@@ -15,9 +15,10 @@ const store = {
   load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } },
   save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } },
 };
-const state = Object.assign({ mode: "practice", topic: "graphRead", progress: {}, mockScores: {} }, store.load());
+const state = Object.assign({ mode: "pearson", topic: "graphRead", progress: {}, mockScores: {}, ptopic: "limGraph", pprogress: {}, log: [], tests: [], guides: true, seenPearson: false, pearsonIntroSeen: false }, store.load());
+if (!state.seenPearson) { state.mode = "pearson"; state.seenPearson = true; }
 if (!GEN[state.topic]) state.topic = "graphRead";
-const persist = () => store.save({ mode: state.mode, topic: state.topic, progress: state.progress, mockScores: state.mockScores });
+const persist = () => store.save({ mode: state.mode, topic: state.topic, progress: state.progress, mockScores: state.mockScores, ptopic: state.ptopic, pprogress: state.pprogress, log: state.log.slice(-2500), tests: state.tests.slice(-200), guides: state.guides, seenPearson: state.seenPearson, pearsonIntroSeen: state.pearsonIntroSeen });
 let examTimer = null, uidCounter = 0;
 
 function el(tag, attrs = {}, html) {
@@ -53,22 +54,23 @@ function renderCountdown() {
   document.getElementById("countdown").innerHTML = `<span class="num">${num}</span><span class="lbl"><b>Midterm · Wed, Sep 16</b>${lbl}</span>`;
 }
 function renderRail() {
+  if (state.mode === "pearson" || state.mode === "ptest" || state.mode === "stats") return renderPearsonRail();
   const rail = document.getElementById("rail"); rail.innerHTML = "";
   TOPICS.forEach((s) => {
     rail.append(el("h2", {}, `<span>§${s.sec}</span><span>${s.name}</span>`));
     const ul = el("ul");
     s.items.forEach(([id, name]) => {
-      const solved = state.progress[id]?.solved || 0;
+      const solved = Math.min(3, state.progress[id]?.streak || 0);
       const pips = [0, 1, 2].map((i) => `<i class="${i < solved ? "on" : ""}"></i>`).join("");
       const b = el("button", {
         type: "button", "aria-current": state.mode === "practice" && state.topic === id ? "true" : "false",
         onclick: () => { state.mode = "practice"; state.topic = id; persist(); render(); window.scrollTo({ top: 0, behavior: smooth() }); },
-      }, `<span>${name}</span><span class="pips" aria-label="${solved} solved">${pips}</span>`);
+      }, `<span>${name}</span><span class="pips" aria-label="${solved} in a row">${pips}</span>`);
       const li = el("li"); li.append(b); ul.append(li);
     });
     rail.append(ul);
   });
-  rail.append(el("p", { class: "legend" }, "A dot fills each time you solve a problem fully without opening the solution."));
+  rail.append(el("p", { class: "legend" }, "Dots = right in a row on the first try, without the solution. 3 = mastered. One miss resets to zero."));
 }
 
 // ---------- problem card ----------
@@ -159,7 +161,7 @@ function problemCard(pr, { title, tag, num }) {
   const card = el("article", { class: "sheet" });
   card.append(el("div", { class: "sheet-head" }, `<h3>${num ? `<span class="qnum">${num}.</span>` : ""}${title}</h3><span class="tag">${tag}</span>`));
   card.append(el("div", { class: "prompt" }, pr.prompt));
-  if (pr.figure) card.append(el("div", { class: "figure" }, pr.figure));
+  if (pr.figure) { card.append(el("div", { class: "figure" }, pr.figure)); if (pr.figure.includes("gp-guide")) card.append(guideToggle()); }
   const list = el("ol", { class: "parts" });
   const ctrls = pr.parts.map((part, i) => { const { li, api } = partView(part, i, pr.parts.length); list.append(li); return api; });
   card.append(list);
@@ -167,6 +169,7 @@ function problemCard(pr, { title, tag, num }) {
 }
 
 // ---------- practice & mixed ----------
+const answerOf = (c) => (c.part.type === "mc" ? (c.value() >= 0 ? c.part.choices[c.value()] : "") : c.value());
 function tipsCard() {
   const d = el("details", { class: "sheet" });
   if (!Object.keys(state.progress).length) d.setAttribute("open", "");
@@ -183,7 +186,7 @@ function renderPractice(mixed) {
   const main = document.getElementById("main"); main.innerHTML = "";
   if (!mixed) main.append(tipsCard());
   const id = mixed ? R.pick(Object.keys(TOPIC_BY_ID)) : state.topic;
-  const t = TOPIC_BY_ID[id], pr = makeProblem(id);
+  const t = TOPIC_BY_ID[id], pr = freshProblem(makeProblem, id);
   const { card, ctrls } = problemCard(pr, { title: t.name, tag: `§${t.sec}${mixed ? " · mixed review" : ""}` });
   const btnCheck = el("button", { class: "btn primary", type: "button", "data-check": "" }, "Check answers");
   const btnHint = el("button", { class: "btn ghost", type: "button" }, "Hint");
@@ -194,18 +197,19 @@ function renderPractice(mixed) {
   const hintBox = el("div", { class: "hint", hidden: "" }, `<b>Hint</b>${pr.hint}`);
   const solBox = el("div", { class: "solution", hidden: "" }, `<div class="sol-lbl">Worked solution</div>${pr.solution}`);
   card.append(actions, hintBox, solBox);
-  let tried = false, counted = false;
+  let tried = false;
   btnCheck.onclick = () => {
     const results = ctrls.map((c) => { const r = c.grade(); applyResult(c, r, !solBox.hidden); return r; });
     const right = results.filter((r) => r.ok).length, total = results.length;
-    const p = state.progress[id] || (state.progress[id] = { tries: 0, solved: 0 });
-    if (!tried) { p.tries++; tried = true; }
-    if (right === total && !counted && solBox.hidden) { p.solved++; counted = true; }
+    if (!tried && results.some((r) => !r.empty)) {
+      tried = true;
+      recordResult({ catalog: "gen", id, mode: mixed ? "mixed" : "practice", pr, results, helped: !solBox.hidden, attempts: 1, answers: ctrls.map(answerOf) });
+    }
     score.textContent = right === total ? `All ${total} correct${solBox.hidden ? "" : " (solution was open)"}` : `${right} of ${total} correct`;
     persist(); renderRail(); typeset(card);
   };
   btnHint.onclick = () => { hintBox.hidden = !hintBox.hidden; };
-  btnSol.onclick = () => { solBox.hidden = false; ctrls.forEach((c) => applyResult(c, c.grade(), true)); typeset(card); solBox.scrollIntoView({ behavior: smooth(), block: "start" }); };
+  btnSol.onclick = () => { if (!tried) { tried = true; recordResult({ catalog: "gen", id, mode: mixed ? "mixed" : "practice", pr, results: ctrls.map((c) => c.grade()), helped: true, attempts: 1, answers: ctrls.map(answerOf) }); renderRail(); } solBox.hidden = false; ctrls.forEach((c) => applyResult(c, c.grade(), true)); typeset(card); solBox.scrollIntoView({ behavior: smooth(), block: "start" }); };
   btnNext.onclick = () => { renderPractice(mixed); window.scrollTo({ top: 0, behavior: smooth() }); };
   main.append(card);
   typeset(main);
@@ -224,8 +228,12 @@ function renderFormulas() {
 function render() {
   clearInterval(examTimer);
   document.querySelectorAll(".modes button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.mode === state.mode ? "true" : "false"));
+  document.body.classList.toggle("no-guides", state.guides === false);
   renderRail();
-  if (state.mode === "practice") renderPractice(false);
+  if (state.mode === "pearson") renderPearsonPractice();
+  else if (state.mode === "ptest") renderPTestHome();
+  else if (state.mode === "stats") renderStats();
+  else if (state.mode === "practice") renderPractice(false);
   else if (state.mode === "mixed") renderPractice(true);
   else if (state.mode === "exam") renderMocks();
   else renderFormulas();

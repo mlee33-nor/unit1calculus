@@ -9,9 +9,18 @@ A self-contained practice site for MAT 213 Brief Calculus, Sections 1.1–1.4:
 
 ## Features
 
-- **Practice by topic:** 25 problem generators, so every problem gets fresh numbers. Answers are graded automatically, and each problem has a hint and a full worked solution.
-- **Mixed review:** random problems pulled from every section.
-- **Mock exams:** four fixed practice midterms (A–D) plus a random one. Each has point values, a timer, grading by section, a printable exam, and an answer key.
+- **Pearson-style practice:** the course exam runs on Pearson, so questions use its answer formats:
+  - A/B limit choices ("does not exist and is neither ∞ nor −∞")
+  - Yes/No and select-all-that-apply
+  - `y =` boxes for tangent lines, plus separate unit boxes
+  - strict "integer or simplified fraction" grading
+  - two tries per question, a similar-question button, and a worked solution
+- **Pearson tests:** three fixed 20-question practice tests plus a random one. Questions appear one at a time with a navigator, and each is scored "x of 1 point."
+- **My gaps:** logs every answer and classifies each mistake (sign error, flipped units, unreduced fraction, chose DNE for an infinite limit, and more). It shows accuracy per skill, what to study next, test history, and a copyable report to paste into Claude for targeted practice.
+- **Mastery streaks:** a topic's dots fill only for first-try correct answers in a row; one miss resets them.
+- **Practice by topic:** 25 more problem generators with fresh numbers every time, automatic grading, hints, and worked solutions.
+- **Readable graphs:** large, spread-out piecewise graphs with optional reading guides. Solutions highlight the approach from the left and from the right.
+- **Paper mock exams:** four fixed printable midterms (A–D) with point values and answer keys, plus a random one.
 - **Formula sheet:** the key definitions and results from the lecture notes.
 
 ## Grading
@@ -38,8 +47,12 @@ The site is built from small modules in [`src/`](src/):
 | `graph.js` | SVG graph engine: piecewise curves, open and closed dots, asymptotes |
 | `gen1.js` – `gen4.js` | Problem generators for sections 1.1–1.4 |
 | `concepts.js` | Concept-check bank and formula sheet |
-| `mock.js` | Seeded mock exams, printable papers, answer keys |
-| `app.js` | Navigation, practice, and grading UI |
+| `mock.js` | Seeded paper mock exams, printable papers, answer keys |
+| `tables.js` | Limits-from-a-table and shrinking-interval generators, plus a guard against repeated questions |
+| `pearson-gen.js`, `pearson-gen2.js` | Pearson-format questions, strict answer checks, practice-test blueprint |
+| `pearson-ui.js` | Pearson-style question cards, two-try practice, one-at-a-time practice tests |
+| `analytics.js` | Answer log, mistake classification, streaks, "My gaps" dashboard, report builder |
+| `app.js` | Navigation, topic practice, and app state |
 
 Rebuild `index.html` with:
 

@@ -3,7 +3,7 @@ const fs = require("fs"), vm = require("vm"), path = require("path");
 const dir = __dirname;
 const ctx = { console, Math, window: {} };
 vm.createContext(ctx);
-const src = ["core.js", "graph.js", "gen1.js", "gen2.js", "gen3.js", "gen4.js", "concepts.js"].map((f) => fs.readFileSync(path.join(dir, f), "utf8")).join("\n;\n") +
+const src = ["core.js", "graph.js", "gen1.js", "gen2.js", "gen3.js", "gen4.js", "concepts.js", "tables.js"].map((f) => fs.readFileSync(path.join(dir, f), "utf8")).join("\n;\n") +
   "\n;this.GEN=GEN;this.Check=Check;this.T=T;this.Q=Q;this.Parser=Parser;";
 vm.runInContext(src, ctx);
 const { GEN, Check, T, Q, Parser } = ctx;

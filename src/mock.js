@@ -98,10 +98,13 @@ function runMock(mock, minutes) {
     const bySec = {}; let earned = 0;
     views.forEach((v) => {
       const sec = TOPIC_BY_ID[v.id].sec; bySec[sec] = bySec[sec] || [0, 0];
-      v.ctrls.forEach((c, j) => { const r = c.grade(); applyResult(c, r, true); c.lock(); if (r.ok) { earned += v.pts[j]; bySec[sec][0] += v.pts[j]; } bySec[sec][1] += v.pts[j]; });
+      const rs = v.ctrls.map((c) => c.grade());
+      v.ctrls.forEach((c, j) => { const r = rs[j]; applyResult(c, r, true); c.lock(); if (r.ok) { earned += v.pts[j]; bySec[sec][0] += v.pts[j]; } bySec[sec][1] += v.pts[j]; });
+      recordResult({ catalog: "gen", id: v.id, mode: "mock", pr: v.pr, results: rs, helped: false, attempts: 1, answers: v.ctrls.map(answerOf), test: mock.name });
       v.card.append(el("details", { class: "solution" }, `<summary class="sol-lbl" style="cursor:pointer">Worked solution</summary>${v.pr.solution}`));
     });
     const pct = Math.round((100 * earned) / totalPts);
+    recordTest({ name: mock.name, kind: "mock", pct, bySec });
     if (mock.key) { state.mockScores[mock.key] = Math.max(state.mockScores[mock.key] ?? 0, pct); persist(); }
     const weakest = Object.entries(bySec).sort((a, b) => a[1][0] / a[1][1] - b[1][0] / b[1][1])[0];
     const res = el("section", { class: "sheet" });

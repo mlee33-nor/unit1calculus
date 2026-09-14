@@ -23,6 +23,8 @@
   --bad: #b3261e;
   --bad-soft: #f9e0dc;
   --focus: #1f5fbf;
+  --hl-left: #2f6fd6;
+  --hl-right: #d9860b;
   --shadow: 0 1px 0 rgba(22, 34, 42, 0.06), 0 8px 24px -12px rgba(22, 34, 42, 0.18);
   --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body: "STIX Two Text", "Cambria", "Georgia", serif;
@@ -32,14 +34,14 @@
   :root:not([data-theme="light"]) {
     --paper: #0e1513; --sheet: #151e1b; --ink: #e2eae6; --graphite: #9aa9a3; --faint: #6f7f78;
     --grid: #22302b; --grid-strong: #34463f; --curve: #f07a63; --curve-soft: #3a221d;
-    --ok: #6cc793; --ok-soft: #17301f; --bad: #ff8b7b; --bad-soft: #3a1d19; --focus: #7fb0ff;
+    --ok: #6cc793; --ok-soft: #17301f; --bad: #ff8b7b; --bad-soft: #3a1d19; --focus: #7fb0ff; --hl-left: #6fa3ff; --hl-right: #f2b24a;
     --shadow: 0 1px 0 rgba(0, 0, 0, 0.4), 0 10px 28px -14px rgba(0, 0, 0, 0.7);
   }
 }
 :root[data-theme="dark"] {
   --paper: #0e1513; --sheet: #151e1b; --ink: #e2eae6; --graphite: #9aa9a3; --faint: #6f7f78;
   --grid: #22302b; --grid-strong: #34463f; --curve: #f07a63; --curve-soft: #3a221d;
-  --ok: #6cc793; --ok-soft: #17301f; --bad: #ff8b7b; --bad-soft: #3a1d19; --focus: #7fb0ff;
+  --ok: #6cc793; --ok-soft: #17301f; --bad: #ff8b7b; --bad-soft: #3a1d19; --focus: #7fb0ff; --hl-left: #6fa3ff; --hl-right: #f2b24a;
   --shadow: 0 1px 0 rgba(0, 0, 0, 0.4), 0 10px 28px -14px rgba(0, 0, 0, 0.7);
 }
 
@@ -105,15 +107,23 @@ code { font-family: var(--f-mono); font-size: 0.86em; background: var(--paper); 
 .prompt p { margin: 0 0 10px; max-width: 68ch; }
 .prompt mjx-container[display="true"] { margin: 10px 0 !important; overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 .figure { margin: 6px 0 14px; }
-svg.graph { width: 100%; max-width: 440px; height: auto; display: block; background: var(--sheet); border: 1px solid var(--grid); border-radius: 8px; }
+svg.graph { width: 100%; max-width: 560px; height: auto; display: block; background: var(--sheet); border: 1px solid var(--grid); border-radius: 8px; }
 .gp-grid { stroke: var(--grid); stroke-width: 1; fill: none; }
 .gp-axis { stroke: var(--ink); stroke-width: 1.4; fill: none; }
 .gp-curve { stroke: var(--curve); stroke-width: 2.6; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-.gp-open { fill: var(--sheet); stroke: var(--curve); stroke-width: 2.2; }
+.gp-open { fill: var(--sheet); stroke: var(--curve); stroke-width: 2.6; }
 .gp-closed { fill: var(--curve); stroke: var(--curve); stroke-width: 1; }
 .gp-asym { stroke: var(--graphite); stroke-width: 1.4; stroke-dasharray: 5 4; fill: none; }
+.gp-guide { stroke: var(--graphite); stroke-width: 1.1; stroke-dasharray: 2 4; fill: none; opacity: 0.6; }
+.no-guides .gp-guide { display: none; }
+.gp-hl { stroke-width: 8; fill: none; stroke-linecap: round; opacity: 0.5; }
+.gp-hl-left { stroke: var(--hl-left); }
+.gp-hl-right { stroke: var(--hl-right); }
+.legend-chip { display: inline-block; width: 22px; height: 6px; border-radius: 3px; vertical-align: middle; margin-right: 4px; }
+.chip-left { background: var(--hl-left); }
+.chip-right { background: var(--hl-right); }
 .gp-cross { stroke: var(--ink); stroke-width: 2; fill: none; }
-.gp-lab { fill: var(--graphite); font: 500 11px var(--f-mono); }
+.gp-lab { fill: var(--graphite); font: 500 13px var(--f-mono); }
 .gp-name { fill: var(--ink); font: italic 14px var(--f-body); }
 
 .tbl-wrap { overflow-x: auto; margin: 6px 0 14px; }
@@ -260,6 +270,86 @@ table.vt td.qmark { color: var(--curve); font-weight: 700; }
   .paper { border: 0; box-shadow: none; padding: 0; max-width: none; }
   .paper-q { page-break-inside: avoid; }
 }
+
+/* ---------- Pearson-format questions ---------- */
+.pq-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 8px 16px; border-bottom: 1px solid var(--grid-strong); padding-bottom: 12px; margin-bottom: 14px; }
+.pq-code { font: 700 20px/1.2 var(--f-display); }
+.pq-meta { font: 500 12px/1.7 var(--f-mono); color: var(--graphite); }
+.pq-sep { margin: 0 8px; color: var(--grid-strong); }
+.pq-prompt { border: 1px solid var(--grid-strong); border-radius: 8px; padding: 14px 16px; }
+.pq-prompt p { margin: 0 0 10px; max-width: 72ch; }
+.pq-prompt mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.pq-part { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--grid); display: grid; gap: 8px; min-width: 0; }
+.pq-part-head { font: 700 15px var(--f-display); }
+.pq-q { line-height: 1.5; overflow-x: auto; overflow-y: hidden; }
+.pq-opt { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 5px 2px; cursor: pointer; line-height: 1.5; }
+.pq-opt > label { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; cursor: pointer; }
+.pq-opt input[type="radio"], .pq-opt input[type="checkbox"] { width: 18px; height: 18px; margin: 0; accent-color: var(--ink); flex: none; }
+.pq-letter { font-weight: 600; }
+.pq-multi { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 2px 20px; }
+.pq-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; line-height: 1.5; }
+.pq-box { font: 500 16px/1.3 var(--f-mono); width: 12em; max-width: 100%; background: var(--sheet); border: 1.5px solid var(--grid-strong); border-radius: 4px; padding: 6px 8px; }
+.pq-box:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent); }
+.pq-instr { font-size: 14px; color: var(--focus); }
+.pq-part.ok .pq-box { border-color: var(--ok); }
+.pq-part.bad .pq-box { border-color: var(--bad); }
+.pq-bar { border-left: 4px solid var(--grid-strong); background: var(--paper); border-radius: 0 6px 6px 0; padding: 10px 14px; font-size: 15px; }
+.pq-bar.ok { border-left-color: var(--ok); }
+.pq-bar.ok > b { color: var(--ok); }
+.pq-bar.bad { border-left-color: var(--bad); }
+.pq-bar.bad > b { color: var(--bad); }
+.pq-err { font: 500 13px/1.45 var(--f-mono); color: var(--bad); margin-top: 4px; }
+.pq-cmp { margin-top: 8px; display: grid; gap: 4px; overflow-x: auto; }
+.pq-cmp span { font: 600 12px var(--f-mono); color: var(--graphite); margin-right: 6px; }
+.btn.small { padding: 6px 10px; font-size: 12px; margin-top: 6px; }
+.rail-score { font: 600 12px var(--f-mono); color: var(--ok); }
+.rail button[aria-current="true"] .rail-score { color: var(--sheet); }
+.pt-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.pt-q { width: 40px; height: 34px; border: 1px solid var(--grid-strong); background: var(--sheet); border-radius: 6px; font: 600 13px var(--f-mono); cursor: pointer; }
+.pt-q.answered { background: var(--paper); border-color: var(--ink); }
+.pt-q[aria-current="true"] { outline: 2px solid var(--ink); outline-offset: 1px; }
+.pt-q.full, .pt-key.full { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+.pt-q.partial, .pt-key.partial { background: color-mix(in srgb, var(--hl-right) 22%, var(--sheet)); border-color: var(--hl-right); }
+.pt-q.zero, .pt-key.zero { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); }
+.pt-key { font: 600 12px var(--f-mono); border: 1px solid; border-radius: 4px; padding: 1px 6px; }
+.pt-confirm { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.pt-pager { justify-content: space-between; }
+
+/* ---------- My gaps dashboard ---------- */
+.stat-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat-tile { border: 1px solid var(--grid-strong); border-radius: 10px; padding: 12px 14px; }
+.stat-tile .v { font: 800 32px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.stat-tile .k { font: 500 11px/1.35 var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--graphite); margin-top: 6px; }
+.sync-line { font: 500 12px/1.5 var(--f-mono); color: var(--graphite); margin: 12px 0 0; }
+.next-list { display: grid; gap: 10px; }
+.next-item { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; border: 1px solid var(--grid-strong); border-radius: 8px; padding: 10px 12px; }
+.next-item b { font-family: var(--f-display); }
+.next-item .why { font-size: 14px; color: var(--graphite); }
+.tbl-scroll { overflow-x: auto; }
+.skill-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.skill-table th { text-align: left; font: 600 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--graphite); padding: 6px 8px; border-bottom: 1px solid var(--grid-strong); white-space: nowrap; }
+.skill-table td { padding: 7px 8px; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+.skill-table td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.skill-table tr.sec-row td { font: 700 13px var(--f-display); background: var(--paper); }
+.skill-table .btn { padding: 5px 10px; font-size: 12px; }
+.chip { display: inline-block; font: 600 11px/1 var(--f-mono); padding: 4px 8px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+.chip.mastered { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+.chip.good { color: var(--ok); border-color: var(--ok); }
+.chip.shaky { color: var(--ink); border-color: var(--hl-right); background: color-mix(in srgb, var(--hl-right) 18%, var(--sheet)); }
+.chip.gap { color: var(--bad); border-color: var(--bad); background: var(--bad-soft); }
+.chip.untested { color: var(--faint); border-color: var(--grid-strong); }
+.last5 { display: inline-flex; gap: 3px; }
+.last5 i { width: 10px; height: 10px; border-radius: 2px; display: block; background: var(--grid); }
+.last5 i.y { background: var(--ok); }
+.last5 i.p { background: var(--hl-right); }
+.last5 i.n { background: var(--bad); }
+.miss-list { display: grid; gap: 10px; }
+.miss { border: 1px solid var(--grid-strong); border-radius: 8px; padding: 10px 12px; }
+.miss h4 { margin: 0 0 4px; font: 700 15px var(--f-display); display: flex; justify-content: space-between; gap: 10px; }
+.miss .count { font: 700 13px var(--f-mono); color: var(--bad); white-space: nowrap; }
+.miss .where { font-size: 13px; color: var(--graphite); }
+.miss .ex { font: 400 12.5px/1.5 var(--f-mono); color: var(--graphite); margin-top: 6px; overflow-wrap: anywhere; }
+.report-box { width: 100%; min-height: 220px; font: 400 12px/1.5 var(--f-mono); background: var(--paper); color: var(--ink); border: 1px solid var(--grid-strong); border-radius: 8px; padding: 10px; resize: vertical; }
 </style>
 <script>
 window.MathJax = {
@@ -284,9 +374,12 @@ window.MathJax = {
   <div class="countdown" id="countdown" aria-live="polite"></div>
 </header>
 <nav class="modes" aria-label="Study mode">
-  <button type="button" data-mode="practice" aria-pressed="true">Practice by topic</button>
+  <button type="button" data-mode="pearson" aria-pressed="true">Pearson-style practice</button>
+  <button type="button" data-mode="ptest" aria-pressed="false">Pearson tests</button>
+  <button type="button" data-mode="stats" aria-pressed="false">My gaps</button>
+  <button type="button" data-mode="practice" aria-pressed="false">Practice by topic</button>
   <button type="button" data-mode="mixed" aria-pressed="false">Mixed review</button>
-  <button type="button" data-mode="exam" aria-pressed="false">Mock exams</button>
+  <button type="button" data-mode="exam" aria-pressed="false">Paper mock exams</button>
   <button type="button" data-mode="formulas" aria-pressed="false">Formula sheet</button>
 </nav>
 <div class="shell">
@@ -597,14 +690,14 @@ const Graph = (() => {
     const Y = (y) => pt + ((o.ymax - y) / (o.ymax - o.ymin)) * (H - pt - pb);
     const id = "clip" + ++uid;
     const parts = [];
-    const gx = o.gx || 1, gy = o.gy || 1;
+    const gx = o.noGrid ? Infinity : o.gx || 1, gy = o.noGrid ? Infinity : o.gy || 1;
     for (let x = Math.ceil(o.xmin / gx) * gx; x <= o.xmax + 1e-9; x += gx) parts.push(`<line class="gp-grid" x1="${X(x)}" y1="${Y(o.ymin)}" x2="${X(x)}" y2="${Y(o.ymax)}"/>`);
     for (let y = Math.ceil(o.ymin / gy) * gy; y <= o.ymax + 1e-9; y += gy) parts.push(`<line class="gp-grid" x1="${X(o.xmin)}" y1="${Y(y)}" x2="${X(o.xmax)}" y2="${Y(y)}"/>`);
     const xAxisY = o.ymin <= 0 && o.ymax >= 0 && !o.edgeLabels ? Y(0) : Y(o.ymin);
     const yAxisX = o.xmin <= 0 && o.xmax >= 0 && !o.edgeLabels ? X(0) : X(o.xmin);
     parts.push(`<line class="gp-axis" x1="${X(o.xmin)}" y1="${xAxisY}" x2="${X(o.xmax)}" y2="${xAxisY}"/>`);
     parts.push(`<line class="gp-axis" x1="${yAxisX}" y1="${Y(o.ymin)}" x2="${yAxisX}" y2="${Y(o.ymax)}"/>`);
-    const lx = o.lx || gx, ly = o.ly || gy;
+    const lx = o.noLabels ? Infinity : o.lx || gx, ly = o.noLabels ? Infinity : o.ly || gy;
     for (let x = Math.ceil(o.xmin / lx) * lx; x <= o.xmax + 1e-9; x += lx) {
       if (!o.edgeLabels && Math.abs(x) < 1e-9) continue;
       const label = o.xLabel ? o.xLabel(x) : fmtDec(x, 2);
@@ -614,14 +707,14 @@ const Graph = (() => {
       if (!o.edgeLabels && Math.abs(y) < 1e-9) continue;
       parts.push(`<text class="gp-lab" x="${yAxisX - 6}" y="${Y(y) + 4}" text-anchor="end">${fmtDec(y, 2)}</text>`);
     }
-    if (!o.edgeLabels) parts.push(`<text class="gp-lab" x="${yAxisX - 6}" y="${xAxisY + 15}" text-anchor="end">0</text>`);
+    if (!o.edgeLabels && !o.noLabels) parts.push(`<text class="gp-lab" x="${yAxisX - 6}" y="${xAxisY + 15}" text-anchor="end">0</text>`);
     parts.push(`<text class="gp-name" x="${X(o.xmax) - 2}" y="${xAxisY - 6}" text-anchor="end">${o.xName || "x"}</text>`);
     parts.push(`<text class="gp-name" x="${yAxisX + 6}" y="${Y(o.ymax) + 12}">${o.yName || "y"}</text>`);
     const defs = `<defs><clipPath id="${id}"><rect x="${X(o.xmin)}" y="${Y(o.ymax)}" width="${X(o.xmax) - X(o.xmin)}" height="${Y(o.ymin) - Y(o.ymax)}"/></clipPath></defs>`;
     const top = [];
     return {
       X, Y, W, H,
-      curve(fn, a, b, n = 320) {
+      curve(fn, a, b, n = 320, cls = "gp-curve") {
         let d = "", pen = false;
         for (let i = 0; i <= n; i++) {
           const x = a + ((b - a) * i) / n, y = fn(x);
@@ -629,11 +722,14 @@ const Graph = (() => {
           d += (pen ? "L" : "M") + X(x).toFixed(2) + " " + Y(y).toFixed(2);
           pen = true;
         }
-        parts.push(`<path class="gp-curve" clip-path="url(#${id})" d="${d}"/>`);
+        parts.push(`<path class="${cls}" clip-path="url(#${id})" d="${d}"/>`);
       },
       poly(pts, cls = "gp-curve") { parts.push(`<polyline class="${cls}" points="${pts.map(([x, y]) => X(x) + "," + Y(y)).join(" ")}"/>`); },
       cross(x, y) { const a = X(x), b = Y(y), s = 4; top.push(`<path class="gp-cross" d="M${a - s} ${b - s}L${a + s} ${b + s}M${a - s} ${b + s}L${a + s} ${b - s}"/>`); },
-      dot(x, y, filled) { top.push(`<circle class="${filled ? "gp-closed" : "gp-open"}" cx="${X(x)}" cy="${Y(y)}" r="${filled ? 4.4 : 4.6}"/>`); },
+      dot(x, y, filled) { top.push(`<circle class="${filled ? "gp-closed" : "gp-open"}" cx="${X(x)}" cy="${Y(y)}" r="${filled ? 5.6 : 5.8}"/>`); },
+      raw(svg) { top.push(svg); },
+      guideV(x) { parts.push(`<line class="gp-guide" x1="${X(x)}" y1="${Y(o.ymin)}" x2="${X(x)}" y2="${Y(o.ymax)}"/>`); },
+      guideH(x, y) { const x0 = o.xmin <= 0 && o.xmax >= 0 ? X(0) : X(o.xmin); parts.push(`<line class="gp-guide" x1="${x0}" y1="${Y(y)}" x2="${X(x)}" y2="${Y(y)}"/>`); },
       vline(x) { parts.push(`<line class="gp-asym" x1="${X(x)}" y1="${Y(o.ymin)}" x2="${X(x)}" y2="${Y(o.ymax)}"/>`); },
       svg(label) { return `<svg class="graph" viewBox="0 0 ${W} ${H}" role="img" aria-label="${label || "graph"}">${defs}${parts.join("")}${top.join("")}</svg>`; },
     };
@@ -669,40 +765,44 @@ const Graph = (() => {
       const a = nodes[i], b = nodes[i + 1], f = segFn(a, b), eps = isFinite(a.yR) && isFinite(b.yL) ? 0 : 0.002;
       g.curve(f, a.x + eps, b.x - eps);
     }
+    if (view.highlight != null) {
+      const k = nodes.findIndex((nd) => nd.x === view.highlight), hx = view.highlight;
+      if (k > 0 && k < nodes.length - 1) {
+        const Ln = nodes[k - 1], Rn = nodes[k + 1];
+        g.curve(segFn(Ln, nodes[k]), Math.max(Ln.x, hx - 1.8), hx - 0.004, 140, "gp-hl gp-hl-left");
+        g.curve(segFn(nodes[k], Rn), hx + 0.004, Math.min(Rn.x, hx + 1.8), 140, "gp-hl gp-hl-right");
+      }
+    }
     nodes.slice(1, -1).forEach((nd) => {
       const L = nd.yL, Rr = nd.yR, v = nd.val;
+      if (view.guides) { g.guideV(nd.x); if (view.guides !== "v") [L, Rr, v].forEach((yy) => { if (yy != null && isFinite(yy)) g.guideH(nd.x, yy); }); }
       if (!isFinite(L) || !isFinite(Rr)) { g.vline(nd.x); if (v != null) g.dot(nd.x, v, true); return; }
-      if (L === Rr) { if (v !== L) { g.dot(nd.x, L, false); if (v != null) g.dot(nd.x, v, true); } return; }
+      if (L === Rr) { if (v !== L) { g.dot(nd.x, L, false); if (v != null) g.dot(nd.x, v, true); } else if (view.dotContinuous) g.dot(nd.x, L, true); return; }
       g.dot(nd.x, L, v === L); g.dot(nd.x, Rr, v === Rr);
       if (v != null && v !== L && v !== Rr) g.dot(nd.x, v, true);
     });
+    if (view.extras) view.extras(g);
     return g.svg(label);
   }
 
-  const SLOPES = [-1.5, -1, -0.5, 0, 0.5, 1, 1.5];
+  const SLOPES = [-1, -0.5, 0, 0.5, 1];
   // types: array like ["jump","hole","cont","corner","asym"]
   function randomPiecewise(types, opts = {}) {
-    const view = { xmin: -6, xmax: 6, ymin: -5, ymax: 5, W: 400, H: 340 };
+    const half = types.length >= 4 ? 7 : 6;
+    const view = { xmin: -half, xmax: half, ymin: -5, ymax: 5, W: 520, H: 440, guides: opts.guides ?? (types.length >= 4 ? "v" : true) };
     for (let attempt = 0; attempt < 400; attempt++) {
       const n = types.length;
-      // spaced integer positions
-      let xs = [];
-      const gapMin = n >= 4 ? 2 : 3;
-      for (let t = 0; t < 50 && xs.length < n; t++) {
-        xs = [];
-        let cur = -5 + R.int(0, 1);
-        for (let i = 0; i < n; i++) { xs.push(cur); cur += gapMin + R.int(0, n >= 4 ? 1 : 2); }
-        if (xs[n - 1] > 5) xs = [];
-      }
-      if (!xs.length) continue;
+      // readable layouts: features spread out and at least 2 grid units from the edges
+      const layouts = n === 1 ? [[0], [-1], [1]] : n === 2 ? [[-3, 2], [-2, 3], [-3, 3], [-2, 2]] : n === 3 ? [[-4, 0, 4], [-3, 0, 3], [-4, -1, 3], [-3, 1, 4]] : [[-5, -2, 1, 4], [-4, -1, 2, 5], [-5, -1, 2, 5]];
+      const xs = R.pick(layouts);
       const ts = R.shuffle(types);
       // no two asymptotes adjacent
       let bad = false;
       for (let i = 1; i < n; i++) if (ts[i] === "asym" && ts[i - 1] === "asym") bad = true;
       if (bad) continue;
-      const nodes = [{ x: view.xmin - 0.6, yR: R.int(-3, 3), sR: R.pick(SLOPES) }];
+      const nodes = [{ x: view.xmin - 0.6, yR: R.int(-2, 3), sR: R.pick(SLOPES) }];
       ts.forEach((t, i) => {
-        const y = R.int(-3, 4), s = R.pick(SLOPES), nd = { x: xs[i], t };
+        const y = R.int(-2, 3), s = R.pick(SLOPES), nd = { x: xs[i], t };
         if (t === "cont") Object.assign(nd, { yL: y, yR: y, val: y, sL: s, sR: s });
         else if (t === "corner") { const sl = R.pick([-2, -1.5, 1.5, 2]); Object.assign(nd, { yL: y, yR: y, val: y, sL: sl, sR: -sl * R.pick([0.5, 1]) }); }
         else if (t === "jump") {
@@ -715,7 +815,7 @@ const Graph = (() => {
         }
         nodes.push(nd);
       });
-      nodes.push({ x: view.xmax + 0.6, yL: R.int(-3, 3), sL: R.pick(SLOPES) });
+      nodes.push({ x: view.xmax + 0.6, yL: R.int(-2, 3), sL: R.pick(SLOPES) });
       // validate ranges
       let ok = true;
       for (let i = 0; i < nodes.length - 1 && ok; i++) {
@@ -725,16 +825,16 @@ const Graph = (() => {
         const fin = isFinite(a.yR) && isFinite(b.yL);
         for (let k = 1; k < 60; k++) {
           const x = a.x + ((b.x - a.x) * k) / 60, y = f(x);
-          if (fin && (y > 4.7 || y < -4.7)) { ok = false; break; }
+          if (fin && (y > 4.2 || y < -4.2)) { ok = false; break; }
         }
       }
-      nodes.forEach((nd) => { if (nd.val != null && (nd.val > 4.5 || nd.val < -4.5)) ok = false; if (isFinite(nd.yR) && (nd.yR > 4.5 || nd.yR < -4.5)) ok = false; });
+      nodes.forEach((nd) => { if (nd.val != null && (nd.val > 4 || nd.val < -4)) ok = false; if (isFinite(nd.yR) && (nd.yR > 4 || nd.yR < -4)) ok = false; if (isFinite(nd.yL) && (nd.yL > 4 || nd.yL < -4)) ok = false; });
       if (!ok) continue;
       if (opts.requireDistinct) {
         const inner = nodes.slice(1, -1);
         if (new Set(inner.map((nd) => info(nd).type + (info(nd).corner ? "c" : ""))).size < Math.min(inner.length, opts.requireDistinct)) continue;
       }
-      return { nodes, svg: drawPiecewise(nodes, view, "piecewise graph"), inner: nodes.slice(1, -1).map(info) };
+      return { nodes, view, svg: drawPiecewise(nodes, view, "piecewise graph"), inner: nodes.slice(1, -1).map(info) };
     }
     throw new Error("graph generation failed");
   }
@@ -753,7 +853,7 @@ const Graph = (() => {
     return g.svg(o.label || "function graph");
   }
 
-  return { frame, randomPiecewise, drawPiecewise, lineChart, fnPlot, info };
+  return { frame, randomPiecewise, drawPiecewise, lineChart, fnPlot, info, segFn };
 })();
 
 ;
@@ -781,6 +881,12 @@ function describeNode(n, fname = "f") {
   return `<h4>At ${$m(`x = ${a}`)}</h4>` + out.map(para).join("");
 }
 
+// Redraw a generated graph with the left/right approach to x highlighted
+function annotatedGraph(G, x) {
+  return `<div class="figure">${Graph.drawPiecewise(G.nodes, { ...G.view, highlight: x, guides: true }, `graph with the approach to x = ${x} highlighted`)}</div>` +
+    para(`<span class="legend-chip chip-left"></span>approaching ${$m(`x = ${x}`)} from the left &nbsp;&nbsp; <span class="legend-chip chip-right"></span>from the right. Follow each colored piece of the curve to the height it heads toward.`);
+}
+
 GEN.graphRead = () => {
   const types = R.pick([["jump", "hole"], ["jump", "asym"], ["hole", "cont", "jump"], ["jump", "hole", "asym"], ["hole", "jump"], ["asym", "hole"]]);
   const G = Graph.randomPiecewise(types);
@@ -797,43 +903,7 @@ GEN.graphRead = () => {
     figure: G.svg,
     parts,
     hint: "Limits ask where the curve is heading (open dots count). Function values ask where the filled dot is.",
-    solution: pickN.map((n) => describeNode(n)).join(""),
-  };
-};
-
-GEN.numTable = () => {
-  const v = R.int(1, 6);
-  let a, ftex, fn, L, approx = 0.0061, extra = "";
-  if (v === 1) { const r = R.nz(-5, 5); a = r; ftex = tx`\frac{x^2 - ${r * r}}{${T.fac(r).slice(1, -1)}}`; fn = (x) => (x * x - r * r) / (x - r); L = q(2 * r); extra = tx`\frac{(x - ${r})(x + ${r})}{x - ${r}} = x + ${r} \to ${2 * r}`.replace(/- -/g, "+ ").replace(/\+ -/g, "- "); }
-  if (v === 2) { const r = R.nz(-4, 4); let s; do { s = R.nz(-5, 5); } while (s === r); a = r; ftex = tx`\frac{${T.poly([1, -(r + s), r * s])}}{${T.fac(r).slice(1, -1)}}`; fn = (x) => (x * x - (r + s) * x + r * s) / (x - r); L = q(r - s); extra = tx`\frac{${T.fac(r)}${T.fac(s)}}{${T.fac(r)}} = ${T.fac(s).slice(1, -1)} \to ${r} ${r - s - r < 0 ? "-" : "+"} ${Math.abs(s)} = ${r - s}`; }
-  if (v === 3) { const r = R.int(2, 4); a = r * r; ftex = tx`\frac{\sqrt{x} - ${r}}{x - ${r * r}}`; fn = (x) => (Math.sqrt(x) - r) / (x - r * r); L = q(1, 2 * r); extra = tx`\frac{\sqrt{x} - ${r}}{(\sqrt{x} - ${r})(\sqrt{x} + ${r})} = \frac{1}{\sqrt{x} + ${r}} \to \frac{1}{${2 * r}}`; }
-  if (v === 4) { a = 0; ftex = tx`\frac{e^{x} - 1}{x}`; fn = (x) => (Math.exp(x) - 1) / x; L = q(1); extra = "(This one can't be simplified with algebra — the table is the tool.)"; }
-  if (v === 5) { a = 0; ftex = tx`\frac{2^{x} - 1}{x}`; fn = (x) => (Math.pow(2, x) - 1) / x; L = Math.LN2; approx = 0.011; extra = tx`\text{(The exact value is } \ln 2 \approx 0.693\text{.)}`; }
-  if (v === 6) { const r = R.pick([1, 2, -1, -2]); a = r; ftex = tx`\frac{x^3 ${r ** 3 < 0 ? "+" : "-"} ${Math.abs(r ** 3)}}{${T.fac(r).slice(1, -1)}}`; fn = (x) => (x ** 3 - r ** 3) / (x - r); L = q(3 * r * r); extra = tx`\frac{${T.fac(r)}(${T.poly([1, r, r * r])})}{${T.fac(r)}} = ${T.poly([1, r, r * r])} \to ${3 * r * r}`; }
-  const offs = [-0.1, -0.01, -0.001, 0, 0.001, 0.01, 0.1];
-  const rows = offs.map((d) => {
-    const x = a + d;
-    return `<td>${fmtDec(x, 4)}</td>`;
-  }).join("");
-  const vals = offs.map((d) => (d === 0 ? "<td class='qmark'>?</td>" : `<td>${fmtDec(fn(a + d), 6)}</td>`)).join("");
-  const table = `<div class="tbl-wrap"><table class="vt"><tr><th>${$m("x")}</th>${rows}</tr><tr><th>${$m("f(x)")}</th>${vals}</tr></table></div>`;
-  const Lt = L instanceof Q ? L : L;
-  return {
-    prompt: para(`Let ${$m(`f(x) = ${ftex}`)}. We want to know what happens to the outputs when ${$m("x")} is near ${$m(a)}.`) + table,
-    parts: [
-      P.mc(`Can you find ${$m(`${T.lim(a)} f(x)`)} by plugging in ${$m(`x = ${a}`)}?`, [
-        `No — substituting gives ${$m("\\frac{0}{0}")}, which is undefined`,
-        `Yes — just compute ${$m(`f(${a})`)}`,
-        `No — ${$m("f")} is undefined for every ${$m("x")} near ${$m(a)}`,
-      ], 0),
-      P.num(`As ${$m(`x \\to ${a}^-`)}, ${$m("f(x)")} approaches…`, L, { approx }),
-      P.num(`As ${$m(`x \\to ${a}^+`)}, ${$m("f(x)")} approaches…`, L, { approx }),
-      P.num($m(`${T.lim(a)} f(x) =`), L, { approx }),
-    ],
-    hint: "Read the left three columns for the left-hand limit and the right three for the right-hand limit. If they approach the same value, that's the limit.",
-    solution: para(`Plugging in ${$m(`x = ${a}`)} makes both the top and bottom 0, so we can't substitute.`) +
-      para(`Reading the table left to right, the outputs close in on ${$m(T.ans(Lt))} from both sides (the values at ${$m(`${a} \\pm 0.001`)} are the closest).`) +
-      $M(`${T.lim(a)} ${ftex} = ${T.ans(Lt)}`) + para(`Algebra check: ${extra.startsWith("(") ? extra : $m(extra)}`),
+    solution: pickN.map((n) => annotatedGraph(G, n.x) + describeNode(n)).join(""),
   };
 };
 
@@ -1314,25 +1384,6 @@ GEN.arcData = () => {
       $M(`\\frac{f(${b}) - f(${a})}{${b} - ${a}} = \\frac{${pts[b][1]} - ${pts[a][1]}}{${b - a}} = ${Vab.tex()}\\ \\text{dollars per month}`) +
       para(`Between ${months[a]} and ${months[b]} the price changed by ${Vab.tex().includes("frac") ? $m(Vab.tex()) : Vab.tex()} dollars per month on average — the slope of the secant line joining those two points.`) +
       para(`Greatest-rate check: ${ivs.map(([p1, p2], i) => `${$m(`[${p1},${p2}]`)}: ${$m(arcs[i].tex())}`).join(", ")} → ${$m(`[${ivs[best][0]}, ${ivs[best][1]}]`)}.`),
-  };
-};
-
-GEN.arcShrink = () => {
-  const k = R.pick([1, 2, 3, 4, 6]), a = R.pick([1, 2]);
-  const deltas = [3, 1, 0.5, 0.05];
-  const arcs = deltas.map((d) => q(-k).div(q(a).mul(q(a).add(q(d)))));
-  const limit = q(-k, a * a);
-  const choices = [limit, limit.neg(), q(0), limit.mul(2)];
-  return {
-    prompt: para(`Let ${$m(`f(x) = \\frac{${k}}{x}`)}. Calculate the average rate of change of ${$m("f")} over each interval (rounded answers to 2+ decimals are fine).`),
-    parts: [
-      ...deltas.map((d, i) => P.num($m(`[${a}, ${fmtDec(a + d, 2)}]`), arcs[i])),
-      P.mcFixed(`As the interval shrinks toward ${$m(`x = ${a}`)}, these values approach…`, choices.map((c) => $m(c.tex())), 0),
-    ],
-    hint: `ARC on [a, b] = (f(b) − f(a))/(b − a). Here f(${a}) = ${q(k, a).txt()}.`,
-    solution:
-      deltas.map((d, i) => { const b = q(a).add(q(d)); const fb = q(k).div(b); return $M(`[${a}, ${fmtDec(a + d, 2)}]:\\quad \\frac{${fb.tex()} - ${q(k, a).tex()}}{${fmtDec(d, 2)}} = ${arcs[i].tex()} ${arcs[i].isInt() ? "" : `\\approx ${fmtDec(arcs[i].val(), 4)}`}`); }).join("") +
-      para(`Each value is the slope of a secant line through ${$m(`(${a}, ${q(k, a).tex()})`)}. As the second point slides toward the first, the secant slopes approach the slope of the <b>tangent line</b>: ${$m(`-\\frac{${k}}{${a}^2} = ${limit.tex()}`)} — the instantaneous rate of change at ${$m(`x = ${a}`)}.`),
   };
 };
 
@@ -1818,10 +1869,13 @@ function runMock(mock, minutes) {
     const bySec = {}; let earned = 0;
     views.forEach((v) => {
       const sec = TOPIC_BY_ID[v.id].sec; bySec[sec] = bySec[sec] || [0, 0];
-      v.ctrls.forEach((c, j) => { const r = c.grade(); applyResult(c, r, true); c.lock(); if (r.ok) { earned += v.pts[j]; bySec[sec][0] += v.pts[j]; } bySec[sec][1] += v.pts[j]; });
+      const rs = v.ctrls.map((c) => c.grade());
+      v.ctrls.forEach((c, j) => { const r = rs[j]; applyResult(c, r, true); c.lock(); if (r.ok) { earned += v.pts[j]; bySec[sec][0] += v.pts[j]; } bySec[sec][1] += v.pts[j]; });
+      recordResult({ catalog: "gen", id: v.id, mode: "mock", pr: v.pr, results: rs, helped: false, attempts: 1, answers: v.ctrls.map(answerOf), test: mock.name });
       v.card.append(el("details", { class: "solution" }, `<summary class="sol-lbl" style="cursor:pointer">Worked solution</summary>${v.pr.solution}`));
     });
     const pct = Math.round((100 * earned) / totalPts);
+    recordTest({ name: mock.name, kind: "mock", pct, bySec });
     if (mock.key) { state.mockScores[mock.key] = Math.max(state.mockScores[mock.key] ?? 0, pct); persist(); }
     const weakest = Object.entries(bySec).sort((a, b) => a[1][0] / a[1][1] - b[1][0] / b[1][1])[0];
     const res = el("section", { class: "sheet" });
@@ -1886,6 +1940,1259 @@ function bootFromURL() {
 }
 
 ;
+// ================= Pearson-format questions (part 1): strict checks, converters, limits & continuity =================
+var PGEN = window.PGEN || {}; window.PGEN = PGEN;
+
+const INSTR = {
+  frac: "(Type an integer or a simplified fraction.)",
+  round4: "(Round to four decimal places as needed.)",
+  round2: "(Round to two decimal places as needed.)",
+  list: "(Use a comma to separate answers as needed.)",
+  expr: (vars) => `(Type an expression using ${vars.join(" and ")} as the variable${vars.length > 1 ? "s" : ""}.)`,
+};
+const LIM_DNE = "The limit does not exist and is neither ∞ nor −∞.";
+
+const UNIT_SYN = {
+  degree: ["degree", "degrees", "deg", "degs", "°", "°f", "degreesf", "degreef", "degreesfahrenheit"],
+  hour: ["hour", "hours", "hr", "hrs", "h"], minute: ["minute", "minutes", "min", "mins"], second: ["second", "seconds", "sec", "secs", "s"],
+  mile: ["mile", "miles", "mi"], foot: ["foot", "feet", "ft"], inch: ["inch", "inches", "in"], centimeter: ["centimeter", "centimeters", "cm"],
+  pound: ["pound", "pounds", "lb", "lbs"], dollar: ["dollar", "dollars", "$", "usd"], gallon: ["gallon", "gallons", "gal"],
+  day: ["day", "days"], week: ["week", "weeks", "wk", "wks"], month: ["month", "months", "mo", "mos"], year: ["year", "years", "yr", "yrs"],
+  item: ["item", "items", "unit", "units"], person: ["person", "people", "persons"],
+};
+function normUnits(s) {
+  s = s.toLowerCase().trim();
+  if (/^mph$/.test(s)) return "mile/hour";
+  s = s.replace(/\s+per\s+/g, "/").replace(/\s*\/\s*/g, "/").replace(/\s+/g, "");
+  const bits = s.split("/");
+  if (bits.length !== 2) return null;
+  return bits.map((b) => Object.keys(UNIT_SYN).find((k) => UNIT_SYN[k].includes(b)) || "?").join("/");
+}
+
+// DOM-free strict checks, modeled on how the online homework grades
+const PCheck = {
+  num(raw, part) {
+    const exact = part.approx == null;
+    const r = Check.num(raw, { ans: part.ans, approx: exact ? 1e-9 : part.approx });
+    if (r.empty || r.err) return r;
+    if (!r.ok && exact && part.ans instanceof Q && /\d*\.\d/.test(raw)) {
+      const v = Number(raw.replace(/\s/g, ""));
+      if (isFinite(v) && Math.abs(v - part.ans.val()) < 0.006) return { ok: false, err: "Close, but this box wants the exact value. Type a simplified fraction, not a rounded decimal." };
+    }
+    if (r.ok) {
+      const m = raw.replace(/\s+/g, "").match(/^\(?(-?\d+)\)?\/\(?(-?\d+)\)?$/);
+      if (m && gcd(+m[1], +m[2]) > 1) return { ok: false, err: "Equivalent, but not simplified. Unreduced fractions get marked wrong — reduce it." };
+    }
+    return { ok: r.ok, note: r.note };
+  },
+  list(raw, part) {
+    if (!raw.trim()) return { empty: true };
+    const vals = [];
+    for (const piece of raw.split(/[,;]/)) {
+      if (!piece.trim()) continue;
+      try { vals.push(Parser.ev(Parser.parse(rhs(piece)), {})); } catch (e) { return { err: `Couldn't read "${piece.trim()}".` }; }
+    }
+    const want = part.ans.map((a) => Q.of(a).val());
+    if (vals.length !== want.length) return { ok: false };
+    const used = new Set();
+    for (const v of vals) { const k = want.findIndex((w, i) => !used.has(i) && closeTo(v, w)); if (k < 0) return { ok: false }; used.add(k); }
+    return { ok: true };
+  },
+  cf(st, part) {
+    const none = part.ans === "DNE" || part.ans === "NONE";
+    if (!st.choice) return st.text && st.text.trim() ? { err: "Select choice A or B first." } : { empty: true };
+    if (st.choice === "B") return { ok: none };
+    if (none) return { ok: false };
+    return part.list ? PCheck.list(st.text, part) : PCheck.num(st.text, part);
+  },
+  multi(sel, part) { if (!sel.length) return { empty: true }; return { ok: [...part.ans].sort().join() === [...sel].sort().join() }; },
+  units(raw, part) {
+    if (!raw.trim()) return { empty: true };
+    const n = normUnits(raw);
+    if (n === part.canon) return { ok: true };
+    const [o, i] = part.canon.split("/");
+    if (n === `${i}/${o}`) return { ok: false, err: "Those units are flipped. A rate is (output units) per (input unit)." };
+    if (n === null && normUnits(raw + "/x") !== null) return { ok: false, err: "A rate needs two units: something per something." };
+    return { ok: false };
+  },
+  mc: (k, part) => (k < 0 ? { empty: true } : { ok: k === part.ans }),
+  expr: (raw, part) => Check.expr(raw, part),
+  line: (raw, part) => Check.line(raw, part),
+};
+
+function pAnswerText(part) {
+  switch (part.type) {
+    case "cf": return part.ans === "DNE" || part.ans === "NONE" ? `B. ${part.dneText}` : `A. ${part.prefix} ${part.list ? "x = " : "= "}${part.list ? part.ans.map((a) => $m(Q.of(a).tex())).join(", ") : $m(T.ans(part.ans))}`;
+    case "num": return $m(T.ans(part.ans));
+    case "units": return part.display;
+    case "multi": return part.ans.length ? part.ans.map((i) => part.choices[i]).join(", ") : "none";
+    case "mc": return part.choices[part.ans];
+    default: return $m(part.display);
+  }
+}
+
+const PP = {
+  cf: (prefix, ans, dneText = LIM_DNE, extra = {}) => ({ type: "cf", prefix, ans, dneText, instr: extra.approx ? INSTR.round4 : INSTR.frac, ...extra }),
+  num: (label, ans, extra = {}) => ({ type: "num", label, ans, instr: extra.approx ? INSTR.round4 : INSTR.frac, ...extra }),
+  yn: (label, yes) => ({ type: "mc", label, choices: ["Yes", "No"], ans: yes ? 0 : 1 }),
+  multi: (label, choices, ans) => ({ type: "multi", label, choices, ans }),
+  units: (label, canon, display, example) => ({ type: "units", label, canon, display, instr: `(Type the units, for example ${example}.)` }),
+  expr: (label, fn, display, vars = ["x"], extra = {}) => ({ type: "expr", label, fn, display, vars, instr: INSTR.expr(vars), forbid: noH, ...extra }),
+  line: (label, m, b) => ({ type: "line", label, m, b, display: T.line(Q.of(m), Q.of(b)), prefix: "y =", instr: INSTR.expr(["x"]) }),
+  list: (ans, noneText) => ({ type: "cf", list: true, prefix: "", ans, dneText: noneText, instr: INSTR.list }),
+};
+
+// Convert a practice-mode problem into the online-homework format
+function pearsonize(pr, opts = {}) {
+  const parts = pr.parts.map((p) => {
+    if (p.type === "num") {
+      const lab = p.label.trim();
+      const isLim = lab.includes("\\lim");
+      const isVal = /^\\\(\s*[A-Za-z]\s*(\\left)?\(/.test(lab);
+      const extra = p.approx ? { approx: p.approx, instr: INSTR.round4 } : opts.round ? { approx: 0.0051, instr: INSTR.round2 } : {};
+      if (isLim || isVal) {
+        const prefix = lab.replace(/\s*=\s*\\\)$/, "\\)");
+        return { ...PP.cf(prefix, p.ans, isLim ? LIM_DNE : `${prefix} is undefined.`), ...extra };
+      }
+      return { ...PP.num(lab, p.ans), ...extra };
+    }
+    if (p.type === "expr") return { ...p, instr: INSTR.expr(p.vars || ["x"]) };
+    if (p.type === "line") return { ...p, prefix: "y =", instr: INSTR.expr(["x"]) };
+    return p;
+  });
+  const prompt = pr.prompt.replace(/[^.>]*(<b>DNE<\/b>|<code>-?inf<\/code>)[^.]*\./g, "").replace(/<p>\s*<\/p>/g, "");
+  return { ...pr, prompt, parts };
+}
+
+// ---------- §1.1–1.2 limits & continuity ----------
+PGEN.limGraph = () => {
+  const G = Graph.randomPiecewise(R.pick([["jump", "hole", "asym"], ["hole", "jump"], ["asym", "jump"], ["hole", "asym", "cont"], ["jump", "hole", "cont"]]));
+  const n = R.shuffle(G.inner.filter((k) => k.type !== "continuous"))[0];
+  const a = n.x;
+  return {
+    prompt: para(`Use the graph of ${$m("y = f(x)")} to find the limits and the function value at ${$m(`x = ${a}`)}.`),
+    figure: G.svg,
+    parts: [
+      PP.cf($m(`${T.lim(a + "^-")} f(x)`), n.left),
+      PP.cf($m(`${T.lim(a + "^+")} f(x)`), n.right),
+      PP.cf($m(`${T.lim(a)} f(x)`), n.limit),
+      PP.cf($m(`f(${a})`), n.value, `${$m(`f(${a})`)} is undefined.`),
+    ],
+    hint: "Heights the curve approaches give the limits (open dots count). The filled dot gives f(a). If a side shoots up, type ∞ in box A.",
+    solution: annotatedGraph(G, a) + describeNode(n) + para(`On this format, an infinite limit goes in box A as ${$m("\\infty")} or ${$m("-\\infty")}. Choice B is only for a limit that doesn't settle anywhere, like left → 2 and right → 5.`),
+  };
+};
+
+PGEN.limAlg = () => {
+  const kind = R.pick(["V1", "V2", "V3", "V3", "V4", "V4b", "V5", "V5", "V7", "V6", "INF", "DIRECT"]);
+  let it;
+  if (kind === "INF") {
+    const r = R.nz(-4, 4); let k; do { k = R.nz(-6, 6); } while (r + k === 0);
+    const t = `${T.lim(r)} \\frac{${T.poly([1, k])}}{${T.fac(r)}^2}`, s = Math.sign(r + k);
+    it = { t, a: s * Infinity, s: `${t}:\\ \\text{top} \\to ${r + k},\\ \\text{bottom} \\to 0 \\text{ through positive values on both sides} \\;\\Rightarrow\\; ${s > 0 ? "\\infty" : "-\\infty"}` };
+  } else if (kind === "DIRECT") {
+    let a, s; do { a = R.int(-4, 5); s = R.nz(-5, 5); } while (a + s === 0);
+    const co = [1, R.int(-6, 6), R.int(-9, 9)], top = evalPoly(co, a), t = `${T.lim(a)} \\frac{${T.poly(co)}}{${T.poly([1, s])}}`;
+    it = { t, a: top.div(a + s), s: `${t} = \\frac{${top.tex()}}{${a + s}} = ${top.div(a + s).tex()} \\quad \\text{(direct substitution)}` };
+  } else it = factorVariants[kind]();
+  return {
+    prompt: para(`Find the limit, if it exists.`),
+    parts: [PP.cf($m(it.t), it.a)],
+    hint: "Try substituting first. 0/0 means factor/cancel or use a conjugate. Nonzero/0 means an infinite limit or no limit — check the sign on each side.",
+    solution: $M(it.s) + para(it.a === "DNE" ? `The two sides disagree, so choose <b>B</b>.` : `Choose <b>A</b> and type ${$m(T.ans(it.a))}.`),
+  };
+};
+
+PGEN.limInf = () => pearsonize(GEN.infRational());
+PGEN.limInfinite = () => pearsonize(GEN.inverse());
+PGEN.limPiecewise = () => pearsonize(GEN.pwLimit());
+
+const REASONS = (a) => [`None — ${$m("f")} is continuous at ${$m(`x = ${a}`)}`, `${$m(`f(${a})`)} is not defined`, `${$m(`${T.lim(a)} f(x)`)} does not exist`, `${$m(`${T.lim(a)} f(x)`)} exists but does not equal ${$m(`f(${a})`)}`];
+PGEN.contYN = () => {
+  const v = R.pick(["pw", "pw", "hole", "holeDef", "poly", "rational"]);
+  let ftex, a, yes, reason, sol;
+  if (v === "pw") {
+    a = R.int(-2, 3); const co = [R.pick([1, -1, 2, -2]), R.int(-4, 4), R.int(-6, 8)], low = R.chance(0.5), left = evalPoly(co, a), m = R.nz(-4, 4);
+    yes = R.chance(0.5); const k = yes ? left.sub(m * a) : left.sub(m * a).add(R.pick([-3, -2, 2, 3])); const right = q(m * a).add(k);
+    ftex = `f(x) = \\begin{cases} ${T.poly(co, "x", low)} & \\text{for } x \\le ${a} \\\\ ${T.poly([m, k])} & \\text{for } x > ${a} \\end{cases}`;
+    reason = yes ? 0 : 2;
+    sol = para(`${$m(`f(${a}) = ${left.tex()}`)} (top piece). Left limit ${$m(left.tex())}; right limit ${$m(`${m}(${a}) ${k.n < 0 ? "-" : "+"} ${k.abs().tex()} = ${right.tex()}`)}.`) + para(yes ? "All three match → continuous." : "Left ≠ right, so the limit doesn't exist → not continuous (jump).");
+  } else if (v === "hole") {
+    const r = R.nz(-4, 4); let s; do { s = R.nz(-5, 5); } while (s === r); a = r; yes = false; reason = 1;
+    ftex = `f(x) = \\frac{${T.poly([1, -(r + s), r * s])}}{${T.fac(r).slice(1, -1)}}`;
+    sol = para(`At ${$m(`x = ${r}`)} the denominator is 0, so ${$m(`f(${r})`)} is not defined — condition 1 already fails. (The limit does exist: it's ${r - s}. That makes it a removable discontinuity.)`);
+  } else if (v === "holeDef") {
+    const r = R.nz(-4, 4); let s; do { s = R.nz(-5, 5); } while (s === r); a = r; const L = r - s; yes = R.chance(0.4); const k = yes ? L : L + R.pick([-2, -1, 1, 2]); reason = yes ? 0 : 3;
+    ftex = `f(x) = \\begin{cases} \\dfrac{${T.poly([1, -(r + s), r * s])}}{${T.fac(r).slice(1, -1)}} & \\text{for } x \\ne ${r} \\\\ ${k} & \\text{for } x = ${r} \\end{cases}`;
+    sol = para(`${$m(`f(${r}) = ${k}`)}. The limit: factor and cancel → ${$m(`${T.lim(r)} ${T.fac(s)} = ${L}`)}.`) + para(yes ? "They match → continuous." : `The limit (${L}) ≠ ${$m(`f(${r})`)} (${k}) → not continuous.`);
+  } else if (v === "poly") {
+    a = R.int(-3, 4); const co = [R.nz(-3, 3), R.int(-5, 5), R.int(-6, 6), R.int(-5, 5)]; yes = true; reason = 0;
+    ftex = `f(x) = ${T.poly(co)}`; sol = para(`Polynomials are continuous at every real number, so yes.`);
+  } else {
+    const c = R.nz(-4, 4); let s; do { s = R.int(-5, 5); } while (s === -c); a = c; yes = false; reason = 1;
+    ftex = `f(x) = \\frac{${T.poly([1, s])}}{${T.fac(c).slice(1, -1)}}`;
+    sol = para(`${$m(`f(${c})`)} would divide by 0, so it's not defined (and there's a vertical asymptote, so the limit doesn't exist either).`);
+  }
+  return {
+    prompt: $M(ftex) + para(`Determine whether ${$m("f")} is continuous at ${$m(`x = ${a}`)}.`),
+    parts: [PP.yn(`Is ${$m("f")} continuous at ${$m(`x = ${a}`)}?`, yes), P.mcFixed(`Which condition for continuity fails first?`, REASONS(a), reason)],
+    hint: "Check in order: (1) is f(a) defined, (2) does the limit exist (left = right), (3) does the limit equal f(a)?",
+    solution: sol,
+  };
+};
+
+PGEN.discList = () => {
+  const v = R.pick(["rat2", "rat2", "rat1", "poly", "pwJump", "pwCont", "noReal"]);
+  let ftex, ans, sol;
+  if (v === "rat2" || v === "rat1") {
+    const r1 = R.nz(-5, 5); let r2; do { r2 = R.nz(-5, 5); } while (r2 === r1);
+    const top = v === "rat1" ? T.fac(r1).slice(1, -1) : T.poly([1, R.int(-6, 6)]);
+    ftex = `f(x) = \\frac{${top}}{${T.poly([1, -(r1 + r2), r1 * r2])}}`; ans = [q(r1), q(r2)].sort((x, y) => x.val() - y.val());
+    sol = para(`Rational functions are discontinuous exactly where the denominator is 0: ${$m(`${T.poly([1, -(r1 + r2), r1 * r2])} = ${T.fac(r1)}${T.fac(r2)} = 0`)} → ${$m(`x = ${ans[0].tex()},\\ ${ans[1].tex()}`)}.`) +
+      (v === "rat1" ? para(`Even though ${$m(T.fac(r1))} cancels, ${$m(`f(${r1})`)} is still undefined — that one is a removable discontinuity, but it still counts.`) : "");
+  } else if (v === "poly") {
+    ftex = `f(x) = ${T.poly([R.nz(-3, 3), R.int(-5, 5), R.int(-6, 6)])}`; ans = "NONE"; sol = para("Polynomials have no discontinuities.");
+  } else if (v === "noReal") {
+    const k = R.int(1, 9); ftex = `f(x) = \\frac{${R.nz(-5, 5)}}{x^2 + ${k}}`; ans = "NONE"; sol = para(`${$m(`x^2 + ${k}`)} is always at least ${k}, so the denominator is never 0 → no discontinuities.`);
+  } else {
+    const c = R.int(-3, 3), m = R.nz(-3, 3), p = R.int(-4, 4), left = c * c + p, jump = v === "pwJump";
+    const b = left - m * c + (jump ? R.pick([-3, -2, 2, 3]) : 0);
+    ftex = `f(x) = \\begin{cases} ${T.poly([1, 0, p])} & \\text{for } x < ${c} \\\\ ${T.poly([m, b])} & \\text{for } x \\ge ${c} \\end{cases}`;
+    ans = jump ? [q(c)] : "NONE";
+    sol = para(`Each piece is a polynomial, so only ${$m(`x = ${c}`)} can be a problem. Left: ${$m(`${T.par(c)}^2 ${p < 0 ? "-" : "+"} ${Math.abs(p)} = ${left}`)}. Right: ${$m(`${m}${T.par(c)} ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${m * c + b}`)}.`) +
+      para(jump ? `They differ → discontinuous at ${$m(`x = ${c}`)}.` : "They match (and f(c) uses the bottom piece, which gives the same value) → no discontinuities.");
+  }
+  return {
+    prompt: $M(ftex) + para(`Find all values of ${$m("x")} where ${$m("f")} is discontinuous.`),
+    parts: [PP.list(ans, "There are no discontinuities.")],
+    hint: "Rational function: set the denominator equal to 0. Piecewise: compare the pieces at the break point.",
+    solution: sol,
+  };
+};
+
+;
+// ================= Pearson-format questions (part 2): rates of change, derivatives, topic list, tests =================
+const FRACS = [q(1, 2), q(1, 3), q(1, 4), q(3, 2), q(-1, 2), q(2, 3), q(3, 4), q(-3, 2)];
+const clock = (h) => (h === 12 ? "noon" : `${h % 12 || 12} ${h < 12 ? "a.m." : "p.m."}`);
+
+function quadSteps(a, b, c, low = false) {
+  a = Q.of(a); b = Q.of(b); c = Q.of(c);
+  return $M(`f'(x) = ${LH} \\frac{\\left[${sumTex([[a, "(x + h)^2"], [b, "(x + h)"], [c, ""]])}\\right] - \\left(${T.poly([a, b, c], "x", low)}\\right)}{h}`) +
+    $M(`= ${LH} \\frac{${sumTex([[a.mul(2), "xh"], [a, "h^2"], [b, "h"]])}}{h} = ${LH} \\left(${sumTex([[a.mul(2), "x"], [a, "h"], [b, ""]])}\\right) = ${T.poly([a.mul(2), b])}`);
+}
+
+// ---------- §1.3 ----------
+const SITUATIONS = [
+  () => { const h1 = R.int(7, 15), d = R.pick([2, 3, 4, 5]), A = R.int(48, 80), ch = R.int(2, 15), up = R.chance(0.6), B = up ? A + ch : A - ch;
+    return { text: `The temperature ${up ? "rose" : "fell"} from ${A} degrees at ${clock(h1)} to ${B} degrees at ${clock(h1 + d)}.`, lead: `The temperature ${up ? "rose" : "fell"}`, rate: q(ch, d), top: `${B} - ${A}`, bottom: d, canon: "degree/hour", display: "degrees/hour", ex: "feet/second", out: "degrees", inp: "hour" }; },
+  () => { const h1 = R.int(8, 14), d = R.pick([2, 3, 4]), m1 = R.int(12000, 48000), dist = R.int(70, 260);
+    return { text: `A car's odometer read ${m1} miles at ${clock(h1)} and ${m1 + dist} miles at ${clock(h1 + d)}.`, lead: "The car traveled at an average rate of", rate: q(dist, d), top: `${m1 + dist} - ${m1}`, bottom: d, canon: "mile/hour", display: "miles/hour", ex: "degrees/hour", out: "miles", inp: "hour" }; },
+  () => { const w1 = R.int(6, 9), k = R.pick([2, 3, 4, 6]), gain = R.int(3, 10);
+    return { text: `A baby weighed ${w1} pounds at birth and ${w1 + gain} pounds at ${k} months old.`, lead: "The baby's weight increased at an average rate of", rate: q(gain, k), top: `${w1 + gain} - ${w1}`, bottom: k, canon: "pound/month", display: "pounds/month", ex: "inches/year", out: "pounds", inp: "month" }; },
+  () => { const [d1, d2, n] = R.pick([["Monday", "Thursday", 3], ["Monday", "Friday", 4], ["Tuesday", "Friday", 3], ["Monday", "Wednesday", 2]]), p1 = R.int(20, 90), ch = R.int(1, 12), up = R.chance(0.5), p2 = up ? p1 + ch : p1 - ch;
+    return { text: `A stock's price ${up ? "rose" : "fell"} from $${p1} per share on ${d1} to $${p2} per share on ${d2}.`, lead: `The price ${up ? "rose" : "fell"}`, rate: q(ch, n), top: `${p2} - ${p1}`, bottom: n, canon: "dollar/day", display: "dollars/day", ex: "miles/hour", out: "dollars", inp: "day" }; },
+  () => { const w1 = R.int(1, 4), w2 = w1 + R.int(2, 5), h1 = R.int(3, 20), gain = R.int(4, 30);
+    return { text: `A plant was ${h1} centimeters tall after ${w1} weeks and ${h1 + gain} centimeters tall after ${w2} weeks.`, lead: "The plant grew at an average rate of", rate: q(gain, w2 - w1), top: `${h1 + gain} - ${h1}`, bottom: `${w2} - ${w1}`, canon: "centimeter/week", display: "centimeters/week", ex: "pounds/month", out: "centimeters", inp: "week" }; },
+  () => { const d = R.pick([2, 3, 4, 5]), a = R.int(48, 72), drop = R.int(2, 11);
+    return { text: `The water in a pool dropped from ${a} inches deep at noon to ${a - drop} inches deep at ${clock(12 + d)}.`, lead: "The water level fell", rate: q(drop, d), top: `${a - drop} - ${a}`, bottom: d, canon: "inch/hour", display: "inches/hour", ex: "degrees/day", out: "inches", inp: "hour" }; },
+];
+PGEN.arcSituation = () => {
+  const s = R.pick(SITUATIONS)();
+  return {
+    prompt: para(`State the average rate of change for the situation. Be sure to include units.`) + para(s.text),
+    parts: [PP.num(`${s.lead} ______`, s.rate), PP.units(`Units`, s.canon, s.display, s.ex)],
+    hint: `Average rate = (change in ${s.out}) ÷ (change in time). The units follow the same order: ${s.out} per ${s.inp}.`,
+    solution: $M(`\\text{average rate of change} = \\frac{${s.top}}{${s.bottom}} = ${s.rate.tex()}`) +
+      para(`So the answer is <b>${s.rate.tex().includes("frac") ? $m(s.rate.tex()) : s.rate.tex()} ${s.display}</b>. The sentence already says the direction (rose/fell/grew), so you type the size of the rate.`) +
+      para(`Watch out: dividing time by ${s.out} gives ${$m(Q.of(s.rate).n === 0 ? "0" : new Q(s.rate.d, s.rate.n).abs().tex())} and flipped units (${s.inp}s per ${s.out.replace(/s$/, "")}). That's the most common way this question gets marked wrong.`),
+  };
+};
+
+PGEN.arcFunction = () => {
+  const v = R.pick(["quad", "quad", "quadFrac", "recip", "sqrt", "cubic"]);
+  let ftex, a, b, f;
+  if (v === "quad" || v === "quadFrac") {
+    const co = [v === "quad" ? q(R.nz(-3, 4)) : R.pick(FRACS), q(R.int(-6, 6)), q(R.int(-9, 9))];
+    ftex = T.poly(co); a = R.int(-2, 3); b = a + R.int(1, 4); f = (x) => evalPoly(co, x);
+  } else if (v === "recip") {
+    const k = R.pick([2, 3, 4, 6, 8, -4, -6]); ftex = `\\frac{${k}}{x}`; a = R.int(1, 3); b = a + R.int(1, 4); f = (x) => q(k, x);
+  } else if (v === "sqrt") {
+    const r1 = R.int(0, 3), r2 = r1 + R.int(1, 3); ftex = `\\sqrt{x}`; a = r1 * r1; b = r2 * r2; f = (x) => q(Math.round(Math.sqrt(x)));
+  } else {
+    const c = R.int(-5, 5); ftex = T.poly([1, 0, 0, c]); a = R.int(-2, 1); b = a + R.int(1, 3); f = (x) => q(x ** 3 + c);
+  }
+  const fa = f(a), fb = f(b), val = fb.sub(fa).div(b - a);
+  return {
+    prompt: para(`Find the average rate of change for the function over the given interval.`) + $M(`y = ${ftex} \\quad \\text{between } x = ${a} \\text{ and } x = ${b}`),
+    parts: [PP.num(`The average rate of change is`, val)],
+    hint: "Compute f(b) and f(a) first, then (f(b) − f(a)) / (b − a). Reduce the fraction.",
+    solution: $M(`f(${b}) = ${fb.tex()}, \\qquad f(${a}) = ${fa.tex()}`) + $M(`\\frac{f(${b}) - f(${a})}{${b} - ${T.par(a)}} = \\frac{${fb.tex()} - ${T.par(fa)}}{${b - a}} = \\frac{${fb.sub(fa).tex()}}{${b - a}} = ${val.tex()}`),
+  };
+};
+
+PGEN.instRate = () => {
+  if (R.chance(0.35)) {
+    const v0 = R.pick([32, 48, 64, 80]), h0 = R.int(0, 60), p = R.int(1, 3), vel = -32 * p + v0;
+    return {
+      prompt: para(`A ball is thrown upward. Its height in feet after ${$m("t")} seconds is ${$m(`s(t) = -16t^2 + ${v0}t${h0 ? ` + ${h0}` : ""}`)}. Find the instantaneous velocity at ${$m(`t = ${p}`)}.`),
+      parts: [PP.num(`The instantaneous velocity at t = ${p} is`, q(vel)), PP.units("Units", "foot/second", "feet/second", "miles/hour")],
+      hint: "Instantaneous velocity is the limit of the average velocity: lim h→0 [s(t+h) − s(t)]/h.",
+      solution: $M(`s'(t) = ${LH} \\frac{s(t + h) - s(t)}{h} = ${LH} \\frac{-32th - 16h^2 + ${v0}h}{h} = -32t + ${v0}`) +
+        $M(`s'(${p}) = -32(${p}) + ${v0} = ${vel}\\ \\text{feet per second}`) + para(vel < 0 ? "Negative: the ball is on its way down." : vel === 0 ? "Zero: the ball is at its highest point." : "Positive: the ball is still rising."),
+    };
+  }
+  const a = R.pick([...FRACS, q(1), q(2), q(-1), q(3)]), b = q(R.int(-6, 6)), c = q(R.int(-8, 8)), p = R.int(-3, 4);
+  const val = a.mul(2 * p).add(b);
+  return {
+    prompt: para(`Find the instantaneous rate of change for the function at the given value.`) + $M(`F(x) = ${T.poly([a, b, c])} \\quad \\text{at } x = ${p}`),
+    parts: [PP.num(`The instantaneous rate of change at x = ${p} is`, val)],
+    hint: "Use lim h→0 [F(a+h) − F(a)]/h, or find F′(x) with the limit definition and substitute.",
+    solution: quadSteps(a, b, c).replace(/f'\(x\)/g, "F'(x)") + $M(`F'(${p}) = ${T.poly([a.mul(2), b]).replace(/x/g, `(${p})`)} = ${val.tex()}`),
+  };
+};
+
+PGEN.dqP = () => pearsonize(GEN.dq());
+PGEN.arcDataP = () => pearsonize(GEN.arcData(), { round: true });
+
+// ---------- §1.4 ----------
+PGEN.derivDef = () => {
+  const c = R.pick([q(1, 2), q(1, 3), q(1, 4), q(3, 2), q(-1, 2), q(2, 3), q(3, 4), q(2), q(-1)]), b = R.chance(0.35) ? R.nz(-4, 4) : 0;
+  const xs = R.pick([[0, 1, 3], [-2, 0, 2], [1, 2, 4], [-1, 1, 3]]);
+  const fpTex = T.poly([c.mul(2), b]);
+  return {
+    prompt: para(`Use the function ${$m(`f(x) = ${T.poly([c, b, 0])}`)} to answer the parts.`) +
+      para(`(a) Find ${$m("f'(x)")} by determining ${$m(`${LH} \\frac{f(x+h) - f(x)}{h}`)}.`) + para(`(b) Find ${xs.map((x) => $m(`f'(${x})`)).join(", ")}.`),
+    parts: [
+      PP.expr($m("f'(x) ="), (e) => 2 * c.val() * e.x + b, fpTex),
+      ...xs.map((x) => PP.num($m(`f'(${x}) =`), c.mul(2 * x).add(b))),
+    ],
+    hint: "Replace x with (x + h), expand, subtract f(x), cancel the h, then let h → 0. A fraction coefficient just rides along.",
+    solution: quadSteps(c, b, 0) + $M(xs.map((x) => `f'(${x}) = ${c.mul(2 * x).add(b).tex()}`).join(",\\quad ")) +
+      para(`On the homework version, parts that ask you to graph and draw tangent lines at these x-values use the same numbers: each ${$m("f'(a)")} is the slope of the tangent line at ${$m("x = a")}.`),
+  };
+};
+
+PGEN.tangentP = () => {
+  const v = R.pick(["cq", "cq", "std", "recip", "cubic", "sqrt"]);
+  let ftex, p, y0, m, steps;
+  if (v === "cq" || v === "std") {
+    const k = v === "cq" ? R.pick([q(-3), q(-2), q(-1), q(1), q(2), q(3), q(1, 2), q(-1, 2)]) : q(R.nz(-3, 3));
+    const lin = v === "cq" ? q(0) : q(R.int(-6, 6)), c0 = q(R.nz(-8, 8)), low = v === "cq" || R.chance(0.5);
+    ftex = T.poly([k, lin, c0], "x", low); p = R.nz(-5, 5);
+    y0 = evalPoly([k, lin, c0], p); m = k.mul(2 * p).add(lin); steps = quadSteps(k, lin, c0, low);
+  } else if (v === "recip") {
+    const k = R.pick([2, 4, 6, 8, -4, -6, 12]); p = R.pick([1, 2, -1, -2].filter((z) => Math.abs(k) % Math.abs(z) === 0));
+    ftex = `\\frac{${k}}{x}`; y0 = q(k, p); m = q(-k, p * p); steps = derivSteps("recip", { k });
+  } else if (v === "cubic") {
+    const b = R.int(-4, 4); p = R.nz(-2, 2); ftex = T.poly([1, 0, b, 0]); y0 = q(p ** 3 + b * p); m = q(3 * p * p + b); steps = derivSteps("cubic", { b });
+  } else {
+    const r = R.int(1, 4); p = r * r; ftex = "\\sqrt{x}"; y0 = q(r); m = q(1, 2 * r); steps = derivSteps("sqrt", {});
+  }
+  const bb = y0.sub(m.mul(p));
+  return {
+    prompt: para(`Find an equation of the line tangent to the graph of ${$m(`f(x) = ${ftex}`)} at ${$m(`(${p}, ${y0.tex()})`)}.`),
+    parts: [PP.line(`The equation of the tangent line to the graph of ${$m(`f(x) = ${ftex}`)} at ${$m(`(${p}, ${y0.tex()})`)} is`, m, bb)],
+    hint: "Slope = f′(a) from the limit definition. Then y − y₁ = m(x − x₁), and solve for y.",
+    solution: steps + $M(`m = f'(${p}) = ${m.tex()}`) + $M(`${T.pointSlope(m, p, y0)} \\;\\Rightarrow\\; ${T.line(m, bb)}`) +
+      para(`Type only the right side in the box: ${$m(T.poly([m, bb]))}.`),
+  };
+};
+
+PGEN.pwDiff = () => {
+  const a = R.pick([1, 2, 3, 4, -1, -2]), p = R.pick([1, 1, -1, 2]), k = R.int(-6, 8);
+  const L = p * a * a + k, slopeL = 2 * p * a, kind = R.pick(["corner", "corner", "smooth", "jump"]);
+  let m; if (kind === "smooth") m = slopeL; else { do { m = R.nz(-6, 8); } while (m === slopeL); }
+  let b = L - m * a; if (kind === "jump") b += R.pick([-3, -2, 2, 3]);
+  const right = m * a + b, cont = right === L, diff = cont && m === slopeL;
+  const Lt = T.poly([p, 0, k]), Rt = T.poly([m, b]);
+  return {
+    prompt: para(`Let ${$m("f")} be the following piecewise-defined function.`) + $M(`f(x) = \\begin{cases} ${Lt} & \\text{for } x \\le ${a} \\\\ ${Rt} & \\text{for } x > ${a} \\end{cases}`) +
+      para(`(a) Is ${$m("f")} continuous at ${$m(`x = ${a}`)}?<br>(b) Is ${$m("f")} differentiable at ${$m(`x = ${a}`)}?`),
+    parts: [PP.yn(`(a) Is ${$m("f(x)")} continuous at ${$m(`x = ${a}`)}?`, cont), PP.yn(`(b) Is ${$m("f(x)")} differentiable at ${$m(`x = ${a}`)}?`, diff)],
+    hint: "Continuity: plug x = a into BOTH pieces — same height? Differentiability: also compare the slopes of the two pieces at x = a.",
+    solution:
+      para(`<b>(a)</b> Top piece at ${$m(`x = ${a}`)}: ${$m(`${p === 1 ? "" : p === -1 ? "-" : p}(${a})^2 ${k < 0 ? "-" : "+"} ${Math.abs(k)} = ${L}`)}. Bottom piece: ${$m(`${m}(${a}) ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${right}`)}. ${cont ? `Both give ${L}, so ${$m("f")} is <b>continuous</b>.` : `${L} ≠ ${right}: a jump, so <b>not continuous</b>.`}`) +
+      para(`<b>(b)</b> ${cont ? `Slope of the top piece: its derivative is ${$m(`${2 * p}x`)}, which is ${$m(slopeL)} at ${$m(`x = ${a}`)}. Slope of the line: ${$m(m)}. ${m === slopeL ? "They match, so the pieces join smoothly → <b>differentiable</b>." : `${slopeL} ≠ ${m}, so the graph has a corner → <b>not differentiable</b>.`}` : "A function that isn't continuous at a point can't be differentiable there → <b>No</b>."}`),
+  };
+};
+
+PGEN.notDiffGraph = () => {
+  const askCont = R.chance(0.3), xs = [1.5, 3.5, 5.5, 7.5, 9.5, 11.5];
+  const view = { xmin: -0.8, xmax: 13.4, ymin: -1.8, ymax: 6.2, W: 580, H: 300, noGrid: true, noLabels: true, dotContinuous: true, padL: 16, padB: 30 };
+  for (let attempt = 0; attempt < 400; attempt++) {
+    const types = R.shuffle(["smooth", "smooth", "corner", "hole", "holePt", "jump", "asym"]).slice(0, 6);
+    const nodes = [{ x: -1.4, yR: R.pick([0.5, 1, 1.5]), sR: 0.3 }];
+    types.forEach((t, i) => {
+      const y = R.pick([1.5, 2, 2.5, 3, 3.5]), s = R.pick([-0.6, -0.3, 0, 0.3, 0.6]), nd = { x: xs[i], t };
+      if (t === "smooth") Object.assign(nd, { yL: y, yR: y, val: y, sL: s, sR: s });
+      if (t === "corner") { const sl = R.pick([-1.6, 1.6]); Object.assign(nd, { yL: y, yR: y, val: y, sL: sl, sR: -sl }); }
+      if (t === "hole") Object.assign(nd, { yL: y, yR: y, val: null, sL: s, sR: s });
+      if (t === "holePt") Object.assign(nd, { yL: y, yR: y, val: y + R.pick([1.3, -1.3]), sL: s, sR: s });
+      if (t === "jump") Object.assign(nd, { yL: y, yR: y + R.pick([-1.5, 1.5]), val: y, sL: s, sR: s });
+      if (t === "asym") Object.assign(nd, { yL: R.pick([Infinity, -Infinity]), yR: R.pick([Infinity, -Infinity]), val: null, sL: 0, sR: 0 });
+      nodes.push(nd);
+    });
+    nodes.push({ x: 14.2, yL: R.pick([1.5, 2.5]), sL: 0.3 });
+    let ok = true;
+    for (let i = 0; i < nodes.length - 1 && ok; i++) {
+      const A = nodes[i], B = nodes[i + 1];
+      if (!isFinite(A.yR) || !isFinite(B.yL)) continue;
+      const f = Graph.segFn(A, B);
+      for (let k = 1; k < 40; k++) { const y = f(A.x + ((B.x - A.x) * k) / 40); if (y < 0.3 || y > 5.4) { ok = false; break; } }
+    }
+    nodes.forEach((nd) => { [nd.yL, nd.yR, nd.val].forEach((y) => { if (y != null && isFinite(y) && (y < 0.4 || y > 5.2)) ok = false; }); });
+    if (!ok) continue;
+    const inner = nodes.slice(1, -1), infos = inner.map(Graph.info);
+    const svg = Graph.drawPiecewise(nodes, {
+      ...view,
+      extras(g) {
+        inner.forEach((nd, i) => {
+          const tops = [nd.yL, nd.yR, nd.val].filter((y) => y != null && isFinite(y));
+          if (tops.length) g.raw(`<line class="gp-asym" x1="${g.X(nd.x)}" y1="${g.Y(0)}" x2="${g.X(nd.x)}" y2="${g.Y(Math.max(...tops))}"/>`);
+          g.raw(`<text class="gp-name" text-anchor="middle" x="${g.X(nd.x)}" y="${g.Y(0) + 20}">x<tspan dy="4" font-size="11">${i}</tspan></text>`);
+        });
+      },
+    }, "graph with labeled points x0 through x5");
+    const order = R.shuffle([0, 1, 2, 3, 4, 5]);
+    const bad = (i) => (askCont ? !infos[i].continuous : !infos[i].differentiable);
+    const choices = order.map((i) => $m(`x_{${i}}`));
+    const ans = order.map((i, j) => (bad(i) ? j : -1)).filter((j) => j >= 0);
+    const why = (n, i) => {
+      const lab = $m(`x_{${i}}`);
+      if (n.differentiable) return `${lab}: smooth and unbroken → continuous and differentiable.`;
+      if (n.corner) return `${lab}: a sharp corner → continuous, but <b>not differentiable</b>.`;
+      if (n.type === "infinite") return `${lab}: vertical asymptote → not continuous, not differentiable.`;
+      if (n.type === "jump") return `${lab}: the graph jumps → not continuous, not differentiable.`;
+      return `${lab}: a hole (open circle${n.value !== "DNE" ? ", with the point moved elsewhere" : ""}) → not continuous, not differentiable.`;
+    };
+    return {
+      prompt: para(`List the points in the graph at which the function is <b>not ${askCont ? "continuous" : "differentiable"}</b>.`),
+      figure: svg,
+      parts: [PP.multi(`Select all that apply.`, choices, ans)],
+      hint: askCont ? "Not continuous: holes, jumps, vertical asymptotes. Corners ARE continuous." : "Not differentiable: corners, holes, jumps, vertical asymptotes (and vertical tangents). Smooth points are fine.",
+      solution: infos.map((n, i) => para(why(n, i))).join("") + para(askCont ? "Corners are the trap: no break in the graph, so they're continuous even though they aren't differentiable." : "Every discontinuity is also a non-differentiable point, plus the corners."),
+    };
+  }
+  throw new Error("notDiffGraph generation failed");
+};
+
+PGEN.interpP = () => pearsonize(GEN.interp());
+PGEN.derivP = () => pearsonize(GEN.deriv());
+
+// ---------- topic list & practice tests ----------
+const PTOPICS = [
+  { sec: "1.1–1.2", name: "Limits & continuity", items: [["limGraph", "Limits from a graph"], ["limTable", "Complete the table"], ["limAlg", "Find the limit, if it exists"], ["limInfinite", "Infinite limits"], ["limInf", "Limits at infinity"], ["limPiecewise", "Piecewise limits"], ["contYN", "Is f continuous at a?"], ["discList", "Where is f discontinuous?"]] },
+  { sec: "1.3", name: "Rates of change", items: [["arcSituation", "Rate from a situation (units)"], ["arcFunction", "Average rate of a function"], ["arcDataP", "Rates from tables & graphs"], ["instRate", "Instantaneous rate at a value"], ["dqP", "Difference quotient"]] },
+  { sec: "1.4", name: "The derivative", items: [["derivDef", "f′(x) by the limit, then values"], ["tangentP", "Tangent line at a point"], ["pwDiff", "Continuous? Differentiable? (piecewise)"], ["notDiffGraph", "Not differentiable — select all"], ["interpP", "Interpret f′(a) with units"], ["derivP", "Derivative from the definition"]] },
+];
+const PTOPIC_BY_ID = {};
+PTOPICS.forEach((s) => s.items.forEach(([id, name]) => { PTOPIC_BY_ID[id] = { id, name, sec: s.sec }; }));
+const PTESTS = [
+  { key: "P1", seed: 516001, name: "Practice Test 1" },
+  { key: "P2", seed: 516002, name: "Practice Test 2" },
+  { key: "P3", seed: 516003, name: "Practice Test 3" },
+];
+const PTEST_BLUEPRINT = ["limGraph", "limTable", "limAlg", "limAlg", "limInfinite", "limInf", "limPiecewise", "contYN", "discList", "arcSituation", "arcFunction", "instRate", "dqP", "derivDef", "tangentP", "tangentP", "pwDiff", "notDiffGraph", "interpP", "arcDataP"];
+
+;
+// ================= variety: table-limit families, shrinking-interval families, no-repeat guard =================
+const kx = (k) => (k === 1 ? "x" : k === -1 ? "-x" : `${k}x`);
+const TABLE_FAMILIES = [
+  () => { const r = R.nz(-6, 6); return { a: r, tex: `\\frac{x^2 - ${r * r}}{${T.fac(r).slice(1, -1)}}`, fn: (x) => (x * x - r * r) / (x - r), L: q(2 * r), why: `\\frac{${T.fac(r)}${T.fac(-r)}}{${T.fac(r)}} = ${T.fac(-r).slice(1, -1)} \\to ${2 * r}` }; },
+  () => { const r = R.nz(-5, 5); let s; do { s = R.nz(-6, 6); } while (s === r); return { a: r, tex: `\\frac{${T.poly([1, -(r + s), r * s])}}{${T.fac(r).slice(1, -1)}}`, fn: (x) => (x * x - (r + s) * x + r * s) / (x - r), L: q(r - s), why: `\\frac{${T.fac(r)}${T.fac(s)}}{${T.fac(r)}} = ${T.fac(s).slice(1, -1)} \\to ${r - s}` }; },
+  () => { const r = R.nz(-4, 4), p = R.pick([2, 3, -1, -2]), t = R.nz(-5, 5), co = [p, t - p * r, -t * r]; return { a: r, tex: `\\frac{${T.poly(co)}}{${T.fac(r).slice(1, -1)}}`, fn: (x) => (co[0] * x * x + co[1] * x + co[2]) / (x - r), L: q(p * r + t), why: `\\frac{${T.fac(r)}${T.lin(p, t)}}{${T.fac(r)}} = ${T.poly([p, t])} \\to ${p * r + t}` }; },
+  () => { const r = R.int(1, 5); return { a: r * r, tex: `\\frac{\\sqrt{x} - ${r}}{x - ${r * r}}`, fn: (x) => (Math.sqrt(x) - r) / (x - r * r), L: q(1, 2 * r), why: `\\frac{\\sqrt{x} - ${r}}{(\\sqrt{x} - ${r})(\\sqrt{x} + ${r})} = \\frac{1}{\\sqrt{x} + ${r}} \\to \\frac{1}{${2 * r}}` }; },
+  () => { const r = R.int(1, 5); return { a: r * r, tex: `\\frac{x - ${r * r}}{\\sqrt{x} - ${r}}`, fn: (x) => (x - r * r) / (Math.sqrt(x) - r), L: q(2 * r), why: `\\frac{(\\sqrt{x} - ${r})(\\sqrt{x} + ${r})}{\\sqrt{x} - ${r}} = \\sqrt{x} + ${r} \\to ${2 * r}` }; },
+  () => { const r = R.pick([1, 2, 3, -1, -2]); return { a: r, tex: `\\frac{x^3 ${r ** 3 < 0 ? "+" : "-"} ${Math.abs(r ** 3)}}{${T.fac(r).slice(1, -1)}}`, fn: (x) => (x ** 3 - r ** 3) / (x - r), L: q(3 * r * r), why: `\\frac{${T.fac(r)}(${T.poly([1, r, r * r])})}{${T.fac(r)}} = ${T.poly([1, r, r * r])} \\to ${3 * r * r}` }; },
+  () => { const k = R.pick([1, 2, 3, 4, -1, -2]); return { a: 0, tex: `\\frac{e^{${kx(k)}} - 1}{x}`, fn: (x) => (Math.exp(k * x) - 1) / x, L: q(k), approx: 0.011, why: `\\text{no algebra trick here: the table values settle at } ${k}` }; },
+  () => { const b = R.pick([2, 3, 5, 10]); return { a: 0, tex: `\\frac{${b}^{x} - 1}{x}`, fn: (x) => (Math.pow(b, x) - 1) / x, L: Math.log(b), approx: 0.011, why: `\\text{the values settle at } \\ln ${b} \\approx ${fmtDec(Math.log(b), 4)}` }; },
+  () => { const r = R.pick([1, 2, 3, 4, -1, -2]); return { a: r, tex: `\\frac{\\frac{1}{x} - \\frac{1}{${r}}}{${T.fac(r).slice(1, -1)}}`, fn: (x) => (1 / x - 1 / r) / (x - r), L: q(-1, r * r), why: `\\frac{\\frac{${r} - x}{${r}x}}{x - ${T.par(r)}} = \\frac{-1}{${r}x} \\to ${q(-1, r * r).tex()}` }; },
+  () => { const k = R.pick([1, 4, 9, 16, 25]), s = Math.sqrt(k); return { a: 0, tex: `\\frac{\\sqrt{x + ${k}} - ${s}}{x}`, fn: (x) => (Math.sqrt(x + k) - s) / x, L: q(1, 2 * s), why: `\\text{multiply by the conjugate: } \\frac{1}{\\sqrt{x + ${k}} + ${s}} \\to \\frac{1}{${2 * s}}` }; },
+  () => { const r = R.nz(-4, 4); let t; do { t = R.nz(-5, 5); } while (t === r || t === -r); return { a: r, tex: `\\frac{x^2 - ${r * r}}{${T.poly([1, -(r + t), r * t])}}`, fn: (x) => (x * x - r * r) / (x * x - (r + t) * x + r * t), L: q(2 * r, r - t), why: `\\frac{${T.fac(r)}${T.fac(-r)}}{${T.fac(r)}${T.fac(t)}} = \\frac{${T.fac(-r).slice(1, -1)}}{${T.fac(t).slice(1, -1)}} \\to ${q(2 * r, r - t).tex()}` }; },
+  () => { const c = R.nz(-5, 5); return { a: 0, tex: `\\frac{(${c} + x)^2 - ${c * c}}{x}`, fn: (x) => ((c + x) ** 2 - c * c) / x, L: q(2 * c), why: `\\frac{${2 * c}x + x^2}{x} = ${2 * c} + x \\to ${2 * c}` }; },
+  () => { const r = R.nz(-4, 4), inner = T.fac(r).slice(1, -1); return { a: r, tex: `\\frac{\\left|${inner}\\right|}{${inner}}`, fn: (x) => Math.abs(x - r) / (x - r), L: "DNE", left: q(-1), right: q(1), why: `\\text{left of } ${r}: \\frac{-(${inner})}{${inner}} = -1; \\quad \\text{right of } ${r}: \\frac{${inner}}{${inner}} = 1` }; },
+  () => { const r = R.nz(-4, 4), k = R.pick([1, 2, 3]); return R.chance(0.5)
+    ? { a: r, big: true, tex: `\\frac{${k}}{${T.fac(r)}^2}`, fn: (x) => k / (x - r) ** 2, L: Infinity, left: Infinity, right: Infinity, why: `\\text{the bottom is a tiny positive number on both sides, so the outputs grow without bound}` }
+    : { a: r, big: true, tex: `\\frac{${k}}{${T.fac(r).slice(1, -1)}}`, fn: (x) => k / (x - r), L: "DNE", left: -Infinity, right: Infinity, why: `\\text{left side: tiny negative bottom} \\to -\\infty; \\text{ right side: tiny positive bottom} \\to \\infty` }; },
+  () => { const co = [R.nz(-3, 3), R.int(-6, 6), R.int(-8, 8)], a = R.int(-3, 3), v = evalPoly(co, a); return { a, noHole: true, tex: T.poly(co), fn: (x) => co[0] * x * x + co[1] * x + co[2], L: v, why: `\\text{a polynomial, so the limit is just } f(${a}) = ${v.tex()}` }; },
+];
+function tableXs(fam) {
+  const offs = fam.big ? [0.1, 0.01, 0.001] : R.pick([[0.1, 0.01, 0.001], [0.5, 0.1, 0.01], [0.01, 0.001, 0.0001]]);
+  return [-offs[0], -offs[1], -offs[2], offs[2], offs[1], offs[0]].map((d) => +(fam.a + d).toFixed(4));
+}
+const tableHead = (fam, xs) => xs.slice(0, 3).map((x) => `<td>${fmtDec(x, 4)}</td>`).join("") + `<td class="qmark">${fam.a}</td>` + xs.slice(3).map((x) => `<td>${fmtDec(x, 4)}</td>`).join("");
+const tableReading = (fam) => {
+  const left = fam.left ?? fam.L, right = fam.right ?? fam.L;
+  return para(`Reading the left three columns, the outputs head toward ${$m(T.ans(left))}; the right three head toward ${$m(T.ans(right))}.`) +
+    para(fam.L === "DNE" ? "The two sides disagree (or run off in opposite directions), so the two-sided limit does not exist." : `Both sides agree, so the limit is ${$m(T.ans(fam.L))}.`);
+};
+
+GEN.numTable = () => {
+  const fam = R.pick(TABLE_FAMILIES)(), xs = tableXs(fam), a = fam.a;
+  const left = fam.left ?? fam.L, right = fam.right ?? fam.L, tol = { approx: 0.011 };
+  const vals = xs.slice(0, 3).map((x) => `<td>${fmtDec(fam.fn(x), 6)}</td>`).join("") + `<td class="qmark">?</td>` + xs.slice(3).map((x) => `<td>${fmtDec(fam.fn(x), 6)}</td>`).join("");
+  const table = `<div class="tbl-wrap"><table class="vt"><tr><th>${$m("x")}</th>${tableHead(fam, xs)}</tr><tr><th>${$m("f(x)")}</th>${vals}</tr></table></div>`;
+  return {
+    prompt: para(`Let ${$m(`f(x) = ${fam.tex}`)}. Use the table to see what the outputs do as ${$m("x")} approaches ${$m(a)}.`) + table,
+    parts: [
+      P.mc(`Can you find ${$m(`${T.lim(a)} f(x)`)} just by plugging in ${$m(`x = ${a}`)}?`, [
+        `Yes — ${$m(`f(${a})`)} is defined, so substitute`,
+        `No — ${$m(`x = ${a}`)} makes a denominator 0, so ${$m(`f(${a})`)} is undefined`,
+      ], fam.noHole ? 0 : 1),
+      P.num(`As ${$m(`x \\to ${a}^-`)}, ${$m("f(x)")} approaches…`, left, tol),
+      P.num(`As ${$m(`x \\to ${a}^+`)}, ${$m("f(x)")} approaches…`, right, tol),
+      P.num($m(`${T.lim(a)} f(x) =`), fam.L, { ...tol, dneOk: true }),
+    ],
+    hint: "Left three columns → left-hand limit. Right three → right-hand limit. Same value on both sides → that's the limit. Opposite directions or different values → DNE.",
+    solution: tableReading(fam) + $M(`${T.lim(a)} ${fam.tex} = ${T.ans(fam.L)}`) + para(`Why: ${$m(fam.why)}`),
+  };
+};
+
+if (typeof PGEN !== "undefined") {
+  PGEN.limTable = () => {
+    const fam = R.pick(TABLE_FAMILIES)(), xs = tableXs(fam), a = fam.a;
+    const blanks = xs.slice(0, 3).map((_, i) => `<td>(${"abc"[i]})</td>`).join("") + `<td class="qmark">?</td>` + xs.slice(3).map((_, i) => `<td>(${"def"[i]})</td>`).join("");
+    const table = `<div class="tbl-wrap"><table class="vt"><tr><th>${$m("x")}</th>${tableHead(fam, xs)}</tr><tr><th>${$m("f(x)")}</th>${blanks}</tr></table></div>`;
+    const exactOk = fam.L === "DNE" || fam.L === Infinity || (fam.L instanceof Q && fam.L.isInt());
+    return {
+      prompt: para(`Complete the table and use the result to find the indicated limit.`) + $M(`f(x) = ${fam.tex}, \\qquad ${T.lim(a)} f(x)`) + table,
+      parts: [
+        ...xs.map((x) => { const v = fam.fn(x); return PP.num($m(`f(${fmtDec(x, 4)})`), v, { approx: Math.max(0.00051, Math.abs(v) * 1e-7), instr: INSTR.round4 }); }),
+        PP.cf($m(`${T.lim(a)} f(x)`), fam.L, LIM_DNE, exactOk ? {} : { approx: 0.0051, instr: INSTR.round4 }),
+      ],
+      hint: "Evaluate f at each x with a calculator and round to four decimal places. Then decide what both sides approach.",
+      solution: para(`Values: ${xs.map((x) => $m(`f(${fmtDec(x, 4)}) \\approx ${fmtDec(fam.fn(x), 4)}`)).join(", ")}.`) + tableReading(fam) + para(`Why: ${$m(fam.why)}`),
+    };
+  };
+}
+
+GEN.arcShrink = () => {
+  const fams = [
+    () => { const k = R.pick([1, 2, 3, 4, 6, -2]), a = R.pick([1, 2, 3]); return { tex: `\\frac{${k}}{x}`, a, f: (x) => q(k).div(x), d: q(-k, a * a), dWhy: `-\\frac{${k}}{x^2}` }; },
+    () => { const c = R.pick([q(1), q(2), q(-1), q(1, 2), q(3)]), dd = R.int(-4, 6), a = R.pick([1, 2, 3, -1, -2]); return { tex: T.poly([c, 0, dd]), a, f: (x) => c.mul(Q.of(x).mul(x)).add(dd), d: c.mul(2 * a), dWhy: T.poly([c.mul(2), 0]) }; },
+    () => { const a = R.pick([1, -1, 2]); return { tex: "x^3", a, f: (x) => Q.of(x).pow(3), d: q(3 * a * a), dWhy: "3x^2" }; },
+    () => { const r = R.int(1, 4); return { tex: "\\sqrt{x}", a: r * r, fnum: (x) => Math.sqrt(x), d: q(1, 2 * r), dWhy: "\\frac{1}{2\\sqrt{x}}" }; },
+  ];
+  const F = R.pick(fams)();
+  const deltas = R.pick([[3, 1, 0.5, 0.05], [2, 1, 0.1, 0.01], [1, 0.5, 0.1, 0.001]]);
+  const arcs = deltas.map((dl) => (F.f ? F.f(q(F.a).add(q(dl))).sub(F.f(F.a)).div(q(dl)) : (F.fnum(F.a + dl) - F.fnum(F.a)) / dl));
+  const L = F.d, seen = new Set(), choices = [];
+  [L, L.neg(), L.mul(2), L.add(1), L.sub(1)].forEach((c) => { if (!seen.has(c.txt())) { seen.add(c.txt()); choices.push(c); } });
+  const show = (v) => (v instanceof Q ? `${v.tex()}${v.isInt() ? "" : ` \\approx ${fmtDec(v.val(), 4)}`}` : `\\approx ${fmtDec(v, 4)}`);
+  return {
+    prompt: para(`Let ${$m(`f(x) = ${F.tex}`)}. Calculate the average rate of change of ${$m("f")} over each interval. (Rounded answers to 2+ decimal places are fine.)`),
+    parts: [
+      ...deltas.map((dl, i) => P.num($m(`[${F.a},\\ ${fmtDec(F.a + dl, 4)}]`), arcs[i], { approx: 0.0051 })),
+      P.mc(`As the interval shrinks toward ${$m(`x = ${F.a}`)}, these values approach…`, choices.slice(0, 4).map((c) => $m(c.tex())), 0),
+    ],
+    hint: `ARC on [a, b] = (f(b) − f(a)) / (b − a). Start with f(${F.a}).`,
+    solution: deltas.map((dl, i) => $M(`[${F.a},\\ ${fmtDec(F.a + dl, 4)}]:\\quad \\frac{f(${fmtDec(F.a + dl, 4)}) - f(${F.a})}{${fmtDec(dl, 4)}} ${show(arcs[i]).startsWith("\\approx") ? "" : "="} ${show(arcs[i])}`)).join("") +
+      para(`Each value is the slope of a secant line through ${$m(`(${F.a}, f(${F.a}))`)}. As the interval shrinks they approach the slope of the <b>tangent line</b>: ${$m(`f'(x) = ${F.dWhy}`)}, so ${$m(`f'(${F.a}) = ${L.tex()}`)}.`),
+  };
+};
+
+// Don't repeat any of the last few questions for a topic in practice
+const recentPrompts = {};
+function freshProblem(make, id) {
+  const sig = (p) => (p.prompt + (p.figure || "")).replace(/clip\d+/g, "");
+  const seen = recentPrompts[id] || (recentPrompts[id] = []);
+  let pr;
+  for (let i = 0; i < 10; i++) { pr = make(id); if (!seen.includes(sig(pr))) break; }
+  seen.push(sig(pr));
+  if (seen.length > 6) seen.shift();
+  return pr;
+}
+
+;
+// ================= Pearson-format UI: question cards, practice with two tries, one-at-a-time practice tests =================
+function makePProblem(id) {
+  for (let i = 0; i < 6; i++) { try { return PGEN[id](); } catch (e) { console.warn(id, e); } }
+  throw new Error("Could not generate " + id);
+}
+const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+function guideToggle() {
+  const label = () => (state.guides === false ? "Show reading guides" : "Hide reading guides");
+  const b = el("button", { type: "button", class: "btn ghost small guide-toggle" }, label());
+  b.onclick = () => {
+    state.guides = state.guides === false;
+    document.body.classList.toggle("no-guides", state.guides === false);
+    persist();
+    document.querySelectorAll(".guide-toggle").forEach((x) => { x.textContent = label(); });
+  };
+  return b;
+}
+
+function pqPartView(part, i, n) {
+  const sec = el("section", { class: "pq-part" });
+  if (n > 1) sec.append(el("div", { class: "pq-part-head" }, `Part ${i + 1} of ${n}`));
+  const bar = el("div", { class: "pq-bar", hidden: "", "aria-live": "polite" });
+  const preview = el("div", { class: "preview" });
+  const base = "pq" + ++uidCounter;
+  const instr = part.instr ? el("div", { class: "pq-instr" }, part.instr) : "";
+  const box = (ph = "") => {
+    const inp = el("input", { type: "text", class: "pq-box", id: `${base}-box`, autocomplete: "off", autocapitalize: "off", spellcheck: "false", placeholder: ph, "aria-label": "answer box" });
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.closest(".sheet")?.querySelector("[data-check]")?.click(); } });
+    inp.addEventListener("input", () => { sec.classList.remove("ok", "bad"); });
+    return inp;
+  };
+  const withPreview = (inp, type) => { let t; inp.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => updatePreview(inp.value, type, preview), 220); }); };
+  const keys = (inp, set) => {
+    const k = el("div", { class: "keys" });
+    set.forEach((s) => k.append(el("button", { type: "button", tabindex: "-1", onclick: () => { insertAt(inp, s); inp.dispatchEvent(new Event("input", { bubbles: true })); inp.focus(); } },
+      s === "inf" ? "∞" : s === "-inf" ? "−∞" : s === "sqrt(" ? "√(" : s)));
+    return k;
+  };
+  let api;
+  if (part.type === "cf") {
+    sec.append(el("div", { class: "pq-q" }, "Select the correct choice below and, if necessary, fill in the answer box to complete your choice."));
+    const name = `${base}-choice`;
+    const rA = el("input", { type: "radio", name, value: "A" }), rB = el("input", { type: "radio", name, value: "B" });
+    const inp = box();
+    const optA = el("div", { class: "pq-opt" });
+    const labA = el("label", {}); labA.append(rA, el("span", { class: "pq-letter" }, "A."), el("span", {}, part.list ? $m("x =") : `${part.prefix} ${$m("=")}`));
+    optA.append(labA, inp);
+    const optB = el("label", { class: "pq-opt" }); optB.append(rB, el("span", { class: "pq-letter" }, "B."), el("span", {}, part.dneText));
+    inp.addEventListener("input", () => { if (inp.value.trim()) rA.checked = true; });
+    withPreview(inp, "num");
+    sec.append(optA, instr, keys(inp, part.list ? ["/", ","] : ["inf", "-inf", "/", "sqrt("]), preview, optB);
+    api = {
+      state: () => ({ choice: rA.checked ? "A" : rB.checked ? "B" : null, text: inp.value }),
+      grade() { return PCheck.cf(this.state(), part); },
+      empty() { const s = this.state(); return !s.choice && !s.text.trim(); },
+      yours() { const s = this.state(); return !s.choice ? "(no choice)" : s.choice === "B" ? "B" : `A. ${escapeHtml(s.text || "(blank)")}`; },
+      lock() { [rA, rB, inp].forEach((e) => { e.disabled = true; }); },
+      clear() { rA.checked = false; rB.checked = false; inp.value = ""; preview.innerHTML = ""; },
+    };
+  } else if (part.type === "mc") {
+    sec.append(el("div", { class: "pq-q" }, part.label));
+    const name = `${base}-mc`;
+    const radios = part.choices.map((c, j) => {
+      const r = el("input", { type: "radio", name, value: String(j) });
+      const lab = el("label", { class: "pq-opt" }); lab.append(r, el("span", {}, c)); sec.append(lab);
+      return r;
+    });
+    const k = () => radios.findIndex((r) => r.checked);
+    api = {
+      grade: () => PCheck.mc(k(), part), empty: () => k() < 0,
+      yours: () => (k() < 0 ? "(no choice)" : part.choices[k()]),
+      lock() { radios.forEach((r) => { r.disabled = true; }); }, clear() { radios.forEach((r) => { r.checked = false; }); },
+    };
+  } else if (part.type === "multi") {
+    sec.append(el("div", { class: "pq-q" }, part.label));
+    const grid = el("div", { class: "pq-multi" });
+    const boxes = part.choices.map((c, j) => {
+      const cb = el("input", { type: "checkbox", value: String(j) });
+      const lab = el("label", { class: "pq-opt" }); lab.append(cb, el("span", { class: "pq-letter" }, `${"ABCDEFGH"[j]}.`), el("span", {}, c)); grid.append(lab);
+      return cb;
+    });
+    sec.append(grid);
+    const sel = () => boxes.map((b, j) => (b.checked ? j : -1)).filter((j) => j >= 0);
+    api = {
+      grade: () => PCheck.multi(sel(), part), empty: () => !sel().length,
+      yours: () => sel().map((j) => part.choices[j]).join(", ") || "(none)",
+      lock() { boxes.forEach((b) => { b.disabled = true; }); }, clear() { boxes.forEach((b) => { b.checked = false; }); },
+    };
+  } else {
+    const inp = box(part.type === "units" ? "units" : "");
+    const row = el("div", { class: "pq-row" });
+    const label = part.label || "";
+    if (label.includes("______")) { const [a, b] = label.split("______"); row.append(el("span", {}, a), inp, el("span", {}, b)); }
+    else { row.append(el("span", {}, label)); if (part.type === "line") row.append(el("span", {}, $m("y ="))); row.append(inp); }
+    sec.append(row, instr);
+    if (part.type !== "units") {
+      sec.append(keys(inp, part.type === "num" ? ["/", "sqrt(", "^"] : ["^", "/", "(", ")", "sqrt(", ...(part.vars || ["x"])]), preview);
+      withPreview(inp, part.type);
+    }
+    api = {
+      grade: () => PCheck[part.type](inp.value, part), empty: () => !inp.value.trim(),
+      yours: () => escapeHtml(inp.value || "(blank)"),
+      lock() { inp.disabled = true; }, clear() { inp.value = ""; preview.innerHTML = ""; },
+    };
+  }
+  sec.append(bar);
+  Object.assign(api, { sec, bar, part });
+  return api;
+}
+
+// mode: "try" (a retry is allowed), "final" (show the correct answer)
+function pqShow(api, res, mode) {
+  api.sec.classList.remove("ok", "bad");
+  api.bar.hidden = false;
+  if (res.empty && mode === "try") { api.bar.className = "pq-bar"; api.bar.innerHTML = "Answer this part, then check again."; return; }
+  const ok = !!res.ok;
+  api.sec.classList.add(ok ? "ok" : "bad");
+  api.bar.className = `pq-bar ${ok ? "ok" : "bad"}`;
+  let h = ok ? "<b>Good job!</b>" : mode === "try" ? "<b>That's not right.</b> You have one more try." : "<b>That's incorrect.</b>";
+  if (res.err) h += `<div class="pq-err">${res.err}</div>`;
+  if (res.note) h += `<div>${res.note}</div>`;
+  if (!ok && mode === "final") h += `<div class="pq-cmp"><div><span>Correct answer:</span> ${pAnswerText(api.part)}</div><div><span>Your answer:</span> ${api.yours()}</div></div>`;
+  api.bar.innerHTML = h;
+}
+
+function pqCard(pr, meta) {
+  const card = el("article", { class: "sheet pq-card" });
+  const nParts = pr.parts.length;
+  const head = el("div", { class: "pq-head" },
+    `<div><div class="pq-code">${meta.num ? `Question ${meta.num}` : meta.title}</div><div class="pq-meta">${nParts} part${nParts > 1 ? "s" : ""}<span class="pq-sep">|</span><span class="pq-score">0 of 1 point</span></div></div><span class="tag">§${meta.sec}${meta.num ? ` · ${meta.title}` : ""}</span>`);
+  const promptBox = el("div", { class: "pq-prompt" }, pr.prompt);
+  if (pr.figure) { promptBox.append(el("div", { class: "figure" }, pr.figure)); if (pr.figure.includes("gp-guide")) promptBox.append(guideToggle()); }
+  card.append(head, promptBox);
+  const ctrls = pr.parts.map((p, i) => { const api = pqPartView(p, i, nParts); card.append(api.sec); return api; });
+  const setScore = (fr) => { head.querySelector(".pq-score").textContent = `${+fr.toFixed(2)} of 1 point`; };
+  return { card, ctrls, setScore };
+}
+
+// ---------- practice ----------
+function pearsonIntro() {
+  const d = el("details", { class: "sheet" });
+  if (!state.pearsonIntroSeen) d.setAttribute("open", "");
+  d.innerHTML = `<summary class="sheet-head" style="cursor:pointer;margin-bottom:0;border:0;padding:0"><h3>Answering in the Pearson format</h3><span class="tag">open / close</span></summary>
+    <div class="intro" style="margin-top:14px">
+      <div class="cell"><h4>Limit questions</h4><p>Pick <b>A</b> and type the value, or pick <b>B</b> when the limit doesn't exist. An infinite limit goes in box A: type <code>inf</code> or <code>-inf</code>.</p></div>
+      <div class="cell"><h4>Strict boxes</h4><p>"Integer or simplified fraction" means <code>1/3</code>. Here, <code>0.33</code> and <code>2/6</code> get marked wrong. Units get their own box, output per input: <code>degrees/hour</code>.</p></div>
+      <div class="cell"><h4>Tangent lines</h4><p>The box already says <b>y =</b>. Type only the right side, like <code>20x + 48</code>.</p></div>
+    </div>`;
+  d.addEventListener("toggle", () => { if (!d.open && !state.pearsonIntroSeen) { state.pearsonIntroSeen = true; persist(); } });
+  return d;
+}
+
+function renderPearsonPractice() {
+  clearInterval(examTimer);
+  const main = document.getElementById("main"); main.innerHTML = "";
+  main.append(pearsonIntro());
+  const id = PGEN[state.ptopic] ? state.ptopic : "limGraph";
+  const t = PTOPIC_BY_ID[id], pr = freshProblem(makePProblem, id);
+  const { card, ctrls, setScore } = pqCard(pr, { title: t.name, sec: t.sec });
+  const hintBox = el("div", { class: "hint", hidden: "" }, `<b>Hint</b>${pr.hint}`);
+  const solBox = el("div", { class: "solution", hidden: "" }, `<div class="sol-lbl">Help me solve this</div>${pr.solution}`);
+  let attempts = 0, finished = false, helped = false, firstRes = null;
+  const check = btn("Check answer", "primary", () => {
+    if (finished) return;
+    const res = ctrls.map((c) => c.grade());
+    if (res.every((r) => r.empty)) { ctrls.forEach((c, i) => pqShow(c, res[i], "try")); return; }
+    attempts++;
+    if (attempts === 1) firstRes = res;
+    const allOk = res.every((r) => r.ok), final = allOk || attempts >= 2;
+    ctrls.forEach((c, i) => pqShow(c, res[i], final ? "final" : "try"));
+    if (final) {
+      finished = true;
+      setScore(res.filter((r) => r.ok).length / res.length);
+      ctrls.forEach((c) => c.lock());
+      recordResult({ catalog: "pgen", id, mode: "pearson", pr, results: firstRes, finalResults: res, helped, attempts, answers: ctrls.map((c) => c.yours()) });
+      renderPearsonRail();
+      check.hidden = true; clear.hidden = true;
+      if (!allOk) solBox.hidden = false;
+    }
+    typeset(card);
+  });
+  check.setAttribute("data-check", "");
+  const help = btn("Help me solve this", "", () => { if (!finished && !helped) { const p = state.pprogress[id] || (state.pprogress[id] = { tries: 0, solved: 0, streak: 0 }); p.streak = 0; persist(); renderPearsonRail(); } helped = true; solBox.hidden = false; solBox.scrollIntoView({ behavior: smooth(), block: "start" }); });
+  const similar = btn("Similar question", "", () => { renderPearsonPractice(); window.scrollTo({ top: 0, behavior: smooth() }); });
+  const hint = btn("Hint", "ghost", () => { hintBox.hidden = !hintBox.hidden; });
+  const clear = btn("Clear all", "ghost", () => { ctrls.forEach((c) => { c.clear(); c.bar.hidden = true; c.sec.classList.remove("ok", "bad"); }); });
+  const actions = el("div", { class: "actions" });
+  actions.append(check, help, similar, hint, clear, el("span", { class: "score-line" }, "2 tries per question"));
+  card.append(actions, hintBox, solBox);
+  main.append(card);
+  typeset(main);
+}
+
+function renderPearsonRail() {
+  const rail = document.getElementById("rail"); rail.innerHTML = "";
+  PTOPICS.forEach((s) => {
+    rail.append(el("h2", {}, `<span>§${s.sec}</span><span>${s.name}</span>`));
+    const ul = el("ul");
+    s.items.forEach(([id, name]) => {
+      const solved = Math.min(3, state.pprogress[id]?.streak || 0);
+      const pips = [0, 1, 2].map((i) => `<i class="${i < solved ? "on" : ""}"></i>`).join("");
+      const b = el("button", {
+        type: "button", "aria-current": state.mode === "pearson" && state.ptopic === id ? "true" : "false",
+        onclick: () => { state.mode = "pearson"; state.ptopic = id; persist(); render(); window.scrollTo({ top: 0, behavior: smooth() }); },
+      }, `<span>${name}</span><span class="pips" aria-label="${solved} in a row">${pips}</span>`);
+      const li = el("li"); li.append(b); ul.append(li);
+    });
+    rail.append(ul);
+  });
+  rail.append(el("h2", {}, `<span>Tests</span><span>${PTEST_BLUEPRINT.length} questions</span>`));
+  const ul = el("ul");
+  PTESTS.forEach((t) => {
+    const best = state.mockScores[t.key];
+    const b = el("button", { type: "button", "aria-current": state.mode === "ptest" ? "true" : "false", onclick: () => { state.mode = "ptest"; persist(); render(); } },
+      `<span>${t.name}</span><span class="rail-score">${best != null ? `${best}%` : ""}</span>`);
+    const li = el("li"); li.append(b); ul.append(li);
+  });
+  rail.append(ul);
+  rail.append(el("p", { class: "legend" }, "Dots = right in a row on the first try, without help. 3 = mastered. One miss resets to zero."));
+}
+
+// ---------- practice tests ----------
+function renderPTestHome() {
+  clearInterval(examTimer);
+  const main = document.getElementById("main"); main.innerHTML = "";
+  const intro = el("section", { class: "sheet" });
+  intro.innerHTML = `<div class="sheet-head"><h3>Pearson-style practice tests</h3><span class="tag">§1.1 – §1.4 · ${PTEST_BLUEPRINT.length} questions</span></div>
+    <div class="prompt"><p>Every answer format from the homework: A/B limit choices, Yes/No, select all that apply, <b>y =</b> boxes, and separate unit boxes. Questions appear one at a time, you can jump between them, and nothing is graded until you submit.</p>
+    <p>Scoring matches the homework: each question is worth 1 point, split across its parts, with the same strict rules — exact simplified fractions and correct units.</p></div>
+    <div class="setup">${minutesSelect("pt-min")}</div>`;
+  main.append(intro);
+  const mins = () => +document.getElementById("pt-min").value;
+  const grid = el("div", { class: "mock-grid" });
+  PTESTS.forEach((t, i) => {
+    const best = state.mockScores[t.key];
+    const card = el("section", { class: "sheet mock-card" });
+    card.innerHTML = `<div class="mock-letter" aria-hidden="true">${i + 1}</div><div><h3>${t.name}</h3><p class="mock-meta">${PTEST_BLUEPRINT.length} questions · same questions every time</p><p class="mock-best">${best != null ? `Best score <b>${best}%</b>` : "Not taken yet"}</p></div>`;
+    const acts = el("div", { class: "actions" }); acts.append(btn("Start test", "primary", () => runPTest(t, mins())));
+    card.append(acts); grid.append(card);
+  });
+  const rnd = el("section", { class: "sheet mock-card" });
+  rnd.innerHTML = `<div class="mock-letter" aria-hidden="true">?</div><div><h3>Random test</h3><p class="mock-meta">New questions every time</p><p class="mock-best">Same layout as Tests 1–3</p></div>`;
+  const racts = el("div", { class: "actions" });
+  racts.append(btn("Start test", "primary", () => runPTest({ key: null, seed: 1000 + Math.floor(Math.random() * 900000), name: "Random test" }, mins())));
+  rnd.append(racts); grid.append(rnd);
+  main.append(grid);
+}
+
+function runPTest(test, minutes) {
+  clearInterval(examTimer);
+  const main = document.getElementById("main"); main.innerHTML = "";
+  const problems = withSeed(test.seed, () => PTEST_BLUEPRINT.map((id) => ({ id, pr: makePProblem(id) })));
+  const bar = el("div", { class: "exam-bar" });
+  bar.innerHTML = `<span class="clock" id="clock">${minutes ? `${minutes}:00` : "∞"}</span><span class="meta">${test.name}<br><span class="pt-pos">Question 1 of ${problems.length}</span></span>`;
+  bar.append(btn("Submit test", "", () => trySubmit()));
+  const confirmRow = el("div", { class: "pt-confirm sheet", hidden: "" });
+  const nav = el("nav", { class: "pt-nav", "aria-label": "Questions" });
+  main.append(bar, confirmRow, nav);
+  let cur = 0, done = false;
+  const views = problems.map((p, i) => {
+    const t = PTOPIC_BY_ID[p.id];
+    const v = pqCard(p.pr, { title: t.name, sec: t.sec, num: i + 1 });
+    v.card.hidden = i !== 0;
+    main.append(v.card);
+    const nb = el("button", { type: "button", class: "pt-q", "aria-label": `Question ${i + 1}`, onclick: () => go(i) }, String(i + 1));
+    nav.append(nb);
+    const mark = () => { if (!done) nb.classList.toggle("answered", !v.ctrls.every((c) => c.empty())); };
+    v.card.addEventListener("input", mark); v.card.addEventListener("change", mark);
+    return { ...p, ...v, nb };
+  });
+  const prev = btn("← Previous", "ghost", () => go(cur - 1)), next = btn("Next →", "primary", () => go(cur + 1));
+  const pager = el("div", { class: "actions pt-pager" }); pager.append(prev, next);
+  main.append(pager);
+  function go(i) {
+    if (i < 0 || i >= views.length) return;
+    views[cur].card.hidden = true; views[cur].nb.removeAttribute("aria-current");
+    cur = i; views[cur].card.hidden = false; views[cur].nb.setAttribute("aria-current", "true");
+    const pos = bar.querySelector(".pt-pos"); if (pos) pos.textContent = `Question ${cur + 1} of ${views.length}`;
+    prev.disabled = cur === 0; next.disabled = cur === views.length - 1;
+    window.scrollTo({ top: 0 });
+  }
+  go(0);
+  typeset(main);
+  const end = Date.now() + minutes * 60000;
+  if (minutes) {
+    examTimer = setInterval(() => {
+      const left = Math.max(0, end - Date.now()), m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
+      const clock = document.getElementById("clock"); if (clock) clock.textContent = `${m}:${String(s).padStart(2, "0")}`;
+      if (left <= 0) grade(true);
+    }, 1000);
+  }
+  function trySubmit() {
+    if (done) return;
+    const blank = views.filter((v) => v.ctrls.every((c) => c.empty())).length;
+    if (blank && confirmRow.hidden) {
+      confirmRow.hidden = false; confirmRow.innerHTML = "";
+      confirmRow.append(el("span", {}, `${blank} question${blank > 1 ? "s are" : " is"} still unanswered.`), btn("Submit anyway", "primary", () => grade(false)), btn("Keep working", "ghost", () => { confirmRow.hidden = true; }));
+      return;
+    }
+    grade(false);
+  }
+  function grade(timeUp) {
+    if (done) return; done = true; clearInterval(examTimer);
+    confirmRow.remove(); bar.remove();
+    let total = 0; const bySec = {};
+    views.forEach((v) => {
+      const res = v.ctrls.map((c) => c.grade());
+      v.ctrls.forEach((c, i) => { pqShow(c, res[i], "final"); c.lock(); });
+      const fr = res.filter((r) => r.ok).length / res.length;
+      v.setScore(fr); total += fr;
+      recordResult({ catalog: "pgen", id: v.id, mode: "ptest", pr: v.pr, results: res, helped: false, attempts: 1, answers: v.ctrls.map((c) => c.yours()), test: test.name });
+      const sec = PTOPIC_BY_ID[v.id].sec; bySec[sec] = bySec[sec] || [0, 0]; bySec[sec][0] += fr; bySec[sec][1]++;
+      v.nb.classList.remove("answered"); v.nb.classList.add(fr === 1 ? "full" : fr > 0 ? "partial" : "zero");
+      v.card.append(el("details", { class: "solution" }, `<summary class="sol-lbl" style="cursor:pointer">Help me solve this</summary>${v.pr.solution}`));
+    });
+    const pct = Math.round((100 * total) / views.length);
+    recordTest({ name: test.name, kind: "ptest", pct, bySec });
+    if (test.key) { state.mockScores[test.key] = Math.max(state.mockScores[test.key] ?? 0, pct); persist(); renderPearsonRail(); }
+    const weakest = Object.entries(bySec).sort((a, b) => a[1][0] / a[1][1] - b[1][0] / b[1][1])[0];
+    const res = el("section", { class: "sheet" });
+    res.innerHTML = `<div class="sheet-head"><h3>${timeUp ? "Time's up — " : ""}${test.name} results</h3><span class="tag">graded</span></div>
+      <div class="result"><span class="big">${pct}%</span><span>${+total.toFixed(2)} of ${views.length} points</span>
+      <table>${Object.entries(bySec).map(([s, [a, b]]) => `<tr><td>§${s}</td><td>${+a.toFixed(2)}/${b}</td><td>${Math.round((100 * a) / b)}%</td></tr>`).join("")}</table></div>
+      <p class="prompt" style="margin-top:10px">Click a question number to review it: <span class="pt-key full">full credit</span> <span class="pt-key partial">partial</span> <span class="pt-key zero">no credit</span>. Your weakest area was <b>§${weakest[0]}</b>. Practice those question types from the list on the left, then retake.</p>`;
+    const acts = el("div", { class: "actions" });
+    acts.append(btn("Back to tests", "primary", renderPTestHome), btn("Retake this test", "", () => runPTest(test, minutes)));
+    res.append(acts);
+    main.insertBefore(res, nav);
+    typeset(main);
+    go(cur);
+  }
+}
+
+;
+// ================= analytics: answer log, streaks, mistake patterns, "My gaps" dashboard, report for Claude =================
+const SKILLS = [
+  { id: "graphLimits", sec: "1.1", name: "Limits from a graph", topics: ["limGraph", "graphRead"] },
+  { id: "tableLimits", sec: "1.1", name: "Limits from a table", topics: ["limTable", "numTable"] },
+  { id: "infiniteLimits", sec: "1.1", name: "Infinite limits (1/x, 1/x²)", topics: ["limInfinite", "inverse"] },
+  { id: "endBehavior", sec: "1.1", name: "End behavior & piecewise at ±∞", topics: ["endBehavior", "bigPiecewise"] },
+  { id: "limitProps", sec: "1.2", name: "Limit properties & substitution", topics: ["properties", "directSub"] },
+  { id: "algLimits", sec: "1.2", name: "0/0 limits (factor, conjugate)", topics: ["limAlg", "factor"] },
+  { id: "limInfinity", sec: "1.2", name: "Limits at infinity (rational)", topics: ["limInf", "infRational"] },
+  { id: "pwLimits", sec: "1.2", name: "Piecewise limits", topics: ["limPiecewise", "pwLimit"] },
+  { id: "continuity", sec: "1.2", name: "Continuity & discontinuities", topics: ["contYN", "discList", "continuity", "discType"] },
+  { id: "arcUnits", sec: "1.3", name: "Average rate with units", topics: ["arcSituation", "arcFunction", "arcFunc"] },
+  { id: "arcData", sec: "1.3", name: "Rates from tables, graphs, shrinking intervals", topics: ["arcDataP", "arcData", "arcShrink"] },
+  { id: "dq", sec: "1.3", name: "Difference quotient & instantaneous rate", topics: ["instRate", "dqP", "dq"] },
+  { id: "limitDef", sec: "1.4", name: "f′(x) from the limit definition", topics: ["derivDef", "derivP", "deriv"] },
+  { id: "tangent", sec: "1.4", name: "Tangent lines", topics: ["tangentP", "tangent"] },
+  { id: "interp", sec: "1.4", name: "Interpreting f′(a) & rate graphs", topics: ["interpP", "interp", "rateGraph"] },
+  { id: "differentiability", sec: "1.4", name: "Continuity vs. differentiability", topics: ["pwDiff", "notDiffGraph", "diffGraph"] },
+  { id: "concepts", sec: "all", name: "Concept checks", topics: ["concepts11", "concepts12", "concepts13", "concepts14"] },
+];
+const SKILL_OF = {};
+SKILLS.forEach((s) => s.topics.forEach((t) => { SKILL_OF[t] = s; }));
+const STATUS_ORDER = { gap: 0, shaky: 1, untested: 2, good: 3, mastered: 4 };
+const STATUS_LABEL = { gap: "Gap", shaky: "Shaky", untested: "Not tried", good: "Solid", mastered: "Mastered" };
+
+const plain = (html) => String(html ?? "").replace(/<[^>]+>/g, " ").replace(/\\\(|\\\)|\\\[|\\\]/g, "").replace(/&nbsp;|&amp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\s+/g, " ").trim();
+const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+// ---------- mistake classification ----------
+function numVal(raw) { try { const v = Parser.ev(Parser.parse(rhs(String(raw))), {}); return isFinite(v) ? v : null; } catch (e) { return null; } }
+function valueMistake(part, raw) {
+  const a = part.ans;
+  if (a === Infinity || a === -Infinity) return numVal(raw) === null && /inf/i.test(String(raw)) ? "wrong sign on an infinite limit" : "missed an infinite limit";
+  const want = a instanceof Q ? a.val() : typeof a === "number" ? a : null, got = numVal(raw);
+  if (want == null || got == null) return "wrong value";
+  if (Math.abs(want) > 1e-9 && closeTo(got, -want)) return "sign error";
+  if (Math.abs(want) > 1e-9 && Math.abs(got) > 1e-9 && closeTo(got, 1 / want)) return "flipped the fraction (reciprocal)";
+  return "wrong value";
+}
+function classify(part, res, answer, helped) {
+  if (!res || res.ok) return null;
+  if (res.empty) return helped ? "opened the solution instead" : "left blank";
+  const err = res.err || "";
+  if (/flipped/i.test(err)) return "units flipped";
+  if (/two units/i.test(err)) return "units incomplete";
+  if (/not simplified|reduce it/i.test(err)) return "fraction not simplified";
+  if (/exact value|rounded decimal/i.test(err)) return "rounded instead of exact";
+  if (/still contains h/i.test(err)) return "left h in the derivative";
+  if (/h in the denominator/i.test(err)) return "didn't cancel the h";
+  const ansStr = String(answer ?? "");
+  switch (part.type) {
+    case "cf": {
+      const none = part.ans === "DNE" || part.ans === "NONE", choice = /^A/.test(ansStr) ? "A" : /^B/.test(ansStr) ? "B" : null;
+      if (none && choice === "A") return part.list ? "listed discontinuities that don't exist" : "said a limit/value exists when it doesn't";
+      if (!none && choice === "B") return part.ans === Infinity || part.ans === -Infinity ? "chose DNE for an infinite limit" : part.list ? "missed the discontinuities" : "said DNE when it exists";
+      if (part.list) return "wrong discontinuity values";
+      return valueMistake(part, ansStr.replace(/^A\.\s*/, ""));
+    }
+    case "num": {
+      if (part.ans === "DNE") return "gave a value when it's DNE/undefined";
+      if (/dne|undefined|does/i.test(ansStr)) return part.ans === Infinity || part.ans === -Infinity ? "wrote DNE for an infinite limit" : "said DNE when a value exists";
+      return valueMistake(part, ansStr);
+    }
+    case "units": return "wrong units";
+    case "expr": return "wrong expression";
+    case "line": {
+      if (ansStr.includes("=") && !/^\s*y\s*=/.test(ansStr)) return "wrong tangent line";
+      const f = (x) => { try { return Parser.ev(Parser.parse(rhs(ansStr)), { x }); } catch (e) { return NaN; } };
+      const slope = f(1) - f(0), m = Q.of(part.m).val();
+      if (!isFinite(slope)) return "wrong tangent line";
+      if (closeTo(slope, m)) return "tangent line: right slope, wrong intercept";
+      if (Math.abs(m) > 1e-9 && closeTo(slope, -m)) return "tangent line: slope sign error";
+      return "tangent line: wrong slope";
+    }
+    case "multi": return "select-all: wrong set";
+    case "mc":
+      if (part.choices[0] === "Yes") return "Yes/No wrong";
+      if (part.choices[0] === "True") return "True/False wrong";
+      return "wrong choice";
+    default: return "wrong answer";
+  }
+}
+
+// ---------- recording ----------
+function recordResult({ catalog, id, mode, pr, results, finalResults, helped, attempts, answers, test }) {
+  const progress = catalog === "pgen" ? state.pprogress : state.progress;
+  const p = progress[id] || (progress[id] = { tries: 0, solved: 0, streak: 0 });
+  const res = results || finalResults || [];
+  const firstOk = res.length > 0 && res.every((r) => r.ok) && !helped;
+  p.tries++;
+  if (firstOk) { p.solved++; p.streak = (p.streak || 0) + 1; p.best = Math.max(p.best || 0, p.streak); } else p.streak = 0;
+  const parts = pr.parts.map((part, i) => {
+    const r = res[i] || { empty: true }, o = { t: part.type, ok: !!r.ok };
+    if (!r.ok) {
+      o.kind = classify(part, r, answers?.[i], helped);
+      o.q = plain(part.label || part.prefix || "").slice(0, 140);
+      o.you = plain(answers?.[i] ?? "").slice(0, 80);
+      o.ans = plain(pAnswerText(part)).slice(0, 120);
+    }
+    return o;
+  });
+  const skill = SKILL_OF[id];
+  const entry = { id: newId(), t: Date.now(), mode, topic: id, skill: skill ? skill.id : id, sec: skill ? skill.sec : "", ok: parts.filter((x) => x.ok).length, n: parts.length, first: firstOk, helped: !!helped, tries: attempts || 1, parts, prompt: plain(pr.prompt).slice(0, 220) };
+  if (test) entry.test = test;
+  if (finalResults && finalResults !== results) entry.finalOk = finalResults.filter((r) => r.ok).length;
+  state.log.push(entry);
+  persist();
+  Sync.touch();
+}
+function recordTest({ name, kind, pct, bySec }) {
+  const secs = {};
+  Object.entries(bySec || {}).forEach(([s, [a, b]]) => { secs[s] = Math.round((100 * a) / b); });
+  state.tests.push({ id: newId(), t: Date.now(), name, kind, pct, secs });
+  persist();
+  Sync.touch();
+}
+
+// ---------- statistics ----------
+function computeStats() {
+  const bySkill = {};
+  SKILLS.forEach((s) => { bySkill[s.id] = { skill: s, n: 0, first: 0, parts: 0, partsOk: 0, recent: [], last: 0 }; });
+  const mistakes = {}, bySec = {};
+  state.log.forEach((e) => {
+    const b = bySkill[e.skill];
+    if (b) { b.n++; if (e.first) b.first++; b.parts += e.n; b.partsOk += e.ok; b.recent.push(e.first ? 1 : e.ok > 0 ? 0.5 : 0); b.last = e.t; }
+    if (e.sec && e.sec !== "all") { const s = bySec[e.sec] || (bySec[e.sec] = { n: 0, first: 0 }); s.n++; if (e.first) s.first++; }
+    e.parts.forEach((p) => {
+      if (p.ok || !p.kind || p.kind === "left blank" || p.kind === "opened the solution instead") return;
+      const m = mistakes[p.kind] || (mistakes[p.kind] = { kind: p.kind, count: 0, skills: {}, examples: [] });
+      m.count++; m.skills[e.skill] = (m.skills[e.skill] || 0) + 1;
+      m.examples.push({ q: p.q, you: p.you, ans: p.ans, topic: e.topic, t: e.t, prompt: e.prompt });
+      if (m.examples.length > 3) m.examples.shift();
+    });
+  });
+  const mlist = Object.values(mistakes).sort((a, b) => b.count - a.count);
+  Object.values(bySkill).forEach((b) => {
+    b.acc = b.n ? b.first / b.n : null;
+    b.partAcc = b.parts ? b.partsOk / b.parts : null;
+    b.last5 = b.recent.slice(-5);
+    b.recentAcc = b.last5.length ? b.last5.reduce((a, c) => a + c, 0) / b.last5.length : null;
+    b.streak = Math.max(0, ...b.skill.topics.map((t) => Math.max(state.progress[t]?.streak || 0, state.pprogress[t]?.streak || 0)));
+    b.status = b.n === 0 ? "untested" : b.streak >= 3 ? "mastered" : b.n >= 2 && b.recentAcc < 0.5 ? "gap" : b.acc < 0.75 || b.recentAcc < 0.75 ? "shaky" : "good";
+    b.topMistake = mlist.find((m) => m.skills[b.skill.id]);
+  });
+  const log = state.log;
+  return {
+    bySkill, bySec, mistakes: mlist,
+    total: log.length,
+    firstRate: log.length ? log.filter((e) => e.first).length / log.length : null,
+    partRate: log.length ? log.reduce((a, e) => a + e.ok, 0) / Math.max(1, log.reduce((a, e) => a + e.n, 0)) : null,
+    recentRate: log.length ? log.slice(-20).filter((e) => e.first).length / Math.min(20, log.length) : null,
+  };
+}
+const pct = (x) => (x == null ? "—" : `${Math.round(100 * x)}%`);
+const when = (t) => new Date(t).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+const recommended = (S) => Object.values(S.bySkill).filter((b) => b.skill.id !== "concepts")
+  .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || (a.recentAcc ?? 1) - (b.recentAcc ?? 1)).slice(0, 3);
+
+function buildReport(S) {
+  const L = [];
+  L.push(`# MAT 213 study analytics (generated ${new Date().toLocaleString()})`);
+  L.push(`Exam: Wed Sep 16, 2026, Sections 1.1–1.4, taken on Pearson.`);
+  L.push(`Totals: ${S.total} questions answered; first-try full credit ${pct(S.firstRate)}; parts correct ${pct(S.partRate)}; last 20 questions ${pct(S.recentRate)}.`);
+  L.push("", "## By section");
+  ["1.1", "1.2", "1.3", "1.4"].forEach((s) => { const v = S.bySec[s]; L.push(`- §${s}: ${v ? `${pct(v.first / v.n)} first-try over ${v.n} questions` : "not practiced"}`); });
+  L.push("", "## Skills (weakest first)", "| Skill | § | Status | First-try | Last 5 | Streak | Attempts | Most common mistake |", "|---|---|---|---|---|---|---|---|");
+  Object.values(S.bySkill).sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]).forEach((b) => {
+    L.push(`| ${b.skill.name} | ${b.skill.sec} | ${STATUS_LABEL[b.status]} | ${pct(b.acc)} | ${b.last5.map((x) => (x === 1 ? "✓" : x > 0 ? "½" : "✗")).join("") || "—"} | ${b.streak} | ${b.n} | ${b.topMistake ? b.topMistake.kind : "—"} |`);
+  });
+  L.push("", "## Mistake patterns");
+  if (!S.mistakes.length) L.push("- none recorded yet");
+  S.mistakes.slice(0, 12).forEach((m) => {
+    const where = Object.entries(m.skills).sort((a, b) => b[1] - a[1]).map(([k, c]) => `${SKILLS.find((s) => s.id === k)?.name || k} ×${c}`).join(", ");
+    L.push(`- **${m.kind}** — ${m.count}× (${where})`);
+    m.examples.slice(-2).forEach((x) => L.push(`  - ${x.prompt.slice(0, 120)} | part: ${x.q} | you: ${x.you || "(blank)"} | correct: ${x.ans}`));
+  });
+  L.push("", "## Recent misses (newest first)");
+  state.log.filter((e) => !e.first).slice(-15).reverse().forEach((e) => {
+    const miss = e.parts.filter((p) => !p.ok).map((p) => `${p.kind}: you "${p.you || "blank"}", correct "${p.ans}"`).join("; ");
+    L.push(`- ${when(e.t)} · ${SKILL_OF[e.topic]?.name || e.topic} · ${e.mode}${e.test ? ` (${e.test})` : ""} · ${e.ok}/${e.n} parts · ${e.prompt.slice(0, 100)} → ${miss}`);
+  });
+  L.push("", "## Tests and mock exams");
+  if (!state.tests.length) L.push("- none taken yet");
+  state.tests.slice(-10).forEach((t) => L.push(`- ${when(t.t)} · ${t.name}: ${t.pct}% (${Object.entries(t.secs).map(([s, v]) => `§${s} ${v}%`).join(", ")})`));
+  L.push("", "Please use this to build a targeted practice exam in the Pearson format that focuses on my gaps and mistake patterns.");
+  return L.join("\n");
+}
+
+// ---------- cloud sync (only inside the published page; the local copy keeps data in the browser) ----------
+const Sync = (() => {
+  let db = null, ready = false, timer = null, status = "local";
+  const CHUNK = 100;
+  const listeners = new Set();
+  const setStatus = (s) => { status = s; listeners.forEach((fn) => fn(s)); };
+  async function init() {
+    if (!window.claude || typeof window.claude.use !== "function") return;
+    try { db = await window.claude.use("db"); } catch (e) { db = null; }
+    if (!db) return;
+    try {
+      const snap = await db.collection("attempts").get();
+      const ids = new Set(state.log.map((e) => e.id));
+      let added = 0;
+      snap.docs.forEach((d) => { const body = d.data(); (body && Array.isArray(body.entries) ? body.entries : []).forEach((e) => { if (e && e.id && !ids.has(e.id)) { state.log.push(e); ids.add(e.id); added++; } }); });
+      state.log.sort((a, b) => a.t - b.t);
+      const t = await db.doc("analytics/tests").get();
+      if (t.exists) { const tids = new Set(state.tests.map((x) => x.id)); (t.data().tests || []).forEach((x) => { if (x && x.id && !tids.has(x.id)) { state.tests.push(x); added++; } }); state.tests.sort((a, b) => a.t - b.t); }
+      const pg = await db.doc("analytics/progress").get();
+      if (pg.exists && !Object.keys(state.progress).length && !Object.keys(state.pprogress).length) {
+        const body = pg.data(); state.progress = { ...(body.progress || {}) }; state.pprogress = { ...(body.pprogress || {}) }; state.mockScores = { ...(body.mockScores || {}), ...state.mockScores };
+      }
+      ready = true; setStatus("synced");
+      persist();
+      if (added && (state.mode === "stats" || state.mode === "pearson" || state.mode === "practice")) render();
+      touch();
+    } catch (e) { console.warn("sync init failed", e); db = null; setStatus("local"); }
+  }
+  function touch() { if (!db || !ready) return; clearTimeout(timer); timer = setTimeout(flush, 2000); }
+  async function flush() {
+    try {
+      const log = state.log;
+      for (let c = 0; c * CHUNK < log.length; c++) await db.doc(`attempts/chunk-${String(c).padStart(4, "0")}`).set({ entries: JSON.parse(JSON.stringify(log.slice(c * CHUNK, (c + 1) * CHUNK))), updated: Date.now() });
+      await db.doc("analytics/tests").set({ tests: JSON.parse(JSON.stringify(state.tests.slice(-200))) });
+      await db.doc("analytics/progress").set({ progress: JSON.parse(JSON.stringify(state.progress)), pprogress: JSON.parse(JSON.stringify(state.pprogress)), mockScores: { ...state.mockScores }, updated: Date.now() });
+      const S = computeStats();
+      await db.doc("analytics/summary").set({ updated: Date.now(), total: S.total, firstRate: S.firstRate, report: buildReport(S) });
+      setStatus("synced");
+    } catch (e) {
+      console.warn("sync failed", e);
+      setStatus(e && e.code === "quota_exceeded" ? "full" : "error");
+      if (e && e.code === "unavailable") { clearTimeout(timer); timer = setTimeout(flush, 5000 + Math.random() * 5000); }
+    }
+  }
+  async function reset() {
+    if (!db || !ready) return;
+    try {
+      const snap = await db.collection("attempts").get();
+      for (const d of snap.docs) await db.doc(`attempts/${d.id}`).delete();
+      await flush();
+    } catch (e) { console.warn("sync reset failed", e); }
+  }
+  return { init, touch, reset, status: () => status, onStatus: (fn) => { listeners.add(fn); return () => listeners.delete(fn); } };
+})();
+setTimeout(() => Sync.init(), 0);
+
+// ---------- dashboard ----------
+function practiceSkill(skill) {
+  const pt = skill.topics.find((t) => PTOPIC_BY_ID[t]);
+  if (pt) { state.mode = "pearson"; state.ptopic = pt; } else { state.mode = "practice"; state.topic = skill.topics.find((t) => TOPIC_BY_ID[t]) || state.topic; }
+  persist(); render(); window.scrollTo({ top: 0, behavior: smooth() });
+}
+const syncText = (s) => ({
+  synced: "Saved to this page's storage, so Claude can read your results directly.",
+  error: "Couldn't reach the page's storage just now. Results are saved in this browser and will sync on the next answer.",
+  full: "The page's storage is full. Results are still saved in this browser.",
+  local: "Saved in this browser only. Use “Copy report” to share results with Claude.",
+})[s];
+
+function renderStats() {
+  clearInterval(examTimer);
+  const main = document.getElementById("main"); main.innerHTML = "";
+  const S = computeStats(), skills = Object.values(S.bySkill);
+  const mastered = skills.filter((b) => b.status === "mastered").length, weak = skills.filter((b) => b.status === "gap" || b.status === "shaky").length;
+
+  const top = el("section", { class: "sheet" });
+  top.innerHTML = `<div class="sheet-head"><h3>My gaps</h3><span class="tag">from every answer you check</span></div>
+    <div class="stat-tiles">
+      <div class="stat-tile"><div class="v">${S.total}</div><div class="k">questions answered</div></div>
+      <div class="stat-tile"><div class="v">${pct(S.firstRate)}</div><div class="k">first-try full credit</div></div>
+      <div class="stat-tile"><div class="v">${pct(S.recentRate)}</div><div class="k">last 20 questions</div></div>
+      <div class="stat-tile"><div class="v">${mastered}/${skills.length}</div><div class="k">skills mastered (3 in a row)</div></div>
+      <div class="stat-tile"><div class="v">${weak}</div><div class="k">gaps or shaky skills</div></div>
+    </div>
+    <p class="sync-line" id="sync-line">${syncText(Sync.status())}</p>`;
+  main.append(top);
+  const off = Sync.onStatus((s) => { const n = document.getElementById("sync-line"); if (n) n.textContent = syncText(s); else off(); });
+
+  if (!S.total) {
+    const empty = el("section", { class: "sheet" });
+    empty.innerHTML = `<div class="prompt"><p>No answers recorded yet. Every question you check in Pearson-style practice, topic practice, Pearson tests, and mock exams shows up here: which skills are solid, where you keep losing points, and what kind of mistake it was.</p></div>`;
+    empty.append(btn("Start Pearson-style practice", "primary", () => { state.mode = "pearson"; persist(); render(); }));
+    main.append(empty);
+  } else {
+    const next = el("section", { class: "sheet" });
+    next.innerHTML = `<div class="sheet-head"><h3>Study these next</h3><span class="tag">weakest first</span></div>`;
+    const list = el("div", { class: "next-list" });
+    recommended(S).forEach((b) => {
+      const why = b.status === "untested" ? "Not practiced yet — it's on the exam."
+        : `${STATUS_LABEL[b.status]}: last ${b.last5.length} ${pct(b.recentAcc)}, first-try ${pct(b.acc)} over ${b.n}${b.topMistake ? `. Most common mistake: ${b.topMistake.kind}` : ""}.`;
+      const item = el("div", { class: "next-item" }, `<div><b>${b.skill.name}</b> <span class="chip ${b.status}">${STATUS_LABEL[b.status]}</span><div class="why">§${b.skill.sec} · ${why}</div></div>`);
+      item.append(btn("Practice", "primary", () => practiceSkill(b.skill)));
+      list.append(item);
+    });
+    next.append(list);
+    main.append(next);
+  }
+
+  const table = el("section", { class: "sheet" });
+  let rows = "";
+  ["1.1", "1.2", "1.3", "1.4", "all"].forEach((sec) => {
+    const secSkills = skills.filter((b) => b.skill.sec === sec);
+    const sv = S.bySec[sec];
+    rows += `<tr class="sec-row"><td colspan="7">${sec === "all" ? "All sections" : `§${sec}`}${sv ? ` — ${pct(sv.first / sv.n)} first-try over ${sv.n}` : ""}</td></tr>`;
+    secSkills.forEach((b) => {
+      const dots = b.last5.map((x) => `<i class="${x === 1 ? "y" : x > 0 ? "p" : "n"}"></i>`).join("");
+      rows += `<tr><td>${b.skill.name}${b.topMistake ? `<div class="why" style="font-size:12px;color:var(--graphite)">often: ${b.topMistake.kind}</div>` : ""}</td><td><span class="chip ${b.status}">${STATUS_LABEL[b.status]}</span></td><td class="num">${pct(b.acc)}</td><td><span class="last5" aria-label="last five results">${dots || "—"}</span></td><td class="num">${b.streak}/3</td><td class="num">${b.n}</td><td data-skill="${b.skill.id}"></td></tr>`;
+    });
+  });
+  table.innerHTML = `<div class="sheet-head"><h3>Every skill</h3><span class="tag">last 5: <span class="last5"><i class="y"></i></span> right · <span class="last5"><i class="p"></i></span> partial · <span class="last5"><i class="n"></i></span> wrong</span></div>
+    <div class="tbl-scroll"><table class="skill-table"><thead><tr><th>Skill</th><th>Status</th><th>First try</th><th>Last 5</th><th>Streak</th><th>Tried</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  table.querySelectorAll("td[data-skill]").forEach((td) => { const s = SKILLS.find((x) => x.id === td.dataset.skill); td.append(btn("Practice", "ghost", () => practiceSkill(s))); });
+  main.append(table);
+
+  if (S.mistakes.length) {
+    const mist = el("section", { class: "sheet" });
+    mist.innerHTML = `<div class="sheet-head"><h3>Mistake patterns</h3><span class="tag">what kind of wrong</span></div>` +
+      `<div class="miss-list">${S.mistakes.slice(0, 8).map((m) => {
+        const where = Object.entries(m.skills).sort((a, b) => b[1] - a[1]).map(([k, c]) => `${SKILLS.find((s) => s.id === k)?.name || k} (${c})`).join(", ");
+        const ex = m.examples[m.examples.length - 1];
+        return `<div class="miss"><h4><span>${escapeHtml(m.kind)}</span><span class="count">${m.count}×</span></h4><div class="where">${escapeHtml(where)}</div>${ex ? `<div class="ex">Latest: ${escapeHtml(ex.q)} — you: ${escapeHtml(ex.you || "(blank)")} · correct: ${escapeHtml(ex.ans)}</div>` : ""}</div>`;
+      }).join("")}</div>`;
+    main.append(mist);
+  }
+
+  if (state.tests.length) {
+    const tests = el("section", { class: "sheet" });
+    tests.innerHTML = `<div class="sheet-head"><h3>Tests & mock exams</h3><span class="tag">${state.tests.length} taken</span></div>
+      <div class="tbl-scroll"><table class="skill-table"><thead><tr><th>When</th><th>Test</th><th>Score</th><th>By section</th></tr></thead><tbody>${state.tests.slice().reverse().map((t) => `<tr><td class="num">${when(t.t)}</td><td>${escapeHtml(t.name)}</td><td class="num"><b>${t.pct}%</b></td><td class="num">${Object.entries(t.secs).map(([s, v]) => `§${s} ${v}%`).join(" · ")}</td></tr>`).join("")}</tbody></table></div>`;
+    main.append(tests);
+  }
+
+  const rep = el("section", { class: "sheet" });
+  rep.innerHTML = `<div class="sheet-head"><h3>Report for Claude</h3><span class="tag">paste into a chat</span></div>
+    <div class="prompt"><p>Copy this and paste it to Claude with a request like “make me a Pearson-style practice exam on my gaps.” It lists your weakest skills, mistake patterns with real examples, and test scores.</p></div>`;
+  const ta = el("textarea", { class: "report-box", id: "report-box", readonly: "", "aria-label": "analytics report" });
+  ta.value = buildReport(S);
+  const msg = el("span", { class: "score-line", "aria-live": "polite" });
+  const copy = btn("Copy report", "primary", async () => {
+    try { await navigator.clipboard.writeText(ta.value); msg.textContent = "Copied."; }
+    catch (e) { ta.focus(); ta.select(); try { document.execCommand("copy"); msg.textContent = "Copied."; } catch (e2) { msg.textContent = "Selected — press Ctrl+C to copy."; } }
+  });
+  const confirmReset = el("span", { hidden: "" });
+  const resetBtn = btn("Reset all tracking", "ghost", () => { confirmReset.hidden = false; resetBtn.hidden = true; });
+  confirmReset.append(el("span", { class: "score-line", style: "margin:0 8px 0 0" }, "Erase every recorded answer, streak, and score?"),
+    btn("Erase everything", "primary", async () => { state.log = []; state.tests = []; state.progress = {}; state.pprogress = {}; state.mockScores = {}; persist(); await Sync.reset(); render(); }),
+    btn("Cancel", "ghost", () => { confirmReset.hidden = true; resetBtn.hidden = false; }));
+  const acts = el("div", { class: "actions" });
+  acts.append(copy, msg);
+  const acts2 = el("div", { class: "actions" });
+  acts2.append(resetBtn, confirmReset);
+  rep.append(ta, acts, acts2);
+  main.append(rep);
+}
+
+;
 // ================= app: navigation, practice, mixed review, exam simulation, formula sheet =================
 const TOPICS = [
   { sec: "1.1", name: "Limits: numerical & graphical", items: [["graphRead", "Limits from a graph"], ["numTable", "Estimating from a table"], ["inverse", "Infinite limits"], ["endBehavior", "End behavior at ±∞"], ["bigPiecewise", "Piecewise: the big example"], ["concepts11", "Concept check"]] },
@@ -1903,9 +3210,10 @@ const store = {
   load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } },
   save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } },
 };
-const state = Object.assign({ mode: "practice", topic: "graphRead", progress: {}, mockScores: {} }, store.load());
+const state = Object.assign({ mode: "pearson", topic: "graphRead", progress: {}, mockScores: {}, ptopic: "limGraph", pprogress: {}, log: [], tests: [], guides: true, seenPearson: false, pearsonIntroSeen: false }, store.load());
+if (!state.seenPearson) { state.mode = "pearson"; state.seenPearson = true; }
 if (!GEN[state.topic]) state.topic = "graphRead";
-const persist = () => store.save({ mode: state.mode, topic: state.topic, progress: state.progress, mockScores: state.mockScores });
+const persist = () => store.save({ mode: state.mode, topic: state.topic, progress: state.progress, mockScores: state.mockScores, ptopic: state.ptopic, pprogress: state.pprogress, log: state.log.slice(-2500), tests: state.tests.slice(-200), guides: state.guides, seenPearson: state.seenPearson, pearsonIntroSeen: state.pearsonIntroSeen });
 let examTimer = null, uidCounter = 0;
 
 function el(tag, attrs = {}, html) {
@@ -1941,22 +3249,23 @@ function renderCountdown() {
   document.getElementById("countdown").innerHTML = `<span class="num">${num}</span><span class="lbl"><b>Midterm · Wed, Sep 16</b>${lbl}</span>`;
 }
 function renderRail() {
+  if (state.mode === "pearson" || state.mode === "ptest" || state.mode === "stats") return renderPearsonRail();
   const rail = document.getElementById("rail"); rail.innerHTML = "";
   TOPICS.forEach((s) => {
     rail.append(el("h2", {}, `<span>§${s.sec}</span><span>${s.name}</span>`));
     const ul = el("ul");
     s.items.forEach(([id, name]) => {
-      const solved = state.progress[id]?.solved || 0;
+      const solved = Math.min(3, state.progress[id]?.streak || 0);
       const pips = [0, 1, 2].map((i) => `<i class="${i < solved ? "on" : ""}"></i>`).join("");
       const b = el("button", {
         type: "button", "aria-current": state.mode === "practice" && state.topic === id ? "true" : "false",
         onclick: () => { state.mode = "practice"; state.topic = id; persist(); render(); window.scrollTo({ top: 0, behavior: smooth() }); },
-      }, `<span>${name}</span><span class="pips" aria-label="${solved} solved">${pips}</span>`);
+      }, `<span>${name}</span><span class="pips" aria-label="${solved} in a row">${pips}</span>`);
       const li = el("li"); li.append(b); ul.append(li);
     });
     rail.append(ul);
   });
-  rail.append(el("p", { class: "legend" }, "A dot fills each time you solve a problem fully without opening the solution."));
+  rail.append(el("p", { class: "legend" }, "Dots = right in a row on the first try, without the solution. 3 = mastered. One miss resets to zero."));
 }
 
 // ---------- problem card ----------
@@ -2047,7 +3356,7 @@ function problemCard(pr, { title, tag, num }) {
   const card = el("article", { class: "sheet" });
   card.append(el("div", { class: "sheet-head" }, `<h3>${num ? `<span class="qnum">${num}.</span>` : ""}${title}</h3><span class="tag">${tag}</span>`));
   card.append(el("div", { class: "prompt" }, pr.prompt));
-  if (pr.figure) card.append(el("div", { class: "figure" }, pr.figure));
+  if (pr.figure) { card.append(el("div", { class: "figure" }, pr.figure)); if (pr.figure.includes("gp-guide")) card.append(guideToggle()); }
   const list = el("ol", { class: "parts" });
   const ctrls = pr.parts.map((part, i) => { const { li, api } = partView(part, i, pr.parts.length); list.append(li); return api; });
   card.append(list);
@@ -2055,6 +3364,7 @@ function problemCard(pr, { title, tag, num }) {
 }
 
 // ---------- practice & mixed ----------
+const answerOf = (c) => (c.part.type === "mc" ? (c.value() >= 0 ? c.part.choices[c.value()] : "") : c.value());
 function tipsCard() {
   const d = el("details", { class: "sheet" });
   if (!Object.keys(state.progress).length) d.setAttribute("open", "");
@@ -2071,7 +3381,7 @@ function renderPractice(mixed) {
   const main = document.getElementById("main"); main.innerHTML = "";
   if (!mixed) main.append(tipsCard());
   const id = mixed ? R.pick(Object.keys(TOPIC_BY_ID)) : state.topic;
-  const t = TOPIC_BY_ID[id], pr = makeProblem(id);
+  const t = TOPIC_BY_ID[id], pr = freshProblem(makeProblem, id);
   const { card, ctrls } = problemCard(pr, { title: t.name, tag: `§${t.sec}${mixed ? " · mixed review" : ""}` });
   const btnCheck = el("button", { class: "btn primary", type: "button", "data-check": "" }, "Check answers");
   const btnHint = el("button", { class: "btn ghost", type: "button" }, "Hint");
@@ -2082,18 +3392,19 @@ function renderPractice(mixed) {
   const hintBox = el("div", { class: "hint", hidden: "" }, `<b>Hint</b>${pr.hint}`);
   const solBox = el("div", { class: "solution", hidden: "" }, `<div class="sol-lbl">Worked solution</div>${pr.solution}`);
   card.append(actions, hintBox, solBox);
-  let tried = false, counted = false;
+  let tried = false;
   btnCheck.onclick = () => {
     const results = ctrls.map((c) => { const r = c.grade(); applyResult(c, r, !solBox.hidden); return r; });
     const right = results.filter((r) => r.ok).length, total = results.length;
-    const p = state.progress[id] || (state.progress[id] = { tries: 0, solved: 0 });
-    if (!tried) { p.tries++; tried = true; }
-    if (right === total && !counted && solBox.hidden) { p.solved++; counted = true; }
+    if (!tried && results.some((r) => !r.empty)) {
+      tried = true;
+      recordResult({ catalog: "gen", id, mode: mixed ? "mixed" : "practice", pr, results, helped: !solBox.hidden, attempts: 1, answers: ctrls.map(answerOf) });
+    }
     score.textContent = right === total ? `All ${total} correct${solBox.hidden ? "" : " (solution was open)"}` : `${right} of ${total} correct`;
     persist(); renderRail(); typeset(card);
   };
   btnHint.onclick = () => { hintBox.hidden = !hintBox.hidden; };
-  btnSol.onclick = () => { solBox.hidden = false; ctrls.forEach((c) => applyResult(c, c.grade(), true)); typeset(card); solBox.scrollIntoView({ behavior: smooth(), block: "start" }); };
+  btnSol.onclick = () => { if (!tried) { tried = true; recordResult({ catalog: "gen", id, mode: mixed ? "mixed" : "practice", pr, results: ctrls.map((c) => c.grade()), helped: true, attempts: 1, answers: ctrls.map(answerOf) }); renderRail(); } solBox.hidden = false; ctrls.forEach((c) => applyResult(c, c.grade(), true)); typeset(card); solBox.scrollIntoView({ behavior: smooth(), block: "start" }); };
   btnNext.onclick = () => { renderPractice(mixed); window.scrollTo({ top: 0, behavior: smooth() }); };
   main.append(card);
   typeset(main);
@@ -2112,8 +3423,12 @@ function renderFormulas() {
 function render() {
   clearInterval(examTimer);
   document.querySelectorAll(".modes button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.mode === state.mode ? "true" : "false"));
+  document.body.classList.toggle("no-guides", state.guides === false);
   renderRail();
-  if (state.mode === "practice") renderPractice(false);
+  if (state.mode === "pearson") renderPearsonPractice();
+  else if (state.mode === "ptest") renderPTestHome();
+  else if (state.mode === "stats") renderStats();
+  else if (state.mode === "practice") renderPractice(false);
   else if (state.mode === "mixed") renderPractice(true);
   else if (state.mode === "exam") renderMocks();
   else renderFormulas();

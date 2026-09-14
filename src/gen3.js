@@ -104,25 +104,6 @@ GEN.arcData = () => {
   };
 };
 
-GEN.arcShrink = () => {
-  const k = R.pick([1, 2, 3, 4, 6]), a = R.pick([1, 2]);
-  const deltas = [3, 1, 0.5, 0.05];
-  const arcs = deltas.map((d) => q(-k).div(q(a).mul(q(a).add(q(d)))));
-  const limit = q(-k, a * a);
-  const choices = [limit, limit.neg(), q(0), limit.mul(2)];
-  return {
-    prompt: para(`Let ${$m(`f(x) = \\frac{${k}}{x}`)}. Calculate the average rate of change of ${$m("f")} over each interval (rounded answers to 2+ decimals are fine).`),
-    parts: [
-      ...deltas.map((d, i) => P.num($m(`[${a}, ${fmtDec(a + d, 2)}]`), arcs[i])),
-      P.mcFixed(`As the interval shrinks toward ${$m(`x = ${a}`)}, these values approach…`, choices.map((c) => $m(c.tex())), 0),
-    ],
-    hint: `ARC on [a, b] = (f(b) − f(a))/(b − a). Here f(${a}) = ${q(k, a).txt()}.`,
-    solution:
-      deltas.map((d, i) => { const b = q(a).add(q(d)); const fb = q(k).div(b); return $M(`[${a}, ${fmtDec(a + d, 2)}]:\\quad \\frac{${fb.tex()} - ${q(k, a).tex()}}{${fmtDec(d, 2)}} = ${arcs[i].tex()} ${arcs[i].isInt() ? "" : `\\approx ${fmtDec(arcs[i].val(), 4)}`}`); }).join("") +
-      para(`Each value is the slope of a secant line through ${$m(`(${a}, ${q(k, a).tex()})`)}. As the second point slides toward the first, the secant slopes approach the slope of the <b>tangent line</b>: ${$m(`-\\frac{${k}}{${a}^2} = ${limit.tex()}`)} — the instantaneous rate of change at ${$m(`x = ${a}`)}.`),
-  };
-};
-
 GEN.dq = () => {
   const v = R.pick(["Q", "Q", "Q", "R", "R", "C"]);
   const hs = v === "R" ? [1, 0.5, 0.05] : [1, 0.1, 0.01];

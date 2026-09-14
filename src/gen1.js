@@ -22,6 +22,12 @@ function describeNode(n, fname = "f") {
   return `<h4>At ${$m(`x = ${a}`)}</h4>` + out.map(para).join("");
 }
 
+// Redraw a generated graph with the left/right approach to x highlighted
+function annotatedGraph(G, x) {
+  return `<div class="figure">${Graph.drawPiecewise(G.nodes, { ...G.view, highlight: x, guides: true }, `graph with the approach to x = ${x} highlighted`)}</div>` +
+    para(`<span class="legend-chip chip-left"></span>approaching ${$m(`x = ${x}`)} from the left &nbsp;&nbsp; <span class="legend-chip chip-right"></span>from the right. Follow each colored piece of the curve to the height it heads toward.`);
+}
+
 GEN.graphRead = () => {
   const types = R.pick([["jump", "hole"], ["jump", "asym"], ["hole", "cont", "jump"], ["jump", "hole", "asym"], ["hole", "jump"], ["asym", "hole"]]);
   const G = Graph.randomPiecewise(types);
@@ -38,43 +44,7 @@ GEN.graphRead = () => {
     figure: G.svg,
     parts,
     hint: "Limits ask where the curve is heading (open dots count). Function values ask where the filled dot is.",
-    solution: pickN.map((n) => describeNode(n)).join(""),
-  };
-};
-
-GEN.numTable = () => {
-  const v = R.int(1, 6);
-  let a, ftex, fn, L, approx = 0.0061, extra = "";
-  if (v === 1) { const r = R.nz(-5, 5); a = r; ftex = tx`\frac{x^2 - ${r * r}}{${T.fac(r).slice(1, -1)}}`; fn = (x) => (x * x - r * r) / (x - r); L = q(2 * r); extra = tx`\frac{(x - ${r})(x + ${r})}{x - ${r}} = x + ${r} \to ${2 * r}`.replace(/- -/g, "+ ").replace(/\+ -/g, "- "); }
-  if (v === 2) { const r = R.nz(-4, 4); let s; do { s = R.nz(-5, 5); } while (s === r); a = r; ftex = tx`\frac{${T.poly([1, -(r + s), r * s])}}{${T.fac(r).slice(1, -1)}}`; fn = (x) => (x * x - (r + s) * x + r * s) / (x - r); L = q(r - s); extra = tx`\frac{${T.fac(r)}${T.fac(s)}}{${T.fac(r)}} = ${T.fac(s).slice(1, -1)} \to ${r} ${r - s - r < 0 ? "-" : "+"} ${Math.abs(s)} = ${r - s}`; }
-  if (v === 3) { const r = R.int(2, 4); a = r * r; ftex = tx`\frac{\sqrt{x} - ${r}}{x - ${r * r}}`; fn = (x) => (Math.sqrt(x) - r) / (x - r * r); L = q(1, 2 * r); extra = tx`\frac{\sqrt{x} - ${r}}{(\sqrt{x} - ${r})(\sqrt{x} + ${r})} = \frac{1}{\sqrt{x} + ${r}} \to \frac{1}{${2 * r}}`; }
-  if (v === 4) { a = 0; ftex = tx`\frac{e^{x} - 1}{x}`; fn = (x) => (Math.exp(x) - 1) / x; L = q(1); extra = "(This one can't be simplified with algebra — the table is the tool.)"; }
-  if (v === 5) { a = 0; ftex = tx`\frac{2^{x} - 1}{x}`; fn = (x) => (Math.pow(2, x) - 1) / x; L = Math.LN2; approx = 0.011; extra = tx`\text{(The exact value is } \ln 2 \approx 0.693\text{.)}`; }
-  if (v === 6) { const r = R.pick([1, 2, -1, -2]); a = r; ftex = tx`\frac{x^3 ${r ** 3 < 0 ? "+" : "-"} ${Math.abs(r ** 3)}}{${T.fac(r).slice(1, -1)}}`; fn = (x) => (x ** 3 - r ** 3) / (x - r); L = q(3 * r * r); extra = tx`\frac{${T.fac(r)}(${T.poly([1, r, r * r])})}{${T.fac(r)}} = ${T.poly([1, r, r * r])} \to ${3 * r * r}`; }
-  const offs = [-0.1, -0.01, -0.001, 0, 0.001, 0.01, 0.1];
-  const rows = offs.map((d) => {
-    const x = a + d;
-    return `<td>${fmtDec(x, 4)}</td>`;
-  }).join("");
-  const vals = offs.map((d) => (d === 0 ? "<td class='qmark'>?</td>" : `<td>${fmtDec(fn(a + d), 6)}</td>`)).join("");
-  const table = `<div class="tbl-wrap"><table class="vt"><tr><th>${$m("x")}</th>${rows}</tr><tr><th>${$m("f(x)")}</th>${vals}</tr></table></div>`;
-  const Lt = L instanceof Q ? L : L;
-  return {
-    prompt: para(`Let ${$m(`f(x) = ${ftex}`)}. We want to know what happens to the outputs when ${$m("x")} is near ${$m(a)}.`) + table,
-    parts: [
-      P.mc(`Can you find ${$m(`${T.lim(a)} f(x)`)} by plugging in ${$m(`x = ${a}`)}?`, [
-        `No — substituting gives ${$m("\\frac{0}{0}")}, which is undefined`,
-        `Yes — just compute ${$m(`f(${a})`)}`,
-        `No — ${$m("f")} is undefined for every ${$m("x")} near ${$m(a)}`,
-      ], 0),
-      P.num(`As ${$m(`x \\to ${a}^-`)}, ${$m("f(x)")} approaches…`, L, { approx }),
-      P.num(`As ${$m(`x \\to ${a}^+`)}, ${$m("f(x)")} approaches…`, L, { approx }),
-      P.num($m(`${T.lim(a)} f(x) =`), L, { approx }),
-    ],
-    hint: "Read the left three columns for the left-hand limit and the right three for the right-hand limit. If they approach the same value, that's the limit.",
-    solution: para(`Plugging in ${$m(`x = ${a}`)} makes both the top and bottom 0, so we can't substitute.`) +
-      para(`Reading the table left to right, the outputs close in on ${$m(T.ans(Lt))} from both sides (the values at ${$m(`${a} \\pm 0.001`)} are the closest).`) +
-      $M(`${T.lim(a)} ${ftex} = ${T.ans(Lt)}`) + para(`Algebra check: ${extra.startsWith("(") ? extra : $m(extra)}`),
+    solution: pickN.map((n) => annotatedGraph(G, n.x) + describeNode(n)).join(""),
   };
 };
 
