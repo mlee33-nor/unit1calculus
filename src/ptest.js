@@ -2,7 +2,7 @@
 const fs = require("fs"), vm = require("vm"), path = require("path");
 const ctx = { console, window: {}, document: {} };
 vm.createContext(ctx);
-const files = ["core.js", "graph.js", "gen1.js", "gen2.js", "gen3.js", "gen4.js", "concepts.js", "mock.js", "pearson-gen.js", "pearson-gen2.js", "tables.js"];
+const files = ["core.js", "graph.js", "gen1.js", "gen2.js", "gen3.js", "gen4.js", "concepts.js", "mock.js", "pearson-gen.js", "pearson-gen2.js", "tables.js", "algebra.js"];
 const src = files.map((f) => fs.readFileSync(path.join(__dirname, f), "utf8")).join("\n;\n") +
   "\nfunction makeProblem(id){for(let i=0;i<6;i++){try{return GEN[id]()}catch(e){}}throw new Error(id)}" +
   "\n;this.PGEN=PGEN;this.PCheck=PCheck;this.Check=Check;this.Q=Q;this.withSeed=withSeed;this.PTESTS=PTESTS;this.PTEST_BLUEPRINT=PTEST_BLUEPRINT;this.PTOPIC_BY_ID=PTOPIC_BY_ID;this.pAnswerText=pAnswerText;this.normUnits=normUnits;";
@@ -29,7 +29,7 @@ for (const key of Object.keys(PGEN)) {
     let pr;
     try { pr = PGEN[key](); } catch (e) { bad.push(`${key}: THREW ${String(e && e.stack || e).split("\n").slice(0, 2).join(" | ")}`); break; }
     n++;
-    const blob = (pr.prompt + pr.solution + pr.parts.map((p) => (p.label || "") + (p.prefix || "") + (p.choices || []).join("") + pAnswerText(p)).join("")).replace(/(is|which is|are)( still)? undefined/g, "");
+    const blob = (pr.prompt + pr.solution + pr.parts.map((p) => (p.label || "") + (p.prefix || "") + (p.choices || []).filter((c) => c !== "undefined").join("|") + pAnswerText(p)).join("")).replace(/(is|which is|are)( still)? undefined/g, "");
     if (/undefined|NaN|\[object|Infinity/.test(blob)) bad.push(`${key}: bad text …${blob.match(/.{0,50}(undefined|NaN|\[object|Infinity).{0,30}/)[0]}`);
     if (!pr.parts.length || !pr.solution) bad.push(`${key}: missing parts/solution`);
     for (const p of pr.parts) {
@@ -60,13 +60,13 @@ for (const key of Object.keys(PGEN)) {
       } else if (p.type === "mc") {
         if (!(p.ans >= 0 && p.ans < p.choices.length)) bad.push(`${key}: mc ans out of range`);
       } else if (p.type === "expr") {
-        r = Check.expr(tex2in(p.display), p);
+        r = PCheck.expr(tex2in(p.display), p);
         if (!r.ok) bad.push(`${key}: expr "${p.display}" rejected ${JSON.stringify(r)}`);
       } else if (p.type === "line") {
-        r = Check.line(tex2in(p.display), p);
+        r = PCheck.line(tex2in(p.display), p);
         if (!r.ok) bad.push(`${key}: line "${p.display}" rejected ${JSON.stringify(r)}`);
         const rhsOnly = tex2in(p.display).replace(/^y\s*=\s*/, "");
-        if (!Check.line(rhsOnly, p).ok) bad.push(`${key}: right-side-only line "${rhsOnly}" rejected`);
+        if (!PCheck.line(rhsOnly, p).ok) bad.push(`${key}: right-side-only line "${rhsOnly}" rejected`);
       }
     }
   }

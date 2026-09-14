@@ -15,10 +15,10 @@ const store = {
   load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } },
   save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } },
 };
-const state = Object.assign({ mode: "pearson", topic: "graphRead", progress: {}, mockScores: {}, ptopic: "limGraph", pprogress: {}, log: [], tests: [], guides: true, seenPearson: false, pearsonIntroSeen: false }, store.load());
+const state = Object.assign({ mode: "pearson", topic: "graphRead", progress: {}, mockScores: {}, ptopic: "limGraph", pprogress: {}, log: [], tests: [], guides: true, seenPearson: false, pearsonIntroSeen: false, plan: {}, examCfg: { minutes: 75, n: 20, calc: true } }, store.load());
 if (!state.seenPearson) { state.mode = "pearson"; state.seenPearson = true; }
 if (!GEN[state.topic]) state.topic = "graphRead";
-const persist = () => store.save({ mode: state.mode, topic: state.topic, progress: state.progress, mockScores: state.mockScores, ptopic: state.ptopic, pprogress: state.pprogress, log: state.log.slice(-2500), tests: state.tests.slice(-200), guides: state.guides, seenPearson: state.seenPearson, pearsonIntroSeen: state.pearsonIntroSeen });
+const persist = () => store.save({ mode: state.mode, topic: state.topic, progress: state.progress, mockScores: state.mockScores, ptopic: state.ptopic, pprogress: state.pprogress, log: state.log.slice(-2500), tests: state.tests.slice(-200), guides: state.guides, seenPearson: state.seenPearson, pearsonIntroSeen: state.pearsonIntroSeen, plan: state.plan, examCfg: state.examCfg });
 let examTimer = null, uidCounter = 0;
 
 function el(tag, attrs = {}, html) {

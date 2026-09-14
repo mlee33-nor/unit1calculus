@@ -74,8 +74,16 @@ const PCheck = {
     return { ok: false };
   },
   mc: (k, part) => (k < 0 ? { empty: true } : { ok: k === part.ans }),
-  expr: (raw, part) => Check.expr(raw, part),
-  line: (raw, part) => Check.line(raw, part),
+  expr(raw, part) {
+    const s = raw.replace(/\s+/g, "");
+    if (part.expanded && s && /\([^()]*[xh][^()]*\)/.test(s)) return { ok: false, err: "Expand completely. The answer shouldn't have parentheses around x or h." };
+    if (part.factored && s && !/\)\*?\(|[0-9a-z]\(|\)\^/i.test(s)) return { ok: false, err: "That's equivalent, but write it in factored form, like (x - 2)(x + 5)." };
+    return Check.expr(raw, part);
+  },
+  line(raw, part) {
+    if (part.slopeIntercept && /\([^()]*x[^()]*\)/.test(raw.replace(/\s+/g, ""))) return { ok: false, err: "Write it in slope-intercept form, y = mx + b, with no parentheses around x." };
+    return Check.line(raw, part);
+  },
 };
 
 function pAnswerText(part) {

@@ -47,6 +47,9 @@ function classify(part, res, answer, helped) {
   if (/exact value|rounded decimal/i.test(err)) return "rounded instead of exact";
   if (/still contains h/i.test(err)) return "left h in the derivative";
   if (/h in the denominator/i.test(err)) return "didn't cancel the h";
+  if (/Expand completely/i.test(err)) return "didn't expand completely";
+  if (/factored form/i.test(err)) return "not in factored form";
+  if (/slope-intercept/i.test(err)) return "not in slope-intercept form";
   const ansStr = String(answer ?? "");
   switch (part.type) {
     case "cf": {
@@ -162,7 +165,7 @@ function buildReport(S) {
   L.push(`Exam: Wed Sep 16, 2026, Sections 1.1–1.4, taken on Pearson.`);
   L.push(`Totals: ${S.total} questions answered; first-try full credit ${pct(S.firstRate)}; parts correct ${pct(S.partRate)}; last 20 questions ${pct(S.recentRate)}.`);
   L.push("", "## By section");
-  ["1.1", "1.2", "1.3", "1.4"].forEach((s) => { const v = S.bySec[s]; L.push(`- §${s}: ${v ? `${pct(v.first / v.n)} first-try over ${v.n} questions` : "not practiced"}`); });
+  ["alg", "1.1", "1.2", "1.3", "1.4"].forEach((s) => { const v = S.bySec[s]; L.push(`- ${s === "alg" ? "Algebra warm-up" : "§" + s}: ${v ? `${pct(v.first / v.n)} first-try over ${v.n} questions` : "not practiced"}`); });
   L.push("", "## Skills (weakest first)", "| Skill | § | Status | First-try | Last 5 | Streak | Attempts | Most common mistake |", "|---|---|---|---|---|---|---|---|");
   Object.values(S.bySkill).sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]).forEach((b) => {
     L.push(`| ${b.skill.name} | ${b.skill.sec} | ${STATUS_LABEL[b.status]} | ${pct(b.acc)} | ${b.last5.map((x) => (x === 1 ? "✓" : x > 0 ? "½" : "✗")).join("") || "—"} | ${b.streak} | ${b.n} | ${b.topMistake ? b.topMistake.kind : "—"} |`);
@@ -255,6 +258,40 @@ const syncText = (s) => ({
   local: "Saved in this browser only. Use “Copy report” to share results with Claude.",
 })[s];
 
+function planCard(S) {
+  const took = (name) => state.tests.some((t) => t.name === name);
+  const midnight = new Date(); midnight.setHours(0, 0, 0, 0);
+  const algToday = state.log.filter((e) => e.sec === "alg" && e.t >= midnight.getTime()).length;
+  const examSkills = Object.values(S.bySkill).filter((b) => b.skill.sec !== "alg" && b.skill.id !== "concepts");
+  const mastered = examSkills.filter((b) => b.status === "mastered").length;
+  const weakest = recommended(S).filter((b) => b.skill.sec !== "alg").map((b) => b.skill.name).join(", ");
+  const steps = [
+    { id: "t1", day: "Sun", text: "Take Pearson Practice Test 1 with the timer on", auto: took("Practice Test 1") },
+    { id: "report1", day: "Sun", text: "Open My gaps and paste your report to Claude", manual: true },
+    { id: "alg", day: "Daily", text: `Algebra warm-up: 5 questions today (${Math.min(5, algToday)}/5)`, auto: algToday >= 5 },
+    { id: "drill", day: "Mon", text: `Get 3 exam skills to 3 dots (${Math.min(3, mastered)}/3)${weakest ? `. Start with: ${weakest}` : ""}`, auto: mastered >= 3 },
+    { id: "t2", day: "Mon", text: "Take Pearson Practice Test 2", auto: took("Practice Test 2") },
+    { id: "hw3", day: "Tue", text: "Finish Written HW 3 by hand (due 11:59 p.m.)", manual: true },
+    { id: "t3", day: "Tue", text: "Take Pearson Practice Test 3, then ask Claude for a final exam on your gaps", auto: took("Practice Test 3") },
+    { id: "warm", day: "Wed", text: "Morning warm-up: a random Pearson test or paper mock D, then the formula sheet", manual: true },
+  ];
+  const isDone = (s) => !!(s.auto || (s.manual && state.plan[s.id]));
+  const card = el("section", { class: "sheet" });
+  card.innerHTML = `<div class="sheet-head"><h3>Plan until Wednesday</h3><span class="tag">${steps.filter(isDone).length}/${steps.length} done</span></div>`;
+  const ul = el("ul", { class: "plan" });
+  steps.forEach((s) => {
+    const li = el("li", { class: isDone(s) ? "done" : "" });
+    const box = el("input", { type: "checkbox", id: `plan-${s.id}` });
+    box.checked = isDone(s);
+    if (!s.manual) box.disabled = true;
+    box.addEventListener("change", () => { state.plan[s.id] = box.checked; persist(); renderStats(); });
+    li.append(box, el("label", { for: `plan-${s.id}` }, `<span class="plan-day">${s.day}</span>${escapeHtml(s.text)}${s.manual ? "" : ' <span class="plan-auto">checks itself</span>'}`));
+    ul.append(li);
+  });
+  card.append(ul);
+  return card;
+}
+
 function renderStats() {
   clearInterval(examTimer);
   const main = document.getElementById("main"); main.innerHTML = "";
@@ -273,6 +310,7 @@ function renderStats() {
     <p class="sync-line" id="sync-line">${syncText(Sync.status())}</p>`;
   main.append(top);
   const off = Sync.onStatus((s) => { const n = document.getElementById("sync-line"); if (n) n.textContent = syncText(s); else off(); });
+  main.append(planCard(S));
 
   if (!S.total) {
     const empty = el("section", { class: "sheet" });
@@ -286,7 +324,7 @@ function renderStats() {
     recommended(S).forEach((b) => {
       const why = b.status === "untested" ? "Not practiced yet — it's on the exam."
         : `${STATUS_LABEL[b.status]}: last ${b.last5.length} ${pct(b.recentAcc)}, first-try ${pct(b.acc)} over ${b.n}${b.topMistake ? `. Most common mistake: ${b.topMistake.kind}` : ""}.`;
-      const item = el("div", { class: "next-item" }, `<div><b>${b.skill.name}</b> <span class="chip ${b.status}">${STATUS_LABEL[b.status]}</span><div class="why">§${b.skill.sec} · ${why}</div></div>`);
+      const item = el("div", { class: "next-item" }, `<div><b>${b.skill.name}</b> <span class="chip ${b.status}">${STATUS_LABEL[b.status]}</span><div class="why">${b.skill.sec === "alg" ? "Algebra" : "§" + b.skill.sec} · ${why}</div></div>`);
       item.append(btn("Practice", "primary", () => practiceSkill(b.skill)));
       list.append(item);
     });
@@ -296,10 +334,10 @@ function renderStats() {
 
   const table = el("section", { class: "sheet" });
   let rows = "";
-  ["1.1", "1.2", "1.3", "1.4", "all"].forEach((sec) => {
+  ["alg", "1.1", "1.2", "1.3", "1.4", "all"].forEach((sec) => {
     const secSkills = skills.filter((b) => b.skill.sec === sec);
     const sv = S.bySec[sec];
-    rows += `<tr class="sec-row"><td colspan="7">${sec === "all" ? "All sections" : `§${sec}`}${sv ? ` — ${pct(sv.first / sv.n)} first-try over ${sv.n}` : ""}</td></tr>`;
+    rows += `<tr class="sec-row"><td colspan="7">${sec === "all" ? "All sections" : sec === "alg" ? "Algebra warm-up" : `§${sec}`}${sv ? ` — ${pct(sv.first / sv.n)} first-try over ${sv.n}` : ""}</td></tr>`;
     secSkills.forEach((b) => {
       const dots = b.last5.map((x) => `<i class="${x === 1 ? "y" : x > 0 ? "p" : "n"}"></i>`).join("");
       rows += `<tr><td>${b.skill.name}${b.topMistake ? `<div class="why" style="font-size:12px;color:var(--graphite)">often: ${b.topMistake.kind}</div>` : ""}</td><td><span class="chip ${b.status}">${STATUS_LABEL[b.status]}</span></td><td class="num">${pct(b.acc)}</td><td><span class="last5" aria-label="last five results">${dots || "—"}</span></td><td class="num">${b.streak}/3</td><td class="num">${b.n}</td><td data-skill="${b.skill.id}"></td></tr>`;

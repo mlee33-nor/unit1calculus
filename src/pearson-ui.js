@@ -128,7 +128,7 @@ function pqCard(pr, meta) {
   const card = el("article", { class: "sheet pq-card" });
   const nParts = pr.parts.length;
   const head = el("div", { class: "pq-head" },
-    `<div><div class="pq-code">${meta.num ? `Question ${meta.num}` : meta.title}</div><div class="pq-meta">${nParts} part${nParts > 1 ? "s" : ""}<span class="pq-sep">|</span><span class="pq-score">0 of 1 point</span></div></div><span class="tag">§${meta.sec}${meta.num ? ` · ${meta.title}` : ""}</span>`);
+    `<div><div class="pq-code">${meta.num ? `Question ${meta.num}` : meta.title}</div><div class="pq-meta">${nParts} part${nParts > 1 ? "s" : ""}<span class="pq-sep">|</span><span class="pq-score">0 of 1 point</span></div></div><span class="tag">${/^\d/.test(meta.sec) ? "§" : ""}${meta.sec}${meta.num ? ` · ${meta.title}` : ""}</span>`);
   const promptBox = el("div", { class: "pq-prompt" }, pr.prompt);
   if (pr.figure) { promptBox.append(el("div", { class: "figure" }, pr.figure)); if (pr.figure.includes("gp-guide")) promptBox.append(guideToggle()); }
   card.append(head, promptBox);
@@ -195,7 +195,7 @@ function renderPearsonPractice() {
 function renderPearsonRail() {
   const rail = document.getElementById("rail"); rail.innerHTML = "";
   PTOPICS.forEach((s) => {
-    rail.append(el("h2", {}, `<span>§${s.sec}</span><span>${s.name}</span>`));
+    rail.append(el("h2", {}, `<span>${/^\d/.test(s.sec) ? "§" + s.sec : s.sec}</span><span>${s.name}</span>`));
     const ul = el("ul");
     s.items.forEach(([id, name]) => {
       const solved = Math.min(3, state.pprogress[id]?.streak || 0);
@@ -221,6 +221,15 @@ function renderPearsonRail() {
 }
 
 // ---------- practice tests ----------
+function testBlueprint() {
+  const cfg = state.examCfg || { n: 20, calc: true };
+  let base = PTEST_BLUEPRINT.map((id) => (!cfg.calc && id === "limTable" ? "limAlg" : id));
+  if (cfg.n < base.length) { const step = base.length / cfg.n; base = Array.from({ length: cfg.n }, (_, i) => base[Math.floor(i * step)]); }
+  const extra = ["limAlg", "contYN", "tangentP", "derivDef", "arcSituation", "pwDiff", "limGraph", "discList"];
+  for (let i = 0; base.length < cfg.n; i++) base.push(extra[i % extra.length]);
+  return base;
+}
+
 function renderPTestHome() {
   clearInterval(examTimer);
   const main = document.getElementById("main"); main.innerHTML = "";
@@ -228,21 +237,29 @@ function renderPTestHome() {
   intro.innerHTML = `<div class="sheet-head"><h3>Pearson-style practice tests</h3><span class="tag">§1.1 – §1.4 · ${PTEST_BLUEPRINT.length} questions</span></div>
     <div class="prompt"><p>Every answer format from the homework: A/B limit choices, Yes/No, select all that apply, <b>y =</b> boxes, and separate unit boxes. Questions appear one at a time, you can jump between them, and nothing is graded until you submit.</p>
     <p>Scoring matches the homework: each question is worth 1 point, split across its parts, with the same strict rules — exact simplified fractions and correct units.</p></div>
-    <div class="setup">${minutesSelect("pt-min")}</div>`;
+    <div class="setup">${minutesSelect("pt-min")}<label for="pt-n">Questions <select id="pt-n"><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option></select></label><label for="pt-calc">Calculator <select id="pt-calc"><option value="yes">Allowed</option><option value="no">Not allowed</option></select></label><span class="note">Set these to match your real exam once you know the details.</span></div>`;
   main.append(intro);
+  const cfg = state.examCfg || { minutes: 75, n: 20, calc: true };
+  document.getElementById("pt-min").value = String(cfg.minutes);
+  document.getElementById("pt-n").value = String(cfg.n);
+  document.getElementById("pt-calc").value = cfg.calc ? "yes" : "no";
+  ["pt-min", "pt-n", "pt-calc"].forEach((id) => document.getElementById(id).addEventListener("change", () => {
+    state.examCfg = { minutes: +document.getElementById("pt-min").value, n: +document.getElementById("pt-n").value, calc: document.getElementById("pt-calc").value === "yes" };
+    persist();
+  }));
   const mins = () => +document.getElementById("pt-min").value;
   const grid = el("div", { class: "mock-grid" });
   PTESTS.forEach((t, i) => {
     const best = state.mockScores[t.key];
     const card = el("section", { class: "sheet mock-card" });
     card.innerHTML = `<div class="mock-letter" aria-hidden="true">${i + 1}</div><div><h3>${t.name}</h3><p class="mock-meta">${PTEST_BLUEPRINT.length} questions · same questions every time</p><p class="mock-best">${best != null ? `Best score <b>${best}%</b>` : "Not taken yet"}</p></div>`;
-    const acts = el("div", { class: "actions" }); acts.append(btn("Start test", "primary", () => runPTest(t, mins())));
+    const acts = el("div", { class: "actions" }); acts.append(btn("Start test", "primary", () => runPTest({ ...t, blueprint: testBlueprint() }, mins())));
     card.append(acts); grid.append(card);
   });
   const rnd = el("section", { class: "sheet mock-card" });
   rnd.innerHTML = `<div class="mock-letter" aria-hidden="true">?</div><div><h3>Random test</h3><p class="mock-meta">New questions every time</p><p class="mock-best">Same layout as Tests 1–3</p></div>`;
   const racts = el("div", { class: "actions" });
-  racts.append(btn("Start test", "primary", () => runPTest({ key: null, seed: 1000 + Math.floor(Math.random() * 900000), name: "Random test" }, mins())));
+  racts.append(btn("Start test", "primary", () => runPTest({ key: null, seed: 1000 + Math.floor(Math.random() * 900000), name: "Random test", blueprint: testBlueprint() }, mins())));
   rnd.append(racts); grid.append(rnd);
   main.append(grid);
 }
@@ -250,7 +267,7 @@ function renderPTestHome() {
 function runPTest(test, minutes) {
   clearInterval(examTimer);
   const main = document.getElementById("main"); main.innerHTML = "";
-  const problems = withSeed(test.seed, () => PTEST_BLUEPRINT.map((id) => ({ id, pr: makePProblem(id) })));
+  const problems = withSeed(test.seed, () => (test.blueprint || PTEST_BLUEPRINT).map((id) => ({ id, pr: makePProblem(id) })));
   const bar = el("div", { class: "exam-bar" });
   bar.innerHTML = `<span class="clock" id="clock">${minutes ? `${minutes}:00` : "∞"}</span><span class="meta">${test.name}<br><span class="pt-pos">Question 1 of ${problems.length}</span></span>`;
   bar.append(btn("Submit test", "", () => trySubmit()));

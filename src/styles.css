@@ -340,3 +340,14 @@ table.vt td.qmark { color: var(--curve); font-weight: 700; }
 .miss .where { font-size: 13px; color: var(--graphite); }
 .miss .ex { font: 400 12.5px/1.5 var(--f-mono); color: var(--graphite); margin-top: 6px; overflow-wrap: anywhere; }
 .report-box { width: 100%; min-height: 220px; font: 400 12px/1.5 var(--f-mono); background: var(--paper); color: var(--ink); border: 1px solid var(--grid-strong); border-radius: 8px; padding: 10px; resize: vertical; }
+
+/* ---------- study plan + test settings ---------- */
+.plan { list-style: none; margin: 0; padding: 0; display: grid; }
+.plan li { display: flex; gap: 10px; align-items: baseline; padding: 7px 2px; border-bottom: 1px solid var(--grid); }
+.plan li:last-child { border-bottom: 0; }
+.plan li.done label { color: var(--graphite); text-decoration: line-through; text-decoration-color: var(--grid-strong); }
+.plan input { width: 17px; height: 17px; margin: 0; accent-color: var(--ok); flex: none; transform: translateY(3px); }
+.plan label { line-height: 1.45; }
+.plan-day { display: inline-block; min-width: 52px; font: 600 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--curve); }
+.plan-auto { font: 500 10px var(--f-mono); color: var(--faint); border: 1px solid var(--grid-strong); border-radius: 3px; padding: 0 5px; margin-left: 6px; white-space: nowrap; text-decoration: none; display: inline-block; }
+.setup .note { font: 400 12px/1.4 var(--f-mono); color: var(--graphite); }

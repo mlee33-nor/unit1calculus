@@ -2,7 +2,7 @@ import pathlib
 
 S = pathlib.Path(__file__).parent
 css = (S / "styles.css").read_text(encoding="utf8")
-files = ["core.js", "graph.js", "gen1.js", "gen2.js", "gen3.js", "gen4.js", "concepts.js", "mock.js", "pearson-gen.js", "pearson-gen2.js", "tables.js", "pearson-ui.js", "analytics.js", "app.js"]
+files = ["core.js", "graph.js", "gen1.js", "gen2.js", "gen3.js", "gen4.js", "concepts.js", "mock.js", "pearson-gen.js", "pearson-gen2.js", "tables.js", "pearson-ui.js", "analytics.js", "algebra.js", "app.js"]
 js = "\n;\n".join((S / f).read_text(encoding="utf8") for f in files).replace("</script", "<\\/script")
 shell = (S / "shell.html").read_text(encoding="utf8")
 frag = shell.replace("/*CSS*/", css, 1).replace("/*JS*/", js, 1)
