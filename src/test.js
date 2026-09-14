@@ -12,7 +12,11 @@ const { GEN, Check, T, Q, Parser } = ctx;
 function tex2in(s) {
   let prev;
   s = s.replace(/\\left|\\right|\\,|\\;/g, "").replace(/\\cdot/g, "*");
-  do { prev = s; s = s.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, "(($1)/($2))").replace(/\\sqrt\{([^{}]*)\}/g, "sqrt($1)").replace(/\^\{([^{}]*)\}/g, "^($1)").replace(/\{([^{}]*)\}/g, "($1)"); } while (s !== prev);
+  do {
+    prev = s;
+    s = s.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, "(($1)/($2))").replace(/\\sqrt\{([^{}]*)\}/g, "sqrt($1)").replace(/\^\{([^{}]*)\}/g, "^($1)");
+    if (s === prev && !s.includes("\\frac")) s = s.replace(/\{([^{}]*)\}/g, "($1)"); // plain groups only once no \frac is waiting on its braces
+  } while (s !== prev);
   return s.replace(/\\infty/g, "inf").replace(/\\text\(DNE\)/g, "DNE");
 }
 
