@@ -1,0 +1,37 @@
+<title>MAT 213 Midterm Lab</title>
+<meta name="description" content="Practice limits, continuity, average rates, and derivatives for the MAT 213 midterm.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>/*CSS*/</style>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    ready() { MathJax.startup.defaultReady(); MathJax.startup.promise.then(() => MathJax.typesetPromise([document.getElementById("main")])); },
+  },
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<!--BODY-->
+<header class="mast">
+  <div class="brand">
+    <span class="sub">MAT 213 · Brief Calculus · Sections 1.1–1.4</span>
+    <h1>Midterm Lab <span class="lim">lim</span></h1>
+  </div>
+  <div class="countdown" id="countdown" aria-live="polite"></div>
+</header>
+<nav class="modes" aria-label="Study mode">
+  <button type="button" data-mode="practice" aria-pressed="true">Practice by topic</button>
+  <button type="button" data-mode="mixed" aria-pressed="false">Mixed review</button>
+  <button type="button" data-mode="exam" aria-pressed="false">Mock exams</button>
+  <button type="button" data-mode="formulas" aria-pressed="false">Formula sheet</button>
+</nav>
+<div class="shell">
+  <aside class="rail" id="rail" aria-label="Topics"></aside>
+  <main class="main" id="main"></main>
+</div>
+<script>/*JS*/</script>

@@ -1,0 +1,2127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAT 213 Midterm Lab</title>
+<meta name="description" content="Practice limits, continuity, average rates, and derivatives for the MAT 213 midterm.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>:root {
+  --paper: #edf1ee;
+  --sheet: #fafbf9;
+  --ink: #16222a;
+  --graphite: #56646b;
+  --faint: #8a979c;
+  --grid: #d6dfdb;
+  --grid-strong: #b8c6c0;
+  --curve: #c23b2a;
+  --curve-soft: #f6e1dc;
+  --ok: #2b7a4b;
+  --ok-soft: #dcefe3;
+  --bad: #b3261e;
+  --bad-soft: #f9e0dc;
+  --focus: #1f5fbf;
+  --shadow: 0 1px 0 rgba(22, 34, 42, 0.06), 0 8px 24px -12px rgba(22, 34, 42, 0.18);
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "STIX Two Text", "Cambria", "Georgia", serif;
+  --f-mono: "IBM Plex Mono", "Consolas", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1513; --sheet: #151e1b; --ink: #e2eae6; --graphite: #9aa9a3; --faint: #6f7f78;
+    --grid: #22302b; --grid-strong: #34463f; --curve: #f07a63; --curve-soft: #3a221d;
+    --ok: #6cc793; --ok-soft: #17301f; --bad: #ff8b7b; --bad-soft: #3a1d19; --focus: #7fb0ff;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.4), 0 10px 28px -14px rgba(0, 0, 0, 0.7);
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1513; --sheet: #151e1b; --ink: #e2eae6; --graphite: #9aa9a3; --faint: #6f7f78;
+  --grid: #22302b; --grid-strong: #34463f; --curve: #f07a63; --curve-soft: #3a221d;
+  --ok: #6cc793; --ok-soft: #17301f; --bad: #ff8b7b; --bad-soft: #3a1d19; --focus: #7fb0ff;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.4), 0 10px 28px -14px rgba(0, 0, 0, 0.7);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-attachment: fixed;
+  color: var(--ink);
+  font: 17px/1.55 var(--f-body);
+  padding-inline: 16px;
+}
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+code { font-family: var(--f-mono); font-size: 0.86em; background: var(--paper); padding: 0 0.3em; border-radius: 3px; }
+
+/* ---------- masthead ---------- */
+.mast { max-width: 1240px; margin: 0 auto; padding-block: 22px 14px; display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: end; justify-content: space-between; }
+.brand { display: grid; gap: 2px; }
+.brand h1 { margin: 0; font: 800 clamp(30px, 4.4vw, 44px)/0.95 var(--f-display); letter-spacing: -0.02em; font-variation-settings: "opsz" 96; text-wrap: balance; }
+.brand h1 .lim { color: var(--curve); font-weight: 700; }
+.brand .sub { font: 500 12px/1.3 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--graphite); }
+.countdown { display: flex; align-items: center; gap: 12px; background: var(--sheet); border: 1px solid var(--grid-strong); border-radius: 10px; padding: 8px 14px; box-shadow: var(--shadow); }
+.countdown .num { font: 800 30px/1 var(--f-display); font-variant-numeric: tabular-nums; color: var(--curve); }
+.countdown .lbl { font: 500 11px/1.3 var(--f-mono); text-transform: uppercase; letter-spacing: 0.07em; color: var(--graphite); }
+.countdown .lbl b { display: block; color: var(--ink); font-weight: 600; letter-spacing: 0.02em; text-transform: none; font-size: 13px; }
+
+.modes { max-width: 1240px; margin: 0 auto 18px; display: flex; flex-wrap: wrap; gap: 6px; }
+.modes button { border: 1px solid var(--grid-strong); background: var(--sheet); padding: 7px 14px; border-radius: 999px; cursor: pointer; font: 500 13px/1.2 var(--f-mono); letter-spacing: 0.02em; }
+.modes button[aria-pressed="true"] { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
+.modes button:hover:not([aria-pressed="true"]) { border-color: var(--ink); }
+
+/* ---------- layout ---------- */
+.shell { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 272px minmax(0, 1fr); gap: 22px; align-items: start; padding-block-end: 60px; }
+.rail { position: sticky; top: 12px; background: var(--sheet); border: 1px solid var(--grid-strong); border-radius: 12px; padding: 14px 10px; max-height: calc(100vh - 24px); overflow: auto; }
+.rail h2 { margin: 12px 8px 4px; font: 600 11px/1.3 var(--f-mono); text-transform: uppercase; letter-spacing: 0.09em; color: var(--graphite); display: flex; justify-content: space-between; gap: 8px; }
+.rail h2:first-child { margin-top: 0; }
+.rail h2 span:last-child { color: var(--faint); letter-spacing: 0.02em; text-transform: none; }
+.rail ul { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 1px; }
+.rail button { width: 100%; text-align: left; background: none; border: 0; border-radius: 7px; padding: 7px 8px; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; font: 500 14px/1.25 var(--f-display); }
+.rail button:hover { background: var(--paper); }
+.rail button[aria-current="true"] { background: var(--ink); color: var(--sheet); }
+.rail button[aria-current="true"] .pips i { border-color: var(--sheet); }
+.rail button[aria-current="true"] .pips i.on { background: var(--sheet); }
+.pips { display: flex; gap: 3px; }
+.pips i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--grid-strong); display: block; }
+.pips i.on { background: var(--ok); border-color: var(--ok); }
+.rail .legend { margin: 10px 8px 0; font: 400 11px/1.4 var(--f-mono); color: var(--faint); }
+
+.main { display: grid; gap: 18px; min-width: 0; }
+
+/* ---------- problem sheet ---------- */
+.sheet { background: var(--sheet); border: 1px solid var(--grid-strong); border-radius: 12px; box-shadow: var(--shadow); padding: 22px clamp(16px, 3vw, 32px) 24px; min-width: 0; }
+.sheet-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; align-items: baseline; border-bottom: 1px dashed var(--grid-strong); padding-bottom: 10px; margin-bottom: 14px; }
+.sheet-head h3 { margin: 0; font: 700 22px/1.15 var(--f-display); letter-spacing: -0.01em; text-wrap: balance; }
+.tag { font: 600 11px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--curve); }
+.qnum { font: 800 15px/1 var(--f-display); color: var(--graphite); margin-right: 8px; }
+.prompt p { margin: 0 0 10px; max-width: 68ch; }
+.prompt mjx-container[display="true"] { margin: 10px 0 !important; overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.figure { margin: 6px 0 14px; }
+svg.graph { width: 100%; max-width: 440px; height: auto; display: block; background: var(--sheet); border: 1px solid var(--grid); border-radius: 8px; }
+.gp-grid { stroke: var(--grid); stroke-width: 1; fill: none; }
+.gp-axis { stroke: var(--ink); stroke-width: 1.4; fill: none; }
+.gp-curve { stroke: var(--curve); stroke-width: 2.6; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.gp-open { fill: var(--sheet); stroke: var(--curve); stroke-width: 2.2; }
+.gp-closed { fill: var(--curve); stroke: var(--curve); stroke-width: 1; }
+.gp-asym { stroke: var(--graphite); stroke-width: 1.4; stroke-dasharray: 5 4; fill: none; }
+.gp-cross { stroke: var(--ink); stroke-width: 2; fill: none; }
+.gp-lab { fill: var(--graphite); font: 500 11px var(--f-mono); }
+.gp-name { fill: var(--ink); font: italic 14px var(--f-body); }
+
+.tbl-wrap { overflow-x: auto; margin: 6px 0 14px; }
+table.vt { border-collapse: collapse; font: 500 13px/1.2 var(--f-mono); font-variant-numeric: tabular-nums; }
+table.vt th, table.vt td { border: 1px solid var(--grid-strong); padding: 7px 9px; text-align: center; white-space: nowrap; }
+table.vt th { background: var(--paper); font-weight: 600; }
+table.vt td.qmark { color: var(--curve); font-weight: 700; }
+
+/* ---------- parts ---------- */
+.parts { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 12px; }
+.part { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 4px 10px; align-items: start; padding: 10px 12px 12px 8px; border-radius: 9px; border: 1px solid transparent; }
+.part.ok { background: var(--ok-soft); border-color: color-mix(in srgb, var(--ok) 35%, transparent); }
+.part.bad { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 35%, transparent); }
+.part .letter { font: 600 14px/2.1 var(--f-mono); color: var(--graphite); text-align: right; }
+.part .body { min-width: 0; display: grid; gap: 7px; }
+.part .label { line-height: 1.5; overflow-x: auto; overflow-y: hidden; }
+.answer-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.answer-row input[type="text"] { flex: 1 1 220px; min-width: 0; max-width: 420px; font: 500 16px/1.3 var(--f-mono); background: var(--sheet); border: 1px solid var(--grid-strong); border-bottom: 2px solid var(--ink); border-radius: 6px 6px 2px 2px; padding: 8px 10px; }
+.answer-row input[type="text"]:focus { border-color: var(--focus); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent); }
+.mark { font: 700 13px/1 var(--f-mono); letter-spacing: 0.04em; padding: 5px 8px; border-radius: 999px; }
+.mark.ok { color: var(--ok); border: 1.5px solid var(--ok); }
+.mark.bad { color: var(--bad); border: 1.5px solid var(--bad); }
+.preview { font-size: 15px; color: var(--graphite); min-height: 1.4em; overflow-x: auto; }
+.preview .pv-lbl { font: 500 11px var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); margin-right: 6px; }
+.preview.err { color: var(--bad); font: 500 13px/1.4 var(--f-mono); }
+.feedback { font-size: 15px; }
+.feedback .reveal { font: 500 13px/1.4 var(--f-mono); color: var(--graphite); }
+.choices { display: grid; gap: 6px; }
+.choice { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; padding: 8px 10px; border: 1px solid var(--grid-strong); border-radius: 8px; cursor: pointer; background: var(--sheet); line-height: 1.45; }
+.choice:hover { border-color: var(--ink); }
+.choice input { margin: 4px 0 0; accent-color: var(--ink); }
+.choice.right { border-color: var(--ok); box-shadow: inset 0 0 0 1px var(--ok); }
+.choice.wrong { border-color: var(--bad); box-shadow: inset 0 0 0 1px var(--bad); }
+.choice-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice-row .choice { grid-template-columns: 18px auto; }
+
+.keys { display: flex; flex-wrap: wrap; gap: 4px; }
+.keys button { font: 500 12px/1 var(--f-mono); border: 1px solid var(--grid-strong); background: var(--paper); border-radius: 5px; padding: 6px 8px; cursor: pointer; min-width: 32px; }
+.keys button:hover { border-color: var(--ink); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; align-items: center; }
+.btn { border: 1px solid var(--ink); background: var(--sheet); padding: 9px 16px; border-radius: 8px; cursor: pointer; font: 600 14px/1.1 var(--f-display); }
+.btn.primary { background: var(--ink); color: var(--sheet); }
+.btn:hover { transform: translateY(-1px); }
+.btn.ghost { border-color: var(--grid-strong); }
+.score-line { font: 500 13px var(--f-mono); color: var(--graphite); margin-left: auto; }
+
+.hint { margin-top: 14px; font-size: 15px; background: var(--paper); border-radius: 8px; padding: 10px 14px; }
+.hint b { font: 600 11px var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--graphite); margin-right: 6px; }
+.solution { margin-top: 16px; border-top: 2px solid var(--ink); padding-top: 12px; }
+.solution > .sol-lbl { font: 600 11px var(--f-mono); letter-spacing: 0.09em; text-transform: uppercase; color: var(--curve); }
+.solution h4 { margin: 12px 0 4px; font: 700 15px var(--f-display); }
+.solution p { margin: 6px 0; max-width: 72ch; }
+.solution mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 2px 0; }
+
+/* ---------- dashboard / notes ---------- */
+.intro { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.intro .cell h4 { margin: 0 0 4px; font: 700 16px var(--f-display); }
+.intro .cell p { margin: 0; font-size: 15px; color: var(--graphite); }
+.warn { font-size: 15px; background: var(--curve-soft); border-radius: 8px; padding: 10px 14px; margin-top: 14px; }
+.warn b { font-family: var(--f-display); }
+
+.formula { display: grid; gap: 18px; }
+.formula section h3 { margin: 0 0 8px; font: 700 20px var(--f-display); display: flex; gap: 10px; align-items: baseline; }
+.formula section h3 .tag { font-size: 12px; }
+.formula dl { margin: 0; display: grid; grid-template-columns: minmax(120px, 190px) minmax(0, 1fr); gap: 8px 18px; }
+.formula dt { font: 600 12px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--graphite); }
+.formula dd { margin: 0; overflow-x: auto; }
+
+.exam-bar { position: sticky; top: 8px; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; background: var(--ink); color: var(--sheet); border-radius: 10px; padding: 10px 16px; box-shadow: var(--shadow); }
+.exam-bar .clock { font: 800 26px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.exam-bar .meta { font: 500 12px/1.3 var(--f-mono); letter-spacing: 0.05em; opacity: 0.85; }
+.exam-bar .btn { background: var(--sheet); color: var(--ink); border-color: var(--sheet); margin-left: auto; }
+.result { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: baseline; }
+.result .big { font: 800 56px/1 var(--f-display); color: var(--curve); font-variant-numeric: tabular-nums; }
+.result table { border-collapse: collapse; font: 500 13px var(--f-mono); }
+.result td { padding: 3px 12px 3px 0; }
+
+.setup { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-top: 12px; }
+.setup label { display: inline-flex; gap: 6px; align-items: center; font: 500 13px var(--f-mono); }
+.setup select { background: var(--sheet); border: 1px solid var(--grid-strong); border-radius: 6px; padding: 6px 8px; }
+
+@media (max-width: 880px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; max-height: none; display: grid; gap: 2px; padding: 10px; }
+  .rail ul { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 6px; }
+  .rail li { flex: 0 0 auto; }
+  .rail button { border: 1px solid var(--grid-strong); white-space: nowrap; }
+  .formula dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .formula dd { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .btn:hover { transform: none; } }
+
+/* ---------- mock exams ---------- */
+.mock-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.mock-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; align-content: start; }
+.mock-card .actions { grid-column: 1 / -1; margin-top: 10px; }
+.mock-letter { font: 800 64px/0.9 var(--f-display); color: var(--curve); min-width: 44px; }
+.mock-card h3 { margin: 4px 0 2px; font: 700 20px/1.2 var(--f-display); }
+.mock-meta, .mock-best { margin: 0; font: 500 13px/1.5 var(--f-mono); color: var(--graphite); }
+.mock-best b { color: var(--ok); }
+
+/* ---------- printable paper ---------- */
+.paper-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.paper-tools .score-line { margin-left: 0; }
+.paper { background: var(--sheet); color: var(--ink); border: 1px solid var(--grid-strong); border-radius: 4px; box-shadow: var(--shadow); padding: clamp(18px, 4vw, 56px); max-width: 900px; font-size: 16px; }
+.paper-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; border-bottom: 2px solid var(--ink); padding-bottom: 12px; font-size: 15px; }
+.paper-title { font: 600 24px/1.25 var(--f-body); }
+.paper-name { display: grid; gap: 10px; min-width: 240px; }
+.paper-total { font: 600 17px var(--f-body); align-self: end; }
+.line { display: inline-block; width: 190px; border-bottom: 1px solid var(--ink); vertical-align: bottom; }
+.line.short { width: 60px; }
+.paper-dir { margin: 14px 0 4px; font-size: 15px; max-width: none; }
+.paper-q { padding-block: 18px 8px; border-bottom: 1px solid var(--grid); break-inside: avoid; }
+.pq-head { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+.pq-num { font-weight: 600; }
+.pq-total { font: 500 12px var(--f-mono); color: var(--graphite); white-space: nowrap; padding-top: 3px; }
+.pq-body p { margin: 0 0 8px; }
+.pq-body mjx-container[display="true"] { margin: 8px 0 !important; overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.pq-parts { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+.pq-parts li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 6px; align-items: baseline; }
+.pq-letter { color: var(--graphite); }
+.pq-pts { font: 500 11px var(--f-mono); color: var(--faint); }
+.pq-choices { display: grid; gap: 4px; margin-top: 4px; }
+.blank { display: inline-block; width: min(180px, 40%); border-bottom: 1px solid var(--ink); margin-left: 8px; }
+.tf { font-weight: 600; margin-right: 14px; }
+.key-ans { margin-top: 3px; color: var(--ok); font-weight: 600; }
+.work { margin-top: 10px; border: 1px dashed var(--grid-strong); border-radius: 4px; }
+.work.short { height: 0.5in; }
+.work.mid { height: 1.5in; }
+.work.tall { height: 2.5in; }
+.paper .figure svg.graph { max-width: 340px; }
+.bare .mast, .bare .modes, .bare .rail { display: none; }
+.bare .shell { display: block; max-width: 900px; }
+@page { margin: 0.55in; }
+@media print {
+  :root:root, :root:root[data-theme] {
+    --paper: #ffffff; --sheet: #ffffff; --ink: #000000; --graphite: #333333; --faint: #666666;
+    --grid: #dddddd; --grid-strong: #999999; --curve: #b0281a; --ok: #1d6b3d; --shadow: none;
+  }
+  body { background: #fff !important; padding: 0; font-size: 12pt; }
+  .mast, .modes, .rail, .paper-tools, .exam-bar { display: none !important; }
+  .shell { display: block; max-width: none; padding: 0; }
+  .paper { border: 0; box-shadow: none; padding: 0; max-width: none; }
+  .paper-q { page-break-inside: avoid; }
+}
+</style>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false },
+  startup: {
+    typeset: false,
+    ready() { MathJax.startup.defaultReady(); MathJax.startup.promise.then(() => MathJax.typesetPromise([document.getElementById("main")])); },
+  },
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+</head>
+<body>
+
+<header class="mast">
+  <div class="brand">
+    <span class="sub">MAT 213 · Brief Calculus · Sections 1.1–1.4</span>
+    <h1>Midterm Lab <span class="lim">lim</span></h1>
+  </div>
+  <div class="countdown" id="countdown" aria-live="polite"></div>
+</header>
+<nav class="modes" aria-label="Study mode">
+  <button type="button" data-mode="practice" aria-pressed="true">Practice by topic</button>
+  <button type="button" data-mode="mixed" aria-pressed="false">Mixed review</button>
+  <button type="button" data-mode="exam" aria-pressed="false">Mock exams</button>
+  <button type="button" data-mode="formulas" aria-pressed="false">Formula sheet</button>
+</nav>
+<div class="shell">
+  <aside class="rail" id="rail" aria-label="Topics"></aside>
+  <main class="main" id="main"></main>
+</div>
+<script>// ================= core: random, rationals, TeX helpers, parser, answer checking =================
+const R = {
+  int: (a, b) => a + Math.floor(Math.random() * (b - a + 1)),
+  nz: (a, b) => { let v; do { v = R.int(a, b); } while (v === 0); return v; },
+  pick: (arr) => arr[Math.floor(Math.random() * arr.length)],
+  shuffle: (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; },
+  sign: () => (Math.random() < 0.5 ? -1 : 1),
+  chance: (p) => Math.random() < p,
+  sample: (arr, n) => R.shuffle(arr).slice(0, n),
+};
+
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }
+
+// Exact rational numbers
+class Q {
+  constructor(n, d = 1) {
+    if (d === 0) throw new Error("division by zero");
+    if (!Number.isInteger(n) || !Number.isInteger(d)) { // allow decimals like 0.05 by scaling
+      let s = 1; while ((!Number.isInteger(n * s) || !Number.isInteger(d * s)) && s < 1e9) s *= 10;
+      n = Math.round(n * s); d = Math.round(d * s);
+    }
+    if (d < 0) { n = -n; d = -d; }
+    const g = gcd(n, d); this.n = n / g; this.d = d / g;
+  }
+  static of(x) { return x instanceof Q ? x : new Q(x, 1); }
+  add(o) { o = Q.of(o); return new Q(this.n * o.d + o.n * this.d, this.d * o.d); }
+  sub(o) { o = Q.of(o); return new Q(this.n * o.d - o.n * this.d, this.d * o.d); }
+  mul(o) { o = Q.of(o); return new Q(this.n * o.n, this.d * o.d); }
+  div(o) { o = Q.of(o); return new Q(this.n * o.d, this.d * o.n); }
+  neg() { return new Q(-this.n, this.d); }
+  abs() { return new Q(Math.abs(this.n), this.d); }
+  pow(k) { let r = new Q(1); for (let i = 0; i < k; i++) r = r.mul(this); return r; }
+  isZero() { return this.n === 0; }
+  isInt() { return this.d === 1; }
+  eq(o) { o = Q.of(o); return this.n === o.n && this.d === o.d; }
+  val() { return this.n / this.d; }
+  tex() { return this.d === 1 ? String(this.n) : (this.n < 0 ? "-" : "") + `\\frac{${Math.abs(this.n)}}{${this.d}}`; }
+  txt() { return this.d === 1 ? String(this.n) : `${this.n}/${this.d}`; }
+}
+const q = (n, d = 1) => new Q(n, d);
+
+// ---------- TeX builders ----------
+const T = {
+  // coefficients high -> low degree
+  poly(coefs, v = "x", lowFirst = false) {
+    const n = coefs.length - 1;
+    let terms = coefs.map((c, i) => ({ c: Q.of(c), deg: n - i })).filter((t) => !t.c.isZero());
+    if (lowFirst) terms = terms.reverse();
+    if (!terms.length) return "0";
+    return terms.map((t, i) => {
+      const neg = t.c.n < 0, a = neg ? t.c.neg() : t.c;
+      const vp = t.deg === 0 ? "" : t.deg === 1 ? v : `${v}^{${t.deg}}`;
+      let coef = a.tex();
+      if (t.deg > 0 && a.eq(1)) coef = "";
+      const body = coef + vp;
+      if (i === 0) return (neg ? "-" : "") + body;
+      return (neg ? " - " : " + ") + body;
+    }).join("");
+  },
+  // (x - r) style factor; r may be Q
+  fac(r, v = "x") { r = Q.of(r); if (r.isZero()) return v; return r.n > 0 ? `(${v} - ${r.tex()})` : `(${v} + ${r.neg().tex()})`; },
+  // (p x + q)
+  lin(p, qq, v = "x") { return `(${T.poly([p, qq], v)})`; },
+  // " + n" or " - n"
+  sgn(n) { n = Q.of(n); return n.n < 0 ? ` - ${n.neg().tex()}` : ` + ${n.tex()}`; },
+  // wrap negatives in parentheses for substitution displays
+  par(n) { n = Q.of(n); return `(${n.tex()})`; },
+  line(m, b) { return `y = ${T.poly([m, b])}`; },
+  pointSlope(m, x0, y0) {
+    const ys = Q.of(y0).isZero() ? "y" : `y ${Q.of(y0).n < 0 ? "+" : "-"} ${Q.of(y0).abs().tex()}`;
+    const mt = Q.of(m).eq(1) ? "" : Q.of(m).eq(-1) ? "-" : Q.of(m).tex();
+    const xs = Q.of(x0).isZero() ? "x" : `(x ${Q.of(x0).n < 0 ? "+" : "-"} ${Q.of(x0).abs().tex()})`;
+    return `${ys} = ${mt}${xs}`;
+  },
+  ans(a) { // TeX for an answer value
+    if (a === "DNE") return "\\text{DNE}";
+    if (a === Infinity) return "\\infty";
+    if (a === -Infinity) return "-\\infty";
+    if (a instanceof Q) return a.tex();
+    return String(+a.toFixed(6));
+  },
+  lim(to, v = "x") { return `\\lim_{${v} \\to ${to}}`; },
+};
+const $m = (s) => `\\(${s}\\)`;      // inline math
+const $M = (s) => `\\[${s}\\]`;      // display math
+
+function fmtDec(x, d = 6) { const s = x.toFixed(d); return s.includes(".") ? s.replace(/0+$/, "").replace(/\.$/, "") : s; }
+function evalPoly(coefs, x) { x = Q.of(x); return coefs.reduce((acc, c) => acc.mul(x).add(Q.of(c)), new Q(0)); }
+
+// ---------- Parser for typed answers ----------
+const Parser = (() => {
+  const WORDS = ["sqrt", "infinity", "inf", "oo", "ln", "pi", "dne", "x", "h", "t", "e", "y"];
+  function tokenize(s) {
+    s = s.replace(/\s+/g, "").replace(/[−–]/g, "-").replace(/[·×]/g, "*").replace(/÷/g, "/")
+      .replace(/√/g, "sqrt").replace(/∞/g, "inf").replace(/\*\*/g, "^").replace(/[\[{]/g, "(").replace(/[\]}]/g, ")");
+    const out = []; let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (/[0-9.]/.test(c)) {
+        let j = i; while (j < s.length && /[0-9.]/.test(s[j])) j++;
+        const num = s.slice(i, j);
+        if ((num.match(/\./g) || []).length > 1 || num === ".") throw `"${num}" isn't a number`;
+        out.push({ k: "n", v: parseFloat(num), dec: num.includes(".") }); i = j; continue;
+      }
+      if (/[a-zA-Z]/.test(c)) {
+        let j = i; while (j < s.length && /[a-zA-Z]/.test(s[j])) j++;
+        let w = s.slice(i, j).toLowerCase();
+        while (w.length) {
+          const m = WORDS.find((k) => w.startsWith(k));
+          if (!m) throw `"${s.slice(i, j)}" isn't something I can read — use x, h, t, e, sqrt( ), ln( )`;
+          out.push({ k: "id", v: m === "infinity" || m === "oo" ? "inf" : m });
+          w = w.slice(m.length);
+        }
+        i = j; continue;
+      }
+      if ("+-*/^()".includes(c)) { out.push({ k: "op", v: c }); i++; continue; }
+      throw `Unexpected character "${c}"`;
+    }
+    return out;
+  }
+  function parse(str) {
+    const t = tokenize(str); let p = 0;
+    if (!t.length) throw "Type an answer first";
+    const peek = () => t[p];
+    const eat = (v) => { if (t[p] && t[p].k === "op" && t[p].v === v) { p++; return true; } return false; };
+    const startsAtom = (tk) => tk && (tk.k === "n" || tk.k === "id" || tk.v === "(");
+    function expr() { let n = term(); while (peek() && peek().k === "op" && (peek().v === "+" || peek().v === "-")) { const o = t[p++].v; n = { t: o, a: n, b: term() }; } return n; }
+    function term() {
+      let n = unary();
+      for (;;) {
+        const tk = peek();
+        if (tk && tk.k === "op" && (tk.v === "*" || tk.v === "/")) { p++; n = { t: tk.v, a: n, b: unary() }; }
+        else if (startsAtom(tk)) { n = { t: "*", a: n, b: power() }; }
+        else break;
+      }
+      return n;
+    }
+    function unary() { if (eat("-")) return { t: "neg", a: unary() }; if (eat("+")) return unary(); return power(); }
+    function power() { const b = atom(); if (eat("^")) return { t: "^", a: b, b: unary() }; return b; }
+    function atom() {
+      const tk = t[p];
+      if (!tk) throw "The expression ends too early";
+      if (tk.k === "n") { p++; return { t: "n", v: tk.v, dec: tk.dec }; }
+      if (tk.v === "(") { p++; const e = expr(); if (!eat(")")) throw "Missing a closing parenthesis"; return { t: "()", a: e }; }
+      if (tk.k === "id") {
+        p++;
+        if (tk.v === "sqrt" || tk.v === "ln") { if (!peek()) throw `${tk.v} needs something after it`; return { t: "fn", f: tk.v, a: power() }; }
+        return { t: "id", v: tk.v };
+      }
+      throw `Unexpected "${tk.v}"`;
+    }
+    const n = expr();
+    if (p < t.length) throw `Unexpected "${t[p].v}"`;
+    return n;
+  }
+  function ev(n, env) {
+    switch (n.t) {
+      case "n": return n.v;
+      case "()": return ev(n.a, env);
+      case "id":
+        if (n.v === "e") return Math.E;
+        if (n.v === "pi") return Math.PI;
+        if (n.v === "inf") return Infinity;
+        if (n.v === "dne") return NaN;
+        if (!(n.v in env)) throw { unknownVar: n.v };
+        return env[n.v];
+      case "+": return ev(n.a, env) + ev(n.b, env);
+      case "-": return ev(n.a, env) - ev(n.b, env);
+      case "*": return ev(n.a, env) * ev(n.b, env);
+      case "/": return ev(n.a, env) / ev(n.b, env);
+      case "^": return Math.pow(ev(n.a, env), ev(n.b, env));
+      case "neg": return -ev(n.a, env);
+      case "fn": { const v = ev(n.a, env); return n.f === "sqrt" ? Math.sqrt(v) : Math.log(v); }
+    }
+  }
+  const strip = (n) => (n.t === "()" ? n.a : n);
+  function tex(n) {
+    switch (n.t) {
+      case "n": return String(n.v);
+      case "()": return `\\left(${tex(n.a)}\\right)`;
+      case "id": return { inf: "\\infty", pi: "\\pi", dne: "\\text{DNE}" }[n.v] || n.v;
+      case "+": return `${tex(n.a)} + ${tex(n.b)}`;
+      case "-": return `${tex(n.a)} - ${tex(n.b)}`;
+      case "*": { const B = tex(n.b); const dot = /^[0-9.\-]/.test(B); return tex(n.a) + (dot ? " \\cdot " : " ") + B; }
+      case "/": return `\\frac{${tex(strip(n.a))}}{${tex(strip(n.b))}}`;
+      case "^": return `{${tex(n.a)}}^{${tex(strip(n.b))}}`;
+      case "neg": return `-${tex(n.a)}`;
+      case "fn": return n.f === "sqrt" ? `\\sqrt{${tex(strip(n.a))}}` : `\\ln\\left(${tex(strip(n.a))}\\right)`;
+    }
+  }
+  function hasDecimal(n) { if (!n) return false; if (n.t === "n") return n.dec; return hasDecimal(n.a) || hasDecimal(n.b); }
+  function usesVar(n, v) { if (!n) return false; if (n.t === "id") return n.v === v; return usesVar(n.a, v) || usesVar(n.b, v); }
+  function varInDenominator(n, v) { if (!n) return false; if (n.t === "/" && usesVar(n.b, v)) return true; return varInDenominator(n.a, v) || varInDenominator(n.b, v); }
+  return { parse, ev, tex, hasDecimal, usesVar, varInDenominator };
+})();
+
+// ---------- Answer checking ----------
+function special(raw) {
+  const s = raw.replace(/\s+/g, "").toLowerCase().replace(/[−–]/g, "-");
+  if (/^(dne|doesnotexist|undefined|und|none|doesn'texist)$/.test(s)) return "DNE";
+  if (/^\+?(inf|infinity|∞|oo)$/.test(s)) return Infinity;
+  if (/^-(inf|infinity|∞|oo)$/.test(s)) return -Infinity;
+  return null;
+}
+const closeTo = (a, b) => Math.abs(a - b) <= 1e-7 * Math.max(1, Math.abs(b));
+const rhs = (raw) => { const k = raw.lastIndexOf("="); return k >= 0 ? raw.slice(k + 1) : raw; };
+
+// result: {ok:bool} | {err:string} | {empty:true}; may carry note
+const Check = {
+  num(raw, part) {
+    if (!raw.trim()) return { empty: true };
+    const A = part.ans instanceof Q ? part.ans.val() : part.ans;
+    const sp = special(raw);
+    if (sp !== null) {
+      if (sp === A) return { ok: true };
+      if (sp === "DNE" && part.dneOk && (A === Infinity || A === -Infinity))
+        return { ok: true, note: `Accepted. More precisely the outputs grow without bound, so we write ${$m(T.ans(A))} (the limit still does not exist as a finite number).` };
+      return { ok: false };
+    }
+    let ast; try { ast = Parser.parse(rhs(raw)); } catch (e) { return { err: String(e) }; }
+    let v; try { v = Parser.ev(ast, {}); } catch (e) { return { err: e.unknownVar ? `This answer is a number — "${e.unknownVar}" doesn't belong here.` : String(e) }; }
+    if (A === "DNE" || !isFinite(A)) return { ok: false };
+    if (!isFinite(v)) return { ok: false };
+    const tol = Parser.hasDecimal(ast) ? (part.approx ?? 0.0051) : (part.approx ?? 0);
+    const ok = tol ? Math.abs(v - A) <= tol + 1e-9 : closeTo(v, A);
+    return { ok, note: ok && tol && !closeTo(v, A) ? `Accepted as a rounded value. Exact: ${$m(T.ans(part.ans))}.` : undefined };
+  },
+  expr(raw, part) {
+    if (!raw.trim()) return { empty: true };
+    let ast; try { ast = Parser.parse(rhs(raw)); } catch (e) { return { err: String(e) }; }
+    const vars = part.vars || ["x"];
+    if (part.forbid) for (const f of part.forbid) if (Parser.usesVar(ast, f.v)) return { ok: false, err: f.msg };
+    let good = 0;
+    for (let tries = 0; tries < 60 && good < 6; tries++) {
+      const env = {};
+      vars.forEach((v) => { env[v] = (part.positive ? 1 : R.sign()) * (0.35 + Math.random() * 3.1); });
+      if (part.avoid && part.avoid(env)) continue;
+      const want = part.fn(env);
+      if (!isFinite(want)) continue;
+      let got;
+      try { got = Parser.ev(ast, env); } catch (e) { return { err: e.unknownVar ? `Use only ${vars.join(" and ")} as variables here ("${e.unknownVar}" isn't one).` : String(e) }; }
+      if (!closeTo(got, want)) return { ok: false };
+      good++;
+    }
+    if (part.simplifyH && Parser.varInDenominator(ast, "h")) return { ok: false, err: "That's equivalent, but not simplified: the h in the denominator should cancel out." };
+    return { ok: good >= 3 };
+  },
+  line(raw, part) { // accepts slope-intercept or point-slope, any equivalent linear equation
+    if (!raw.trim()) return { empty: true };
+    const sides = raw.split("=");
+    if (sides.length > 2) return { err: "Use a single = sign" };
+    let L, Rt;
+    try { if (sides.length === 1) { L = Parser.parse("y"); Rt = Parser.parse(sides[0]); } else { L = Parser.parse(sides[0]); Rt = Parser.parse(sides[1]); } }
+    catch (e) { return { err: String(e) }; }
+    if (sides.length === 1 && !Parser.usesVar(Rt, "x")) { /* constant line y = c is fine */ }
+    const m = Q.of(part.m).val(), b = Q.of(part.b).val();
+    const g = (x, y) => Parser.ev(L, { x, y }) - Parser.ev(Rt, { x, y });
+    try {
+      for (const x of [-2.7, -1, 0.4, 1.9, 3.3]) {
+        const y = m * x + b;
+        if (Math.abs(g(x, y)) > 1e-6 * Math.max(1, Math.abs(y))) return { ok: false };
+        if (Math.abs(g(x, y + 1)) < 1e-6) return { ok: false };
+      }
+    } catch (e) { return { err: e.unknownVar ? `Write the line using x and y only.` : String(e) }; }
+    return { ok: true };
+  },
+  preview(raw, type) {
+    try {
+      if (special(raw) !== null) return T.ans(special(raw));
+      if (type === "line") { const s = raw.split("="); return s.length === 2 ? `${Parser.tex(Parser.parse(s[0]))} = ${Parser.tex(Parser.parse(s[1]))}` : `y = ${Parser.tex(Parser.parse(s[0]))}`; }
+      const k = raw.lastIndexOf("=");
+      return (k >= 0 ? raw.slice(0, k).replace(/'/g, "'") + " = " : "") + Parser.tex(Parser.parse(rhs(raw)));
+    } catch (e) { return null; }
+  },
+};
+
+// ---------- part constructors (keeps generators terse) ----------
+const P = {
+  num: (label, ans, extra = {}) => ({ type: "num", label, ans, ...extra }),
+  expr: (label, fn, display, extra = {}) => ({ type: "expr", label, fn, display, ...extra }),
+  line: (label, m, b, extra = {}) => ({ type: "line", label, m, b, display: T.line(Q.of(m), Q.of(b)), ...extra }),
+  mc: (label, choices, correctIndex, extra = {}) => {
+    const order = R.shuffle(choices.map((c, i) => i));
+    return { type: "mc", label, choices: order.map((i) => choices[i]), ans: order.indexOf(correctIndex), ...extra };
+  },
+  mcFixed: (label, choices, correctIndex, extra = {}) => ({ type: "mc", label, choices, ans: correctIndex, ...extra }),
+  tf: (label, truth, extra = {}) => ({ type: "mc", label, choices: ["True", "False"], ans: truth ? 0 : 1, ...extra }),
+};
+const limVal = (L, Rr) => (L === Infinity || L === -Infinity || Rr === Infinity || Rr === -Infinity)
+  ? (L === Rr ? L : "DNE")
+  : (Q.of(L).eq(Q.of(Rr)) ? L : "DNE");
+
+;
+// ================= graph engine: SVG graph paper, piecewise curves, dots, charts =================
+const Graph = (() => {
+  let uid = 0;
+
+  function frame(o) {
+    const W = o.W || 400, H = o.H || 320;
+    const pl = o.padL ?? 34, pr = 14, pt = 14, pb = o.padB ?? 30;
+    const X = (x) => pl + ((x - o.xmin) / (o.xmax - o.xmin)) * (W - pl - pr);
+    const Y = (y) => pt + ((o.ymax - y) / (o.ymax - o.ymin)) * (H - pt - pb);
+    const id = "clip" + ++uid;
+    const parts = [];
+    const gx = o.gx || 1, gy = o.gy || 1;
+    for (let x = Math.ceil(o.xmin / gx) * gx; x <= o.xmax + 1e-9; x += gx) parts.push(`<line class="gp-grid" x1="${X(x)}" y1="${Y(o.ymin)}" x2="${X(x)}" y2="${Y(o.ymax)}"/>`);
+    for (let y = Math.ceil(o.ymin / gy) * gy; y <= o.ymax + 1e-9; y += gy) parts.push(`<line class="gp-grid" x1="${X(o.xmin)}" y1="${Y(y)}" x2="${X(o.xmax)}" y2="${Y(y)}"/>`);
+    const xAxisY = o.ymin <= 0 && o.ymax >= 0 && !o.edgeLabels ? Y(0) : Y(o.ymin);
+    const yAxisX = o.xmin <= 0 && o.xmax >= 0 && !o.edgeLabels ? X(0) : X(o.xmin);
+    parts.push(`<line class="gp-axis" x1="${X(o.xmin)}" y1="${xAxisY}" x2="${X(o.xmax)}" y2="${xAxisY}"/>`);
+    parts.push(`<line class="gp-axis" x1="${yAxisX}" y1="${Y(o.ymin)}" x2="${yAxisX}" y2="${Y(o.ymax)}"/>`);
+    const lx = o.lx || gx, ly = o.ly || gy;
+    for (let x = Math.ceil(o.xmin / lx) * lx; x <= o.xmax + 1e-9; x += lx) {
+      if (!o.edgeLabels && Math.abs(x) < 1e-9) continue;
+      const label = o.xLabel ? o.xLabel(x) : fmtDec(x, 2);
+      parts.push(`<text class="gp-lab" x="${X(x)}" y="${xAxisY + 15}" text-anchor="middle">${label}</text>`);
+    }
+    for (let y = Math.ceil(o.ymin / ly) * ly; y <= o.ymax + 1e-9; y += ly) {
+      if (!o.edgeLabels && Math.abs(y) < 1e-9) continue;
+      parts.push(`<text class="gp-lab" x="${yAxisX - 6}" y="${Y(y) + 4}" text-anchor="end">${fmtDec(y, 2)}</text>`);
+    }
+    if (!o.edgeLabels) parts.push(`<text class="gp-lab" x="${yAxisX - 6}" y="${xAxisY + 15}" text-anchor="end">0</text>`);
+    parts.push(`<text class="gp-name" x="${X(o.xmax) - 2}" y="${xAxisY - 6}" text-anchor="end">${o.xName || "x"}</text>`);
+    parts.push(`<text class="gp-name" x="${yAxisX + 6}" y="${Y(o.ymax) + 12}">${o.yName || "y"}</text>`);
+    const defs = `<defs><clipPath id="${id}"><rect x="${X(o.xmin)}" y="${Y(o.ymax)}" width="${X(o.xmax) - X(o.xmin)}" height="${Y(o.ymin) - Y(o.ymax)}"/></clipPath></defs>`;
+    const top = [];
+    return {
+      X, Y, W, H,
+      curve(fn, a, b, n = 320) {
+        let d = "", pen = false;
+        for (let i = 0; i <= n; i++) {
+          const x = a + ((b - a) * i) / n, y = fn(x);
+          if (!isFinite(y) || Math.abs(y) > (o.ymax - o.ymin) * 6) { pen = false; continue; }
+          d += (pen ? "L" : "M") + X(x).toFixed(2) + " " + Y(y).toFixed(2);
+          pen = true;
+        }
+        parts.push(`<path class="gp-curve" clip-path="url(#${id})" d="${d}"/>`);
+      },
+      poly(pts, cls = "gp-curve") { parts.push(`<polyline class="${cls}" points="${pts.map(([x, y]) => X(x) + "," + Y(y)).join(" ")}"/>`); },
+      cross(x, y) { const a = X(x), b = Y(y), s = 4; top.push(`<path class="gp-cross" d="M${a - s} ${b - s}L${a + s} ${b + s}M${a - s} ${b + s}L${a + s} ${b - s}"/>`); },
+      dot(x, y, filled) { top.push(`<circle class="${filled ? "gp-closed" : "gp-open"}" cx="${X(x)}" cy="${Y(y)}" r="${filled ? 4.4 : 4.6}"/>`); },
+      vline(x) { parts.push(`<line class="gp-asym" x1="${X(x)}" y1="${Y(o.ymin)}" x2="${X(x)}" y2="${Y(o.ymax)}"/>`); },
+      svg(label) { return `<svg class="graph" viewBox="0 0 ${W} ${H}" role="img" aria-label="${label || "graph"}">${defs}${parts.join("")}${top.join("")}</svg>`; },
+    };
+  }
+
+  // ----- piecewise curve through nodes -----
+  function segFn(a, b) {
+    const y0 = a.yR, y1 = b.yL, K = 1.1;
+    if (isFinite(y0) && isFinite(y1)) {
+      const dx = b.x - a.x, m0 = a.sR, m1 = b.sL;
+      return (x) => { const t = (x - a.x) / dx, t2 = t * t, t3 = t2 * t; return (2 * t3 - 3 * t2 + 1) * y0 + (t3 - 2 * t2 + t) * dx * m0 + (-2 * t3 + 3 * t2) * y1 + (t3 - t2) * dx * m1; };
+    }
+    if (!isFinite(y1)) { const s = Math.sign(y1); return (x) => y0 + s * K * (1 / (b.x - x) - 1 / (b.x - a.x)); }
+    const s = Math.sign(y0); return (x) => y1 + s * K * (1 / (x - a.x) - 1 / (b.x - a.x));
+  }
+
+  function info(nd) {
+    const fin = isFinite(nd.yL) && isFinite(nd.yR);
+    const type = !fin ? "infinite" : nd.yL !== nd.yR ? "jump" : nd.val !== nd.yL ? "removable" : "continuous";
+    return {
+      x: nd.x, left: nd.yL, right: nd.yR,
+      value: nd.val == null ? "DNE" : nd.val,
+      limit: fin ? (nd.yL === nd.yR ? nd.yL : "DNE") : nd.yL === nd.yR ? nd.yL : "DNE",
+      type, continuous: type === "continuous",
+      differentiable: type === "continuous" && Math.abs(nd.sL - nd.sR) < 1e-9,
+      corner: type === "continuous" && Math.abs(nd.sL - nd.sR) >= 1e-9,
+    };
+  }
+
+  function drawPiecewise(nodes, view, label) {
+    const g = frame(view);
+    for (let i = 0; i < nodes.length - 1; i++) {
+      const a = nodes[i], b = nodes[i + 1], f = segFn(a, b), eps = isFinite(a.yR) && isFinite(b.yL) ? 0 : 0.002;
+      g.curve(f, a.x + eps, b.x - eps);
+    }
+    nodes.slice(1, -1).forEach((nd) => {
+      const L = nd.yL, Rr = nd.yR, v = nd.val;
+      if (!isFinite(L) || !isFinite(Rr)) { g.vline(nd.x); if (v != null) g.dot(nd.x, v, true); return; }
+      if (L === Rr) { if (v !== L) { g.dot(nd.x, L, false); if (v != null) g.dot(nd.x, v, true); } return; }
+      g.dot(nd.x, L, v === L); g.dot(nd.x, Rr, v === Rr);
+      if (v != null && v !== L && v !== Rr) g.dot(nd.x, v, true);
+    });
+    return g.svg(label);
+  }
+
+  const SLOPES = [-1.5, -1, -0.5, 0, 0.5, 1, 1.5];
+  // types: array like ["jump","hole","cont","corner","asym"]
+  function randomPiecewise(types, opts = {}) {
+    const view = { xmin: -6, xmax: 6, ymin: -5, ymax: 5, W: 400, H: 340 };
+    for (let attempt = 0; attempt < 400; attempt++) {
+      const n = types.length;
+      // spaced integer positions
+      let xs = [];
+      const gapMin = n >= 4 ? 2 : 3;
+      for (let t = 0; t < 50 && xs.length < n; t++) {
+        xs = [];
+        let cur = -5 + R.int(0, 1);
+        for (let i = 0; i < n; i++) { xs.push(cur); cur += gapMin + R.int(0, n >= 4 ? 1 : 2); }
+        if (xs[n - 1] > 5) xs = [];
+      }
+      if (!xs.length) continue;
+      const ts = R.shuffle(types);
+      // no two asymptotes adjacent
+      let bad = false;
+      for (let i = 1; i < n; i++) if (ts[i] === "asym" && ts[i - 1] === "asym") bad = true;
+      if (bad) continue;
+      const nodes = [{ x: view.xmin - 0.6, yR: R.int(-3, 3), sR: R.pick(SLOPES) }];
+      ts.forEach((t, i) => {
+        const y = R.int(-3, 4), s = R.pick(SLOPES), nd = { x: xs[i], t };
+        if (t === "cont") Object.assign(nd, { yL: y, yR: y, val: y, sL: s, sR: s });
+        else if (t === "corner") { const sl = R.pick([-2, -1.5, 1.5, 2]); Object.assign(nd, { yL: y, yR: y, val: y, sL: sl, sR: -sl * R.pick([0.5, 1]) }); }
+        else if (t === "jump") {
+          const y2 = y + R.pick([-3, -2, 2, 3]); const r = Math.random();
+          Object.assign(nd, { yL: y, yR: y2, sL: R.pick(SLOPES), sR: R.pick(SLOPES), val: r < 0.42 ? y : r < 0.84 ? y2 : null });
+        } else if (t === "hole") {
+          Object.assign(nd, { yL: y, yR: y, sL: s, sR: s, val: R.chance(0.65) ? y + R.pick([-3, -2, 2, 3]) : null });
+        } else if (t === "asym") {
+          Object.assign(nd, { yL: R.pick([Infinity, -Infinity]), yR: R.pick([Infinity, -Infinity]), sL: 0, sR: 0, val: null });
+        }
+        nodes.push(nd);
+      });
+      nodes.push({ x: view.xmax + 0.6, yL: R.int(-3, 3), sL: R.pick(SLOPES) });
+      // validate ranges
+      let ok = true;
+      for (let i = 0; i < nodes.length - 1 && ok; i++) {
+        const a = nodes[i], b = nodes[i + 1];
+        if (!isFinite(a.yR) && !isFinite(b.yL)) { ok = false; break; }
+        const f = segFn(a, b);
+        const fin = isFinite(a.yR) && isFinite(b.yL);
+        for (let k = 1; k < 60; k++) {
+          const x = a.x + ((b.x - a.x) * k) / 60, y = f(x);
+          if (fin && (y > 4.7 || y < -4.7)) { ok = false; break; }
+        }
+      }
+      nodes.forEach((nd) => { if (nd.val != null && (nd.val > 4.5 || nd.val < -4.5)) ok = false; if (isFinite(nd.yR) && (nd.yR > 4.5 || nd.yR < -4.5)) ok = false; });
+      if (!ok) continue;
+      if (opts.requireDistinct) {
+        const inner = nodes.slice(1, -1);
+        if (new Set(inner.map((nd) => info(nd).type + (info(nd).corner ? "c" : ""))).size < Math.min(inner.length, opts.requireDistinct)) continue;
+      }
+      return { nodes, svg: drawPiecewise(nodes, view, "piecewise graph"), inner: nodes.slice(1, -1).map(info) };
+    }
+    throw new Error("graph generation failed");
+  }
+
+  // ----- line chart (data points joined) -----
+  function lineChart({ pts, xLabel, ymin, ymax, gy, xName, yName }) {
+    const g = frame({ xmin: 0, xmax: pts.length - 1, ymin, ymax, gy, ly: gy, edgeLabels: true, xLabel, xName, yName, W: 420, H: 300, padL: 40, padB: 32 });
+    g.poly(pts);
+    pts.forEach(([x, y]) => g.cross(x, y));
+    return g.svg("data chart");
+  }
+
+  function fnPlot(o) {
+    const g = frame({ ...o, W: o.W || 420, H: o.H || 300, padL: o.padL ?? 42 });
+    g.curve(o.fn, o.xmin, o.xmax, 400);
+    return g.svg(o.label || "function graph");
+  }
+
+  return { frame, randomPiecewise, drawPiecewise, lineChart, fnPlot, info };
+})();
+
+;
+// ================= Section 1.1 — Limits: numerical & graphical =================
+var GEN = window.GEN || {}; window.GEN = GEN;
+const tx = String.raw;
+const para = (s) => `<p>${s}</p>`;
+const infWord = (v) => (v === Infinity ? "∞" : "−∞");
+
+function describeNode(n, fname = "f") {
+  const a = n.x, out = [];
+  const val = n.value === "DNE"
+    ? `There is no filled dot on the line ${$m(`x = ${a}`)}, so ${$m(`${fname}(${a})`)} is undefined → <b>DNE</b>.`
+    : n.type === "continuous"
+      ? `The curve passes straight through ${$m(`(${a}, ${n.value})`)}, so ${$m(`${fname}(${a}) = ${n.value}`)}.`
+      : `The <b>filled</b> dot at ${$m(`x = ${a}`)} sits at height ${n.value}, so ${$m(`${fname}(${a}) = ${n.value}`)}.`;
+  out.push(val);
+  const side = (v, dir) => isFinite(v)
+    ? `Tracing the curve toward ${$m(`x = ${a}`)} from the ${dir}, the heights approach <b>${v}</b> (open or closed dot doesn't matter).`
+    : `From the ${dir}, the curve runs along the asymptote ${$m(`x = ${a}`)} ${v > 0 ? "upward" : "downward"}, so the limit is ${$m(T.ans(v))}.`;
+  out.push(side(n.left, "left"), side(n.right, "right"));
+  if (n.limit === "DNE") out.push(`The left and right limits don't match, so ${$m(`${T.lim(a)} ${fname}(x)`)} <b>DNE</b>.`);
+  else if (!isFinite(n.limit)) out.push(`Both sides go to ${$m(T.ans(n.limit))}, so ${$m(`${T.lim(a)} ${fname}(x) = ${T.ans(n.limit)}`)} (unbounded, so no finite limit exists).`);
+  else out.push(`Both one-sided limits equal ${n.limit}, so ${$m(`${T.lim(a)} ${fname}(x) = ${n.limit}`)}${n.value !== n.limit ? ` — even though ${$m(`${fname}(${a})`)} ${n.value === "DNE" ? "is undefined" : `= ${n.value}`}. The limit ignores the value AT the point.` : "."}`);
+  return `<h4>At ${$m(`x = ${a}`)}</h4>` + out.map(para).join("");
+}
+
+GEN.graphRead = () => {
+  const types = R.pick([["jump", "hole"], ["jump", "asym"], ["hole", "cont", "jump"], ["jump", "hole", "asym"], ["hole", "jump"], ["asym", "hole"]]);
+  const G = Graph.randomPiecewise(types);
+  const pickN = R.shuffle(G.inner).sort((a, b) => (a.type === "continuous") - (b.type === "continuous")).slice(0, 2).sort((a, b) => a.x - b.x);
+  const parts = [];
+  pickN.forEach((n) => {
+    parts.push(P.num($m(`f(${n.x})`), n.value));
+    parts.push(P.num($m(`${T.lim(n.x + "^-")} f(x)`), n.left, { dneOk: true }));
+    parts.push(P.num($m(`${T.lim(n.x + "^+")} f(x)`), n.right, { dneOk: true }));
+    parts.push(P.num($m(`${T.lim(n.x)} f(x)`), n.limit, { dneOk: true }));
+  });
+  return {
+    prompt: para(`Use the graph of ${$m("y = f(x)")} to state the value of each quantity, if it exists. If it does not exist, write <b>DNE</b>. Use <code>inf</code> / <code>-inf</code> for ${$m("\\pm\\infty")}.`),
+    figure: G.svg,
+    parts,
+    hint: "Limits ask where the curve is heading (open dots count). Function values ask where the filled dot is.",
+    solution: pickN.map((n) => describeNode(n)).join(""),
+  };
+};
+
+GEN.numTable = () => {
+  const v = R.int(1, 6);
+  let a, ftex, fn, L, approx = 0.0061, extra = "";
+  if (v === 1) { const r = R.nz(-5, 5); a = r; ftex = tx`\frac{x^2 - ${r * r}}{${T.fac(r).slice(1, -1)}}`; fn = (x) => (x * x - r * r) / (x - r); L = q(2 * r); extra = tx`\frac{(x - ${r})(x + ${r})}{x - ${r}} = x + ${r} \to ${2 * r}`.replace(/- -/g, "+ ").replace(/\+ -/g, "- "); }
+  if (v === 2) { const r = R.nz(-4, 4); let s; do { s = R.nz(-5, 5); } while (s === r); a = r; ftex = tx`\frac{${T.poly([1, -(r + s), r * s])}}{${T.fac(r).slice(1, -1)}}`; fn = (x) => (x * x - (r + s) * x + r * s) / (x - r); L = q(r - s); extra = tx`\frac{${T.fac(r)}${T.fac(s)}}{${T.fac(r)}} = ${T.fac(s).slice(1, -1)} \to ${r} ${r - s - r < 0 ? "-" : "+"} ${Math.abs(s)} = ${r - s}`; }
+  if (v === 3) { const r = R.int(2, 4); a = r * r; ftex = tx`\frac{\sqrt{x} - ${r}}{x - ${r * r}}`; fn = (x) => (Math.sqrt(x) - r) / (x - r * r); L = q(1, 2 * r); extra = tx`\frac{\sqrt{x} - ${r}}{(\sqrt{x} - ${r})(\sqrt{x} + ${r})} = \frac{1}{\sqrt{x} + ${r}} \to \frac{1}{${2 * r}}`; }
+  if (v === 4) { a = 0; ftex = tx`\frac{e^{x} - 1}{x}`; fn = (x) => (Math.exp(x) - 1) / x; L = q(1); extra = "(This one can't be simplified with algebra — the table is the tool.)"; }
+  if (v === 5) { a = 0; ftex = tx`\frac{2^{x} - 1}{x}`; fn = (x) => (Math.pow(2, x) - 1) / x; L = Math.LN2; approx = 0.011; extra = tx`\text{(The exact value is } \ln 2 \approx 0.693\text{.)}`; }
+  if (v === 6) { const r = R.pick([1, 2, -1, -2]); a = r; ftex = tx`\frac{x^3 ${r ** 3 < 0 ? "+" : "-"} ${Math.abs(r ** 3)}}{${T.fac(r).slice(1, -1)}}`; fn = (x) => (x ** 3 - r ** 3) / (x - r); L = q(3 * r * r); extra = tx`\frac{${T.fac(r)}(${T.poly([1, r, r * r])})}{${T.fac(r)}} = ${T.poly([1, r, r * r])} \to ${3 * r * r}`; }
+  const offs = [-0.1, -0.01, -0.001, 0, 0.001, 0.01, 0.1];
+  const rows = offs.map((d) => {
+    const x = a + d;
+    return `<td>${fmtDec(x, 4)}</td>`;
+  }).join("");
+  const vals = offs.map((d) => (d === 0 ? "<td class='qmark'>?</td>" : `<td>${fmtDec(fn(a + d), 6)}</td>`)).join("");
+  const table = `<div class="tbl-wrap"><table class="vt"><tr><th>${$m("x")}</th>${rows}</tr><tr><th>${$m("f(x)")}</th>${vals}</tr></table></div>`;
+  const Lt = L instanceof Q ? L : L;
+  return {
+    prompt: para(`Let ${$m(`f(x) = ${ftex}`)}. We want to know what happens to the outputs when ${$m("x")} is near ${$m(a)}.`) + table,
+    parts: [
+      P.mc(`Can you find ${$m(`${T.lim(a)} f(x)`)} by plugging in ${$m(`x = ${a}`)}?`, [
+        `No — substituting gives ${$m("\\frac{0}{0}")}, which is undefined`,
+        `Yes — just compute ${$m(`f(${a})`)}`,
+        `No — ${$m("f")} is undefined for every ${$m("x")} near ${$m(a)}`,
+      ], 0),
+      P.num(`As ${$m(`x \\to ${a}^-`)}, ${$m("f(x)")} approaches…`, L, { approx }),
+      P.num(`As ${$m(`x \\to ${a}^+`)}, ${$m("f(x)")} approaches…`, L, { approx }),
+      P.num($m(`${T.lim(a)} f(x) =`), L, { approx }),
+    ],
+    hint: "Read the left three columns for the left-hand limit and the right three for the right-hand limit. If they approach the same value, that's the limit.",
+    solution: para(`Plugging in ${$m(`x = ${a}`)} makes both the top and bottom 0, so we can't substitute.`) +
+      para(`Reading the table left to right, the outputs close in on ${$m(T.ans(Lt))} from both sides (the values at ${$m(`${a} \\pm 0.001`)} are the closest).`) +
+      $M(`${T.lim(a)} ${ftex} = ${T.ans(Lt)}`) + para(`Algebra check: ${extra.startsWith("(") ? extra : $m(extra)}`),
+  };
+};
+
+GEN.inverse = () => {
+  const c = R.int(-4, 4), k = R.pick([1, 2, 3, -1, -2, -3]), p = R.pick([1, 2, 2]);
+  const base = T.fac(c);
+  const den = p === 1 ? (c === 0 ? "x" : base.slice(1, -1)) : c === 0 ? "x^2" : `${base}^2`;
+  const ftex = tx`\frac{${k}}{${den}}`;
+  const sk = Math.sign(k);
+  const left = p === 1 ? -sk * Infinity : sk * Infinity, right = sk * Infinity, two = limVal(left, right);
+  const near = (s) => `${c === 0 ? "x" : `x ${c > 0 ? "-" : "+"} ${Math.abs(c)}`}`;
+  return {
+    prompt: para(`Let ${$m(`f(x) = ${ftex}`)}. Answer with a number, <code>inf</code>, <code>-inf</code>, or <b>DNE</b>.`),
+    parts: [
+      P.num($m(`${T.lim(c + "^-")} f(x)`), left),
+      P.num($m(`${T.lim(c + "^+")} f(x)`), right),
+      P.num($m(`${T.lim(c)} f(x)`), two, { dneOk: true }),
+      P.num($m(`${T.lim("\\infty")} f(x)`), q(0)),
+      P.num(`The vertical asymptote is ${$m("x =")}`, q(c)),
+    ],
+    hint: `Test a number just left of ${c} and just right of ${c} and look only at the SIGN of the bottom.`,
+    solution:
+      para(`Near ${$m(`x = ${c}`)} the denominator ${$m(den)} is tiny, so ${$m("f(x)")} is huge in size. Only the sign needs work.`) +
+      (p === 1
+        ? para(`Left of ${c} (try ${$m(`x = ${c - 0.01}`)}): ${$m(near())} is a small <b>negative</b> number, so ${$m(`\\frac{${k}}{\\text{small negative}}`)} → ${$m(T.ans(left))}.`) +
+          para(`Right of ${c} (try ${$m(`x = ${c + 0.01}`)}): ${$m(near())} is a small <b>positive</b> number → ${$m(T.ans(right))}.`) +
+          para(`The sides disagree, so the two-sided limit <b>DNE</b>.`)
+        : para(`Squaring makes the denominator a small <b>positive</b> number on both sides, so both one-sided limits are ${$m(T.ans(right))}. Since both sides agree we write ${$m(`${T.lim(c)} f(x) = ${T.ans(two)}`)} (it still has no finite value).`)) +
+      para(`As ${$m("x \\to \\infty")}, the denominator grows without bound while the top stays ${k}, so ${$m("f(x) \\to 0")}. The vertical asymptote is ${$m(`x = ${c}`)}.`),
+  };
+};
+
+GEN.endBehavior = () => {
+  const makePoly = () => {
+    const n = R.int(2, 5), a = R.nz(-4, 4), dir = R.sign();
+    const coefs = [a]; for (let i = 0; i < n; i++) coefs.push(R.chance(0.5) ? 0 : R.int(-6, 6));
+    const s = Math.sign(a) * (dir < 0 && n % 2 === 1 ? -1 : 1);
+    const to = dir > 0 ? "\\infty" : "-\\infty";
+    return { label: $m(`${T.lim(to)} \\left(${T.poly(coefs)}\\right)`), ans: s * Infinity,
+      why: `Leading term ${$m(T.poly([a, ...Array(n).fill(0)]))}: degree ${n} (${n % 2 ? "odd" : "even"}), leading coefficient ${a > 0 ? "positive" : "negative"}. As ${$m(`x \\to ${to}`)}, ${$m(`x^{${n}}`)} ${n % 2 === 0 ? "is positive" : dir > 0 ? "is positive" : "is negative"}, times ${a} → ${$m(T.ans(s * Infinity))}.` };
+  };
+  const makeExp = () => {
+    const c = R.int(-5, 5), k = R.nz(-4, 4), neg = R.chance(0.5), dir = R.sign();
+    const e = neg ? "e^{-x}" : "e^{x}";
+    const grows = (neg && dir < 0) || (!neg && dir > 0);
+    const ans = grows ? Math.sign(k) * Infinity : q(c);
+    const to = dir > 0 ? "\\infty" : "-\\infty";
+    const kt = k === 1 ? "" : k === -1 ? "-" : String(k);
+    const expr = c === 0 ? `${kt}${e}` : `${c} ${k < 0 ? "-" : "+"} ${Math.abs(k) === 1 ? "" : Math.abs(k)}${e}`;
+    return { label: $m(`${T.lim(to)} \\left(${expr}\\right)`), ans,
+      why: `As ${$m(`x \\to ${to}`)}, ${$m(e)} ${grows ? "grows without bound" : "shrinks to 0"}${grows ? `, and multiplying by ${k} gives ${$m(T.ans(ans))}` : `, so the expression approaches ${c}`}.` };
+  };
+  const makeRecip = () => {
+    const c = R.int(-6, 6), k = R.nz(-9, 9), pw = R.int(1, 3), dir = R.sign();
+    const to = dir > 0 ? "\\infty" : "-\\infty";
+    return { label: $m(`${T.lim(to)} \\left(${c} + \\frac{${k}}{x^{${pw}}}\\right)`.replace("+ \\frac{-", "- \\frac{")), ans: q(c),
+      why: `${$m(`\\frac{${Math.abs(k)}}{x^{${pw}}} \\to 0`)} as ${$m(`x \\to ${to}`)}, leaving ${c}.` };
+  };
+  const items = R.shuffle([makePoly(), makePoly(), makeExp(), makeRecip()]);
+  return {
+    prompt: para(`Find each limit (end behavior). Use <code>inf</code> or <code>-inf</code> when the outputs grow without bound.`),
+    parts: items.map((it) => P.num(it.label, it.ans)),
+    hint: "For polynomials only the leading term matters: its degree (even/odd) and the sign of its coefficient.",
+    solution: items.map((it, i) => para(`<b>${"abcd"[i]}.</b> ${it.why}`)).join(""),
+  };
+};
+
+GEN.bigPiecewise = () => {
+  const c = R.int(-2, 3), qa = R.pick([1, -1]), d = R.int(-4, 4), m = R.nz(-3, 3);
+  const leftAt = qa * c * c + d;
+  const equal = R.chance(0.4);
+  const b = equal ? leftAt - m * c : leftAt - m * c + R.pick([-3, -2, 2, 3]);
+  const right = m * c + b, dd = c + R.int(1, 3);
+  const Lt = T.poly([qa, 0, d]), Rt = T.poly([m, b]);
+  const gtex = tx`G(x) = \begin{cases} ${Lt} & x < ${c} \\ ${Rt} & x > ${c} \end{cases}`;
+  const lim = limVal(q(leftAt), q(right));
+  return {
+    prompt: para(`Let`) + $M(gtex) + para(`Find each quantity. If it does not exist, write <b>DNE</b>.`),
+    parts: [
+      P.num($m(`G(${c})`), "DNE"),
+      P.num($m(`${T.lim(c + "^-")} G(x)`), q(leftAt)),
+      P.num($m(`${T.lim(c + "^+")} G(x)`), q(right)),
+      P.num($m(`${T.lim(c)} G(x)`), lim),
+      P.num($m(`G(${dd})`), q(m * dd + b)),
+      P.num($m(`${T.lim("-\\infty")} G(x)`), qa * Infinity),
+      P.num($m(`${T.lim("\\infty")} G(x)`), Math.sign(m) * Infinity),
+    ],
+    hint: `Neither piece includes x = ${c} (both inequalities are strict). Left limits use the top piece; right limits use the bottom piece.`,
+    solution:
+      para(`<b>${$m(`G(${c})`)}:</b> the pieces cover ${$m(`x < ${c}`)} and ${$m(`x > ${c}`)} only, so ${$m(`G(${c})`)} is undefined → DNE.`) +
+      para(`<b>Left:</b> use ${$m(Lt)}: ${$m(`${qa < 0 ? "-" : ""}${T.par(c)}^2 ${d < 0 ? "-" : "+"} ${Math.abs(d)} = ${leftAt}`)}.`) +
+      para(`<b>Right:</b> use ${$m(Rt)}: ${$m(`${m}${T.par(c)} ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${right}`)}.`) +
+      para(`<b>Two-sided:</b> ${leftAt === right ? `both sides give ${leftAt}, so the limit is ${leftAt} (even though ${$m(`G(${c})`)} is undefined).` : `${leftAt} ≠ ${right}, so the limit DNE.`}`) +
+      para(`<b>${$m(`G(${dd})`)}:</b> ${dd} > ${c}, so use ${$m(Rt)}: ${$m(`${m}(${dd}) ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${m * dd + b}`)}.`) +
+      para(`<b>End behavior:</b> as ${$m("x \\to -\\infty")} we're on the ${$m(Lt)} piece — an even-degree term with ${qa > 0 ? "positive" : "negative"} leading coefficient → ${$m(T.ans(qa * Infinity))}. As ${$m("x \\to \\infty")} we're on the line with slope ${m} → ${$m(T.ans(Math.sign(m) * Infinity))}.`),
+  };
+};
+
+;
+// ================= Section 1.2 — Limits: algebraic viewpoint & continuity =================
+
+GEN.properties = () => {
+  const c = R.int(-3, 5), A = R.nz(-6, 6), B = R.nz(-6, 6), C = R.pick([4, 9, 16, 25, 36]), rc = Math.sqrt(C);
+  const L = (s) => `${T.lim(c)} ${s}`;
+  const pool = [
+    () => { const p = R.int(2, 5), k = R.int(2, 5); return { t: L(`\\left[${p}f(x) - ${k}g(x)\\right]`), a: q(p * A - k * B), s: `${p}${T.par(A)} - ${k}${T.par(B)} = ${p * A - k * B}` }; },
+    () => { const k = R.int(1, 4); return { t: L(`\\frac{g(x) - ${k}}{f(x)}`), a: q(B - k, A), s: `\\frac{${B} - ${k}}{${A}} = ${q(B - k, A).tex()}` }; },
+    () => { const p = R.int(2, 3); return { t: L(`\\left[${p}f(x) + g(x)\\right]^2`), a: q((p * A + B) ** 2), s: `\\left[${p}${T.par(A)} + ${T.par(B)}\\right]^2 = (${p * A + B})^2 = ${(p * A + B) ** 2}` }; },
+    () => ({ t: L(`\\sqrt{h(x)}\\, f(x)`), a: q(rc * A), s: `\\sqrt{${C}}\\cdot${T.par(A)} = ${rc}\\cdot${T.par(A)} = ${rc * A}` }),
+    () => { const k = R.int(1, 5); return { t: L(`\\frac{f(x)\\,g(x)}{h(x) + ${k}}`), a: q(A * B, C + k), s: `\\frac{${T.par(A)}${T.par(B)}}{${C} + ${k}} = ${q(A * B, C + k).tex()}` }; },
+    () => ({ t: L(`x^2 f(x)`), a: q(c * c * A), s: `${T.par(c)}^2\\cdot${T.par(A)} = ${c * c * A}` }),
+    () => { const a3 = A ** 3; return { t: L(`\\left(\\left[f(x)\\right]^3 - g(x)\\right)`), a: q(a3 - B), s: `${T.par(A)}^3 - ${T.par(B)} = ${a3} ${B < 0 ? "+" : "-"} ${Math.abs(B)} = ${a3 - B}` }; },
+  ];
+  const items = R.sample(pool, 4).map((f) => f());
+  return {
+    prompt: para(`Suppose`) + $M(`${T.lim(c)} f(x) = ${A}, \\qquad ${T.lim(c)} g(x) = ${B}, \\qquad ${T.lim(c)} h(x) = ${C}`) + para(`Use the properties of limits to find each limit.`),
+    parts: items.map((it) => P.num($m(it.t), it.a)),
+    hint: "The sum, difference, constant multiple, product, quotient, power, and root properties let you replace each limit by its value.",
+    solution: items.map((it, i) => para(`<b>${"abcd"[i]}.</b> ${$m(`${it.t} = ${it.s}`)}`)).join("") +
+      para(`The quotient property works here because the bottom limit isn't 0.`),
+  };
+};
+
+GEN.directSub = () => {
+  const items = [];
+  { const a = R.int(-4, 4), co = [R.nz(-3, 3), R.int(-6, 6), R.int(-9, 9)]; const v = evalPoly(co, a);
+    items.push({ t: `${T.lim(a)} \\left(${T.poly(co)}\\right)`, a: v, s: `${co[0]}${T.par(a)}^2 ${co[1] < 0 ? "-" : "+"} ${Math.abs(co[1])}${T.par(a)} ${co[2] < 0 ? "-" : "+"} ${Math.abs(co[2])} = ${v.tex()}` }); }
+  { let a, s; do { a = R.int(-4, 5); s = R.int(-5, 5); } while (a + s === 0 || s === 0);
+    const co = [1, R.int(-6, 6), R.int(-9, 9)]; const top = evalPoly(co, a);
+    items.push({ t: `${T.lim(a)} \\frac{${T.poly(co)}}{${T.poly([1, s])}}`, a: top.div(a + s), s: `\\frac{${T.par(a)}^2 ${co[1] < 0 ? "-" : "+"} ${Math.abs(co[1])}${T.par(a)} ${co[2] < 0 ? "-" : "+"} ${Math.abs(co[2])}}{${a} ${s < 0 ? "-" : "+"} ${Math.abs(s)}} = \\frac{${top.tex()}}{${a + s}} = ${top.div(a + s).tex()}` }); }
+  { const a = R.nz(-4, 4), m = Math.abs(a) + R.int(1, 3), k = m * m - a * a;
+    items.push({ t: `${T.lim(a)} \\sqrt{x^2 + ${k}}`, a: q(m), s: `\\sqrt{${T.par(a)}^2 + ${k}} = \\sqrt{${m * m}} = ${m}` }); }
+  if (R.chance(0.5)) { const a = R.int(-9, 9), k = R.nz(-9, 9); items.push({ t: `${T.lim(a)} ${k}`, a: q(k), s: `${k}` + "\\quad\\text{(the limit of a constant is that constant)}" }); }
+  return {
+    prompt: para(`Calculate each limit algebraically.`),
+    parts: items.map((it) => P.num($m(it.t), it.a)),
+    hint: "If the input is in the domain (no zero denominator, no negative under a root), just substitute.",
+    solution: para(`Each input is in the domain of its function, so direct substitution works.`) + items.map((it, i) => para(`<b>${"abcd"[i]}.</b> ${$m(`${it.t} = ${it.s}`)}`)).join(""),
+  };
+};
+
+const factorVariants = {
+  V1() { const r = R.nz(-5, 5); let s; do { s = R.nz(-6, 6); } while (s === r);
+    const t = `${T.lim(r)} \\frac{${T.poly([1, -(r + s), r * s])}}{${T.fac(r).slice(1, -1)}}`;
+    return { t, a: q(r - s), s: `${t} = ${T.lim(r)} \\frac{${T.fac(r)}${T.fac(s)}}{${T.fac(r)}} = ${T.lim(r)} ${T.fac(s)} = ${r} ${s < 0 ? "+" : "-"} ${Math.abs(s)} = ${r - s}` }; },
+  V2() { const r = R.nz(-5, 5); let tt; do { tt = R.nz(-5, 5); } while (tt === r || tt === -r);
+    const t = `${T.lim(r)} \\frac{x^2 - ${r * r}}{${T.poly([1, -(r + tt), r * tt])}}`;
+    return { t, a: q(2 * r, r - tt), s: `${t} = ${T.lim(r)} \\frac{${T.fac(r)}${T.fac(-r)}}{${T.fac(r)}${T.fac(tt)}} = ${T.lim(r)} \\frac{${T.fac(-r).slice(1, -1)}}{${T.fac(tt).slice(1, -1)}} = \\frac{${2 * r}}{${r - tt}} = ${q(2 * r, r - tt).tex()}` }; },
+  V3() { let p, s, qq, u, r;
+    do { p = R.int(1, 3); s = R.int(1, 3); qq = R.nz(-5, 5); u = R.nz(-5, 5); r = R.nz(-3, 3); } while ((p === 1 && s === 1) || s * r + u === 0 || p * u === qq * s || p * r + qq === 0);
+    const num = [p, qq - p * r, -qq * r], den = [s, u - s * r, -u * r];
+    const t = `${T.lim(r)} \\frac{${T.poly(num)}}{${T.poly(den)}}`;
+    return { t, a: q(p * r + qq, s * r + u), s: `${t} = ${T.lim(r)} \\frac{${T.fac(r)}${T.lin(p, qq)}}{${T.fac(r)}${T.lin(s, u)}} = ${T.lim(r)} \\frac{${T.poly([p, qq])}}{${T.poly([s, u])}} = \\frac{${p * r + qq}}{${s * r + u}} = ${q(p * r + qq, s * r + u).tex()}` }; },
+  V4() { const a = R.nz(-5, 5); const t = `${T.lim(0, "h")} \\frac{(${a} + h)^2 - ${a * a}}{h}`;
+    return { t, a: q(2 * a), s: `${t} = ${T.lim(0, "h")} \\frac{${a * a} ${2 * a < 0 ? "-" : "+"} ${Math.abs(2 * a)}h + h^2 - ${a * a}}{h} = ${T.lim(0, "h")} \\frac{h(${2 * a} + h)}{h} = ${T.lim(0, "h")} (${2 * a} + h) = ${2 * a}` }; },
+  V4b() { const a = R.pick([1, 2, 3, 4, -2]); const t = `${T.lim(0, "h")} \\frac{\\frac{1}{${a} + h} - \\frac{1}{${a}}}{h}`;
+    return { t, a: q(-1, a * a), s: `${t} = ${T.lim(0, "h")} \\frac{\\frac{${a} - (${a} + h)}{${a}(${a} + h)}}{h} = ${T.lim(0, "h")} \\frac{-h}{${a}(${a} + h)\\,h} = ${T.lim(0, "h")} \\frac{-1}{${a}(${a} + h)} = ${q(-1, a * a).tex()}` }; },
+  V4c() { const a = R.pick([1, 2, -1, 3]); const t = `${T.lim(0, "h")} \\frac{(${a} + h)^3 ${a ** 3 < 0 ? "+" : "-"} ${Math.abs(a ** 3)}}{h}`;
+    return { t, a: q(3 * a * a), s: `(${a} + h)^3 = ${a ** 3} + ${3 * a * a}h ${3 * a < 0 ? "-" : "+"} ${Math.abs(3 * a)}h^2 + h^3,\\ \\text{so}\\ ${t} = ${T.lim(0, "h")} \\left(${3 * a * a} ${3 * a < 0 ? "-" : "+"} ${Math.abs(3 * a)}h + h^2\\right) = ${3 * a * a}` }; },
+  V5() { const r = R.int(2, 7);
+    if (R.chance(0.5)) { const t = `${T.lim(r * r)} \\frac{\\sqrt{x} - ${r}}{x - ${r * r}}`;
+      return { t, a: q(1, 2 * r), s: `${t} = ${T.lim(r * r)} \\frac{\\sqrt{x} - ${r}}{(\\sqrt{x} - ${r})(\\sqrt{x} + ${r})} = ${T.lim(r * r)} \\frac{1}{\\sqrt{x} + ${r}} = \\frac{1}{${r} + ${r}} = \\frac{1}{${2 * r}}` }; }
+    const t = `${T.lim(r * r)} \\frac{x - ${r * r}}{\\sqrt{x} - ${r}}`;
+    return { t, a: q(2 * r), s: `${t} = ${T.lim(r * r)} \\frac{(\\sqrt{x} - ${r})(\\sqrt{x} + ${r})}{\\sqrt{x} - ${r}} = ${T.lim(r * r)} (\\sqrt{x} + ${r}) = ${2 * r}` }; },
+  V7() { const a = R.nz(-6, 6), b = R.nz(-9, 9), c = R.pick([1, 1, 2, 3]);
+    const t = `${T.lim(0)} \\frac{${T.poly([a, b, 0])}}{${c === 1 ? "x" : c + "x"}}`;
+    return { t, a: q(b, c), s: `${t} = ${T.lim(0)} \\frac{x(${T.poly([a, b])})}{${c === 1 ? "x" : c + "x"}} = ${T.lim(0)} \\frac{${T.poly([a, b])}}{${c}} = ${q(b, c).tex()}` }; },
+  V6() { const r = R.nz(-4, 4); const t = `${T.lim(r)} \\frac{${T.fac(r).slice(1, -1)}}{${T.poly([1, -2 * r, r * r])}}`;
+    return { t, a: "DNE", s: `${t} = ${T.lim(r)} \\frac{${T.fac(r)}}{${T.fac(r)}^2} = ${T.lim(r)} \\frac{1}{${T.fac(r).slice(1, -1)}}.\\ \\text{Left} \\to -\\infty,\\ \\text{right} \\to \\infty,\\ \\text{so the limit DNE}` }; },
+};
+
+GEN.factor = () => {
+  const keys = R.sample(["V1", "V2", "V3", "V3", "V4", "V4b", "V4c", "V5", "V5", "V7", "V6"], 3);
+  const uniq = [...new Set(keys)].slice(0, 2);
+  if (uniq.length < 2) uniq.push("V2");
+  const items = uniq.map((k) => factorVariants[k]());
+  return {
+    prompt: para(`Calculate each limit algebraically. (Direct substitution gives ${$m("\\frac{0}{0}")} — simplify first.) If it doesn't exist, write <b>DNE</b>.`),
+    parts: items.map((it) => P.num($m(it.t), it.a)),
+    hint: "0/0 means a common factor is hiding. Factor (or expand, or use √x·√x = x), cancel, then substitute.",
+    solution: items.map((it, i) => para(`<b>${"ab"[i]}.</b>`) + $M(it.s)).join("") + para(`<i>Notation tip:</i> keep writing ${$m("\\lim")} on every line until the step where you actually substitute.`),
+  };
+};
+
+function divByPower(coefs, m) {
+  const n = coefs.length - 1; let out = "";
+  coefs.forEach((c, i) => {
+    const k = n - i; if (c === 0) return;
+    const neg = c < 0, a = Math.abs(c); let body;
+    if (k > m) body = (a === 1 ? "" : a) + (k - m === 1 ? "x" : `x^{${k - m}}`);
+    else if (k === m) body = String(a);
+    else body = `\\frac{${a}}{${m - k === 1 ? "x" : `x^{${m - k}}`}}`;
+    out += out === "" ? (neg ? "-" : "") + body : (neg ? " - " : " + ") + body;
+  });
+  return out;
+}
+
+GEN.infRational = () => {
+  const cases = R.shuffle(["eq", "lt", "gt"]);
+  const items = cases.map((cs) => {
+    let n, m;
+    if (cs === "eq") { n = m = R.int(1, 4); }
+    if (cs === "lt") { m = R.int(2, 4); n = R.int(0, m - 1); }
+    if (cs === "gt") { m = R.int(1, 3); n = m + R.int(1, 2); }
+    const a = R.nz(-7, 7), b = R.nz(-7, 7), dir = R.sign();
+    const num = [a], den = [b];
+    for (let i = 0; i < n; i++) num.push(R.chance(0.45) ? 0 : R.int(-9, 9));
+    for (let i = 0; i < m; i++) den.push(R.chance(0.45) ? 0 : R.int(-9, 9));
+    const to = dir > 0 ? "\\infty" : "-\\infty";
+    let ans;
+    if (n === m) ans = q(a, b);
+    else if (n < m) ans = q(0);
+    else ans = Math.sign(a * b) * (dir < 0 && (n - m) % 2 === 1 ? -1 : 1) * Infinity;
+    const t = `${T.lim(to)} \\frac{${T.poly(num)}}{${T.poly(den)}}`;
+    const powTxt = m === 1 ? "x" : `x^{${m}}`;
+    let concl;
+    if (n === m) concl = `Every fraction term → 0, leaving ${$m(`\\frac{${a}}{${b}} = ${q(a, b).tex()}`)}.`;
+    else if (n < m) concl = `The top → 0 while the bottom → ${b}, so the limit is ${$m("0")}.`;
+    else concl = `The bottom → ${b}, but the top is dominated by ${$m(`${a}x^{${n - m}}`)}, which → ${$m(T.ans(Math.sign(a) * (dir < 0 && (n - m) % 2 === 1 ? -1 : 1) * Infinity))} as ${$m(`x \\to ${to}`)}; dividing by ${b} gives ${$m(T.ans(ans))}.`;
+    return { t, ans, sol: `Divide every term by ${$m(powTxt)}, the highest power of ${$m("x")} in the denominator:` + $M(`${t} = ${T.lim(to)} \\frac{${divByPower(num, m)}}{${divByPower(den, m)}}`) + concl };
+  });
+  return {
+    prompt: para(`Compute each limit algebraically. Use <code>inf</code> / <code>-inf</code> for unbounded results.`),
+    parts: items.map((it) => P.num($m(it.t), it.ans)),
+    hint: "Divide every term by the highest power of x in the DENOMINATOR, then use c/xᵖ → 0.",
+    solution: items.map((it, i) => para(`<b>${"abc"[i]}.</b> ${it.sol}`)).join(""),
+  };
+};
+
+GEN.pwLimit = () => {
+  const s = R.pick([1, 2]);
+  const t = s === 1 ? R.nz(-4, 4) : R.pick([-5, -3, -1, 1, 3, 5]);
+  const c = q(-t, s), w = R.int(-5, 5);
+  const num = [s, s * w + t, t * w];
+  const leftL = c.add(w);
+  const equal = R.chance(0.4);
+  let m = R.nz(-3, 4); if (equal && s === 2 && m % 2 === 0) m += 1;
+  if (m === 0) m = 1;
+  let b = equal ? leftL.sub(c.mul(m)) : q(R.int(-6, 6));
+  if (!equal && c.mul(m).add(b).eq(leftL)) b = b.add(2);
+  const rightL = c.mul(m).add(b);
+  const includeC = R.chance(0.5);
+  const d = Math.ceil(c.val()) + R.int(2, 4), e = Math.floor(c.val()) - R.int(2, 3);
+  const Lt = `\\dfrac{${T.poly(num)}}{${T.poly([s, t])}}`, Rt = T.poly([m, b]);
+  const ftex = `f(x) = \\begin{cases} ${Lt} & x < ${c.tex()} \\\\ ${Rt} & x ${includeC ? "\\ge" : ">"} ${c.tex()} \\end{cases}`;
+  const fc = includeC ? rightL : "DNE";
+  const lim = limVal(leftL, rightL);
+  return {
+    prompt: para(`Let`) + $M(ftex) + para(`Find each limit or function value algebraically. Write <b>DNE</b> if it doesn't exist.`),
+    parts: [
+      P.num($m(`${T.lim(d)} f(x)`), q(m * d).add(b)),
+      P.num($m(`${T.lim(e)} f(x)`), q(e + w)),
+      P.num($m(`f\\left(${c.tex()}\\right)`), fc),
+      P.num($m(`${T.lim(c.tex() + "^-")} f(x)`), leftL),
+      P.num($m(`${T.lim(c.tex() + "^+")} f(x)`), rightL),
+      P.num($m(`${T.lim(c.tex())} f(x)`), lim),
+    ],
+    hint: "Decide which piece each x-value lives on first. The top piece simplifies by factoring.",
+    solution:
+      para(`For ${$m(`x < ${c.tex()}`)}, factor the top: ${$m(`\\frac{${T.lin(s, t)}${T.lin(1, w)}}{${T.poly([s, t])}} = ${T.poly([1, w])}`)} (valid since ${$m(`x \\ne ${c.tex()}`)} there).`) +
+      para(`<b>a.</b> ${d} > ${c.tex()} → bottom piece: ${$m(`${m}(${d}) ${b.n < 0 ? "-" : "+"} ${b.abs().tex()} = ${q(m * d).add(b).tex()}`)}.`) +
+      para(`<b>b.</b> ${e} < ${c.tex()} → top piece, simplified: ${$m(`${e} ${w < 0 ? "-" : "+"} ${Math.abs(w)} = ${e + w}`)}.`) +
+      para(`<b>c.</b> ${includeC ? `The bottom piece includes ${$m(`x = ${c.tex()}`)} (≥), so ${$m(`f(${c.tex()}) = ${m}\\left(${c.tex()}\\right) ${b.n < 0 ? "-" : "+"} ${b.abs().tex()} = ${rightL.tex()}`)}.` : `Neither piece includes ${$m(`x = ${c.tex()}`)}, so ${$m(`f(${c.tex()})`)} is undefined → DNE.`}`) +
+      para(`<b>d.</b> Left: ${$m(`${T.lim(c.tex() + "^-")} (${T.poly([1, w])}) = ${leftL.tex()}`)}.`) +
+      para(`<b>e.</b> Right: ${$m(`${T.lim(c.tex() + "^+")} (${Rt}) = ${rightL.tex()}`)}.`) +
+      para(`<b>f.</b> ${lim === "DNE" ? `${leftL.tex() === rightL.tex() ? "" : `${$m(leftL.tex())} ≠ ${$m(rightL.tex())}`}, so the limit DNE.` : `Both sides equal ${$m(leftL.tex())}, so the limit is ${$m(leftL.tex())}.`}`),
+  };
+};
+
+const CONT_CHOICES = [
+  "Yes — f(a) exists, the limit exists, and they are equal",
+  "No — the one-sided limits differ, so the limit does not exist",
+  "No — the limit exists but does not equal f(a)",
+  "No — f(a) is undefined",
+];
+
+GEN.continuity = () => {
+  const v = R.pick(["A", "A", "B", "D"]);
+  if (v === "A") {
+    const c = R.int(-2, 3), co = [R.pick([1, -1, -1, 2, -2]), R.int(-4, 4), R.int(-6, 8)], low = R.chance(0.5);
+    const left = evalPoly(co, c), m = R.nz(-4, 4), equal = R.chance(0.5);
+    const k = equal ? left.sub(m * c) : left.sub(m * c).add(R.pick([-3, -2, 2, 3]));
+    const right = q(m * c).add(k);
+    const Lt = T.poly(co, "x", low), Rt = T.poly([m, k]);
+    const cont = left.eq(right);
+    const choices = CONT_CHOICES.map((s) => s.replace("f(a)", `f(${c})`));
+    const subst = co.map((cf, i) => ({ cf, deg: 2 - i })).filter((o) => o.cf !== 0);
+    const substTex = (low ? subst.reverse() : subst).map((o, i) => {
+      const neg = o.cf < 0, a = Math.abs(o.cf), body = o.deg === 0 ? `${a}` : `${a === 1 ? "" : a}${T.par(c)}${o.deg === 2 ? "^2" : ""}`;
+      return (i === 0 ? (neg ? "-" : "") : neg ? " - " : " + ") + body;
+    }).join("");
+    return {
+      prompt: para(`Let`) + $M(`f(x) = \\begin{cases} ${Lt} & x \\le ${c} \\\\ ${Rt} & x > ${c} \\end{cases}`) + para(`Determine whether ${$m("f(x)")} is continuous at ${$m(`x = ${c}`)}.`),
+      parts: [
+        P.num($m(`f(${c})`), left),
+        P.num($m(`${T.lim(c + "^-")} f(x)`), left),
+        P.num($m(`${T.lim(c + "^+")} f(x)`), right),
+        P.num($m(`${T.lim(c)} f(x)`), limVal(left, right)),
+        P.mcFixed(`Is ${$m("f")} continuous at ${$m(`x = ${c}`)}?`, choices, cont ? 0 : 1),
+      ],
+      hint: `Watch the signs: with x = ${c}, a term like -x² is -(${c})² = ${-(c * c)}. Substitute into each term separately.`,
+      solution:
+        para(`<b>1. ${$m(`f(${c})`)}:</b> ${c} satisfies ${$m(`x \\le ${c}`)}, so use the top piece: ${$m(`${substTex} = ${left.tex()}`)}.`) +
+        para(`<b>2. Limit:</b> left uses the top piece → ${$m(left.tex())}; right uses ${$m(Rt)} → ${$m(`${m}${T.par(c)} ${k.n < 0 ? "-" : "+"} ${k.abs().tex()} = ${right.tex()}`)}.`) +
+        para(cont ? `<b>3.</b> Both one-sided limits are ${$m(left.tex())}, so the limit exists and equals ${$m(`f(${c})`)}. <b>Continuous.</b>` : `<b>3.</b> ${$m(left.tex())} ≠ ${$m(right.tex())}, so ${$m(`${T.lim(c)} f(x)`)} DNE. <b>Not continuous</b> — a jump discontinuity.`),
+    };
+  }
+  if (v === "B") {
+    const r = R.nz(-4, 4); let s; do { s = R.int(-5, 5); } while (s === r);
+    const L = r - s, equal = R.chance(0.45), k = equal ? L : L + R.pick([-3, -2, -1, 1, 2, 3]);
+    const choices = CONT_CHOICES.map((x) => x.replace("f(a)", `f(${r})`));
+    return {
+      prompt: para(`Is ${$m("f(x)")} continuous at ${$m(`x = ${r}`)}?`) + $M(`f(x) = \\begin{cases} \\dfrac{${T.poly([1, -(r + s), r * s])}}{${T.fac(r).slice(1, -1)}} & x \\ne ${r} \\\\ ${k} & x = ${r} \\end{cases}`),
+      parts: [
+        P.num($m(`f(${r})`), q(k)),
+        P.num($m(`${T.lim(r)} f(x)`), q(L)),
+        P.mcFixed(`Is ${$m("f")} continuous at ${$m(`x = ${r}`)}?`, choices, equal ? 0 : 2),
+      ],
+      hint: "The bottom piece tells you f(a) directly. For the limit, factor the top piece and cancel.",
+      solution:
+        para(`<b>1.</b> ${$m(`f(${r}) = ${k}`)} (given directly by the second piece).`) +
+        para(`<b>2.</b> ${$m(`${T.lim(r)} \\frac{${T.fac(r)}${T.fac(s)}}{${T.fac(r)}} = ${T.lim(r)} ${s === 0 ? "x" : T.fac(s)} = ${L}`)}.`) +
+        para(equal ? `<b>3.</b> ${L} = ${k}. All three conditions hold → <b>continuous</b>.` : `<b>3.</b> The limit is ${L} but ${$m(`f(${r}) = ${k}`)}. They're not equal → <b>not continuous</b> (a removable discontinuity).`),
+    };
+  }
+  // D: find the constant
+  const c = R.pick([1, 2, 3, -1, -2]), a = R.int(-4, 4), b = R.int(-6, 6);
+  const leftV = c * c + a * c, k = q(leftV - b, c);
+  return {
+    prompt: para(`Find the value of ${$m("k")} that makes ${$m("f")} continuous at ${$m(`x = ${c}`)}.`) + $M(`f(x) = \\begin{cases} ${T.poly([1, a, 0])} & x < ${c} \\\\ kx ${b < 0 ? "-" : "+"} ${Math.abs(b)} & x \\ge ${c} \\end{cases}`),
+    parts: [
+      P.num($m(`${T.lim(c + "^-")} f(x)`), q(leftV)),
+      P.num($m("k ="), k),
+    ],
+    hint: "Continuity needs left limit = right limit = f(c). Set the two pieces equal at x = c and solve for k.",
+    solution:
+      para(`Left: ${$m(`${T.par(c)}^2 ${a < 0 ? "-" : "+"} ${Math.abs(a)}${T.par(c)} = ${leftV}`)}. Right (and ${$m(`f(${c})`)}): ${$m(`k${T.par(c)} ${b < 0 ? "-" : "+"} ${Math.abs(b)}`)}.`) +
+      $M(`${c}k ${b < 0 ? "-" : "+"} ${Math.abs(b)} = ${leftV} \\;\\Rightarrow\\; k = \\frac{${leftV - b}}{${c}} = ${k.tex()}`),
+  };
+};
+
+const DISC = ["Continuous", "Removable discontinuity", "Jump discontinuity", "Infinite discontinuity"];
+GEN.discType = () => {
+  if (R.chance(0.45)) {
+    const G = Graph.randomPiecewise(R.shuffle(["jump", "hole", "asym", "cont"]));
+    const idx = { continuous: 0, removable: 1, jump: 2, infinite: 3 };
+    return {
+      prompt: para(`Classify the behavior of ${$m("f")} at each labeled ${$m("x")}-value.`),
+      figure: G.svg,
+      parts: G.inner.map((n) => P.mcFixed(`At ${$m(`x = ${n.x}`)}`, DISC, idx[n.type])),
+      hint: "Removable = a hole (the limit exists). Jump = the two sides land at different heights. Infinite = a vertical asymptote.",
+      solution: G.inner.map((n) => para(`<b>${$m(`x = ${n.x}`)}:</b> ${{
+        continuous: `No break, and the dot is on the curve → continuous.`,
+        removable: `Both sides approach ${n.left}, but ${n.value === "DNE" ? "there is no point there" : `the filled dot is at ${n.value}`} → removable (the limit exists, it just doesn't match f).`,
+        jump: `Left approaches ${n.left}, right approaches ${n.right} → jump.`,
+        infinite: `The graph shoots off along a vertical asymptote → infinite.`,
+      }[n.type]}`)).join(""),
+    };
+  }
+  const pool = [
+    () => { const r = R.nz(-5, 5); return { t: `f(x) = \\frac{x^2 - ${r * r}}{${T.fac(r).slice(1, -1)}} \\text{ at } x = ${r}`, a: 1, s: `0/0 at ${r}, but it cancels to ${$m(T.fac(-r).slice(1, -1))}, so the limit exists (${2 * r}) while ${$m(`f(${r})`)} is undefined → removable.` }; },
+    () => { const c = R.nz(-5, 5); let s; do { s = R.int(-5, 5); } while (s === -c); return { t: `f(x) = \\frac{${T.poly([1, s])}}{${T.fac(c).slice(1, -1)}} \\text{ at } x = ${c}`, a: 3, s: `The bottom is 0 at ${c} but the top is ${c + s} ≠ 0 → vertical asymptote → infinite.` }; },
+    () => { const c = R.int(-3, 3), p = R.int(-4, 4), j = R.pick([-3, -2, 2, 3]); return { t: `f(x) = \\begin{cases} ${T.poly([1, p])} & x < ${c} \\\\ ${T.poly([1, p + j])} & x \\ge ${c} \\end{cases} \\text{ at } x = ${c}`, a: 2, s: `Left → ${c + p}, right → ${c + p + j}. Different finite values → jump.` }; },
+    () => { const a = R.int(-4, 4), co = [R.nz(-3, 3), R.int(-5, 5), R.int(-5, 5)]; return { t: `f(x) = ${T.poly(co)} \\text{ at } x = ${a}`, a: 0, s: `Polynomials are continuous everywhere.` }; },
+    () => { const c = R.nz(-3, 3); let d; do { d = R.nz(-4, 4); } while (d === c); return { t: `f(x) = \\frac{${T.fac(c).slice(1, -1)}}{${T.poly([1, -(c + d), c * d])}} \\text{ at } x = ${d}`, a: 3, s: `Factor: ${$m(`\\frac{${T.fac(c)}}{${T.fac(c)}${T.fac(d)}}`)}. The ${$m(T.fac(d))} factor does NOT cancel, so ${$m(`x = ${d}`)} is a vertical asymptote → infinite.` }; },
+    () => { const c = R.nz(-3, 3); let d; do { d = R.nz(-4, 4); } while (d === c); return { t: `f(x) = \\frac{${T.fac(c).slice(1, -1)}}{${T.poly([1, -(c + d), c * d])}} \\text{ at } x = ${c}`, a: 1, s: `Factor: ${$m(`\\frac{${T.fac(c)}}{${T.fac(c)}${T.fac(d)}}`)}. The ${$m(T.fac(c))} cancels, leaving ${$m(`\\frac{1}{${T.fac(d).slice(1, -1)}} \\to ${q(1, c - d).tex()}`)} → removable.` }; },
+  ];
+  const items = R.sample(pool, 3).map((f) => f());
+  return {
+    prompt: para(`Classify each function at the given ${$m("x")}-value.`),
+    parts: items.map((it) => P.mcFixed($m(it.t), DISC, it.a)),
+    hint: "Factor first. A factor that cancels means a hole (removable); one that stays in the bottom means an asymptote (infinite).",
+    solution: items.map((it, i) => para(`<b>${"abc"[i]}.</b> ${it.s}`)).join(""),
+  };
+};
+
+;
+// ================= Section 1.3 — Average rate of change & the difference quotient =================
+const sumTex = (items) => {
+  let out = "";
+  items.forEach(([c, body]) => {
+    c = Q.of(c); if (c.isZero()) return;
+    const neg = c.n < 0, a = neg ? c.neg() : c;
+    const s = (body && a.eq(1) ? "" : a.tex()) + body;
+    out += out === "" ? (neg ? "-" : "") + s : (neg ? " - " : " + ") + s;
+  });
+  return out || "0";
+};
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+const ARC_CTX = [
+  { f: "f", v: "x", inU: "hours", outU: "miles", outOne: "mile", what: "the distance driven", desc: (v) => `the number of miles driven after ${$m(v)} hours`, unit: "miles per hour", gen: () => [R.int(1, 5), R.int(-3, 8), R.int(0, 6)], lo: 0, hi: 8 },
+  { f: "C", v: "q", inU: "items", outU: "dollars", outOne: "dollar", what: "the cost", desc: (v) => `the cost, in dollars, of producing ${$m(v)} items`, unit: "dollars per item", gen: () => [R.int(1, 3), R.int(2, 15), R.int(40, 200)], lo: 0, hi: 12 },
+  { f: "s", v: "t", inU: "seconds", outU: "feet", outOne: "foot", what: "the height of the ball", desc: (v) => `the height, in feet, of a ball ${$m(v)} seconds after it is thrown upward`, unit: "feet per second", gen: () => [-16, R.pick([64, 80, 96]), R.int(4, 40)], lo: 0, hi: 4 },
+  { f: "V", v: "t", inU: "minutes", outU: "gallons", outOne: "gallon", what: "the amount of water in the tank", desc: (v) => `the number of gallons of water in a tank ${$m(v)} minutes after a drain is opened`, unit: "gallons per minute", gen: () => [1, -R.pick([30, 40, 50]), R.pick([300, 400, 600])], lo: 0, hi: 12 },
+  { f: "P", v: "t", inU: "years", outU: "thousand people", outOne: "thousand people", what: "the population", desc: (v) => `the population of a town, in thousands of people, ${$m(v)} years after 2020`, unit: "thousand people per year", gen: () => [R.int(1, 2), R.int(1, 6), R.int(20, 60)], lo: 0, hi: 10 },
+];
+
+GEN.arcFunc = () => {
+  let ctx, co, p, qq, fp, fq, V;
+  do {
+    ctx = R.pick(ARC_CTX); co = ctx.gen();
+    p = R.int(ctx.lo, ctx.hi - 2); qq = p + R.int(2, Math.min(4, ctx.hi - p));
+    fp = evalPoly(co, p); fq = evalPoly(co, qq); V = fq.sub(fp).div(qq - p);
+  } while (V.isZero());
+  const { f, v } = ctx, ftex = T.poly(co, v), Vt = V.tex();
+  return {
+    prompt: para(`Let ${$m(`${f}(${v}) = ${ftex}`)}, where ${$m(`${f}(${v})`)} represents ${ctx.desc(v)}. Find the average rate of change over ${$m(`[${p}, ${qq}]`)}.`),
+    parts: [
+      P.num($m(`${f}(${p})`), fp),
+      P.num($m(`${f}(${qq})`), fq),
+      P.num(`Average rate of change (number only)`, V),
+      P.mc(`Which sentence correctly states the result <b>with units</b>?`, [
+        `Between ${$m(`${v} = ${p}`)} and ${$m(`${v} = ${qq}`)} ${ctx.inU}, ${ctx.what} changes at an average rate of ${$m(Vt)} ${ctx.unit}.`,
+        `At exactly ${$m(`${v} = ${qq}`)} ${ctx.inU}, ${ctx.what} is changing at a rate of ${$m(Vt)} ${ctx.unit}.`,
+        `${cap(ctx.what)} changes by a total of ${$m(Vt)} ${ctx.outU} from ${$m(`${v} = ${p}`)} to ${$m(`${v} = ${qq}`)}.`,
+        `Between ${$m(`${v} = ${p}`)} and ${$m(`${v} = ${qq}`)}, ${ctx.what} changes at an average rate of ${$m(Vt)} ${ctx.inU} per ${ctx.outOne}.`,
+      ], 0),
+    ],
+    hint: "Average rate of change = [f(b) − f(a)] / (b − a). Units are (output units) per (input unit).",
+    solution:
+      $M(`${f}(${p}) = ${fp.tex()}, \\qquad ${f}(${qq}) = ${fq.tex()}`) +
+      $M(`\\frac{${f}(${qq}) - ${f}(${p})}{${qq} - ${p}} = \\frac{${fq.tex()} - ${T.par(fp)}}{${qq - p}} = \\frac{${fq.sub(fp).tex()}}{${qq - p}} = ${Vt}\\ \\text{${ctx.unit}}`) +
+      para(`It's an <i>average</i> over an interval (not an instant), and the units are ${ctx.outU} per ${ctx.inU.replace(/s$/, "")} — ${ctx.unit}. The total change would be ${fq.sub(fp).tex()} ${ctx.outU}.`),
+  };
+};
+
+GEN.arcData = () => {
+  if (R.chance(0.5)) {
+    const ctx = R.pick([
+      { name: "U.S. unemployment rate", row: "Rate, %", dec: 1, lo: 3.4, hi: 10, start: () => 4 + Math.random() * 2, step: 1.3, unit: "percentage points per year", units: ["percentage points per year", "years per percentage point", "percent", "percentage points"] },
+      { name: "average price of a gallon of regular gas", row: "Price, $", dec: 2, lo: 1.9, hi: 5.2, start: () => 2.3 + Math.random() * 0.6, step: 0.45, unit: "dollars per year", units: ["dollars per year", "years per dollar", "dollars", "dollars per gallon"] },
+    ]);
+    const sc = 10 ** ctx.dec, yrs = Array.from({ length: 11 }, (_, i) => 2016 + i);
+    let x = ctx.start(); const vals = yrs.map(() => { const out = Math.round(x * sc); x = Math.min(ctx.hi, Math.max(ctx.lo, x + (Math.random() - 0.45) * ctx.step)); return out; });
+    const i1 = R.int(0, 3), j1 = i1 + R.int(3, 5), i2 = R.int(5, 7), j2 = Math.min(10, i2 + R.int(3, 4));
+    const arc = (i, j) => q(vals[j] - vals[i], sc * (yrs[j] - yrs[i]));
+    const show = (vv) => (vv / sc).toFixed(ctx.dec);
+    const table = `<div class="tbl-wrap"><table class="vt"><tr><th>Year</th>${yrs.map((y) => `<td>${y}</td>`).join("")}</tr><tr><th>${ctx.row}</th>${vals.map((vv) => `<td>${show(vv)}</td>`).join("")}</tr></table></div>`;
+    const a1 = arc(i1, j1), a2 = arc(i2, j2);
+    const line = (i, j, a) => $M(`\\frac{${show(vals[j])} - ${show(vals[i])}}{${yrs[j]} - ${yrs[i]}} = \\frac{${fmtDec((vals[j] - vals[i]) / sc, 2)}}{${yrs[j] - yrs[i]}} ${a.isInt() ? "=" : "\\approx"} ${fmtDec(a.val(), 3)}`);
+    return {
+      prompt: para(`The table shows the ${ctx.name}.`) + table + para(`Rounded answers (2+ decimal places) are accepted.`),
+      parts: [
+        P.num(`Average rate of change from ${yrs[i1]} to ${yrs[j1]}`, a1),
+        P.num(`Average rate of change from ${yrs[i2]} to ${yrs[j2]}`, a2),
+        P.mcFixed(`The units of these answers are…`, ctx.units, 0),
+      ],
+      hint: "Rate = change in output ÷ change in years. Keep the sign: a decrease gives a negative rate.",
+      solution: para(`<b>${yrs[i1]}–${yrs[j1]}:</b>`) + line(i1, j1, a1) + para(`<b>${yrs[i2]}–${yrs[j2]}:</b>`) + line(i2, j2, a2) +
+        para(`Units: output units per input unit → <b>${ctx.unit}</b>.`),
+    };
+  }
+  // line chart (stock-price style)
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"];
+  let pts, best, arcs;
+  const ivs = [[0, 2], [2, 4], [4, 6]];
+  do {
+    let y = R.int(19, 25); pts = months.map((_, i) => { const out = [i, y]; y = Math.max(16, Math.min(34, y + R.int(-3, 4))); return out; });
+    arcs = ivs.map(([a, b]) => q(pts[b][1] - pts[a][1], b - a));
+    const mx = Math.max(...arcs.map((a) => a.val()));
+    best = arcs.findIndex((a) => a.val() === mx);
+    if (arcs.filter((a) => a.val() === mx).length > 1) best = -1;
+  } while (best < 0);
+  const ymin = Math.floor((Math.min(...pts.map((p) => p[1])) - 2) / 2) * 2, ymax = Math.ceil((Math.max(...pts.map((p) => p[1])) + 2) / 2) * 2;
+  const a = R.int(0, 2), b = a + R.int(3, 4);
+  const Vab = q(pts[b][1] - pts[a][1], b - a);
+  const svg = Graph.lineChart({ pts, xLabel: (x) => `${x}`, ymin, ymax, gy: 2, xName: "", yName: "" });
+  return {
+    prompt: para(`The graph shows the closing price (in dollars) of a stock at the start of each month in 2026, where ${$m("x = 0")} is January, ${$m("x = 1")} is February, and so on.`),
+    figure: svg,
+    parts: [
+      P.num(`Average rate of change on ${$m(`[${a}, ${b}]`)} (dollars per month)`, Vab),
+      P.mcFixed(`On which interval is the average rate of change greatest?`, ivs.map(([p1, p2]) => $m(`[${p1}, ${p2}]`)), best),
+    ],
+    hint: "Read the heights at the ×'s at each endpoint, then compute rise over run.",
+    solution:
+      $M(`\\frac{f(${b}) - f(${a})}{${b} - ${a}} = \\frac{${pts[b][1]} - ${pts[a][1]}}{${b - a}} = ${Vab.tex()}\\ \\text{dollars per month}`) +
+      para(`Between ${months[a]} and ${months[b]} the price changed by ${Vab.tex().includes("frac") ? $m(Vab.tex()) : Vab.tex()} dollars per month on average — the slope of the secant line joining those two points.`) +
+      para(`Greatest-rate check: ${ivs.map(([p1, p2], i) => `${$m(`[${p1},${p2}]`)}: ${$m(arcs[i].tex())}`).join(", ")} → ${$m(`[${ivs[best][0]}, ${ivs[best][1]}]`)}.`),
+  };
+};
+
+GEN.arcShrink = () => {
+  const k = R.pick([1, 2, 3, 4, 6]), a = R.pick([1, 2]);
+  const deltas = [3, 1, 0.5, 0.05];
+  const arcs = deltas.map((d) => q(-k).div(q(a).mul(q(a).add(q(d)))));
+  const limit = q(-k, a * a);
+  const choices = [limit, limit.neg(), q(0), limit.mul(2)];
+  return {
+    prompt: para(`Let ${$m(`f(x) = \\frac{${k}}{x}`)}. Calculate the average rate of change of ${$m("f")} over each interval (rounded answers to 2+ decimals are fine).`),
+    parts: [
+      ...deltas.map((d, i) => P.num($m(`[${a}, ${fmtDec(a + d, 2)}]`), arcs[i])),
+      P.mcFixed(`As the interval shrinks toward ${$m(`x = ${a}`)}, these values approach…`, choices.map((c) => $m(c.tex())), 0),
+    ],
+    hint: `ARC on [a, b] = (f(b) − f(a))/(b − a). Here f(${a}) = ${q(k, a).txt()}.`,
+    solution:
+      deltas.map((d, i) => { const b = q(a).add(q(d)); const fb = q(k).div(b); return $M(`[${a}, ${fmtDec(a + d, 2)}]:\\quad \\frac{${fb.tex()} - ${q(k, a).tex()}}{${fmtDec(d, 2)}} = ${arcs[i].tex()} ${arcs[i].isInt() ? "" : `\\approx ${fmtDec(arcs[i].val(), 4)}`}`); }).join("") +
+      para(`Each value is the slope of a secant line through ${$m(`(${a}, ${q(k, a).tex()})`)}. As the second point slides toward the first, the secant slopes approach the slope of the <b>tangent line</b>: ${$m(`-\\frac{${k}}{${a}^2} = ${limit.tex()}`)} — the instantaneous rate of change at ${$m(`x = ${a}`)}.`),
+  };
+};
+
+GEN.dq = () => {
+  const v = R.pick(["Q", "Q", "Q", "R", "R", "C"]);
+  const hs = v === "R" ? [1, 0.5, 0.05] : [1, 0.1, 0.01];
+  let ftex, expr, fn, disp, steps, x0, at, extra = {}, lim;
+  if (v === "Q") {
+    const a = R.pick([1, -1, 2, -2, 3]), b = R.int(-6, 6), c = R.int(-5, 5);
+    ftex = T.poly([a, b, c]); x0 = R.int(-3, 3);
+    fn = (e) => 2 * a * e.x + a * e.h + b;
+    disp = sumTex([[2 * a, "x"], [a, "h"], [b, ""]]);
+    at = (h) => q(2 * a * x0 + b).add(q(h).mul(a));
+    lim = q(2 * a * x0 + b);
+    extra = { simplifyH: true };
+    steps =
+      $M(`f(x + h) = ${sumTex([[a, "(x + h)^2"], [b, "(x + h)"], [c, ""]])} = ${sumTex([[a, "x^2"], [2 * a, "xh"], [a, "h^2"], [b, "x"], [b, "h"], [c, ""]])}`) +
+      $M(`f(x + h) - f(x) = ${sumTex([[2 * a, "xh"], [a, "h^2"], [b, "h"]])}`) +
+      $M(`\\frac{f(x + h) - f(x)}{h} = \\frac{h\\left(${disp}\\right)}{h} = ${disp}`);
+  } else if (v === "R") {
+    const k = R.pick([1, 2, 3, 4, -2]);
+    ftex = `\\frac{${k}}{x}`; x0 = R.pick([1, 2]);
+    fn = (e) => -k / (e.x * (e.x + e.h));
+    disp = `\\frac{${-k}}{x(x + h)}`;
+    at = (h) => q(-k).div(q(x0).mul(q(x0).add(q(h))));
+    lim = q(-k, x0 * x0);
+    extra = { avoid: (e) => Math.abs(e.x) < 0.3 || Math.abs(e.x + e.h) < 0.3 };
+    steps =
+      $M(`\\frac{f(x + h) - f(x)}{h} = \\frac{\\frac{${k}}{x + h} - \\frac{${k}}{x}}{h} = \\frac{\\frac{${k}x - ${k}(x + h)}{x(x + h)}}{h}`) +
+      $M(`= \\frac{${-k}h}{x(x + h)} \\cdot \\frac{1}{h} = ${disp}`);
+  } else {
+    const b = R.int(-5, 5);
+    ftex = T.poly([1, 0, b, 0]); x0 = R.pick([1, -1, 2]);
+    fn = (e) => 3 * e.x * e.x + 3 * e.x * e.h + e.h * e.h + b;
+    disp = sumTex([[3, "x^2"], [3, "xh"], [1, "h^2"], [b, ""]]);
+    at = (h) => { const H = q(h); return q(3 * x0 * x0 + b).add(H.mul(3 * x0)).add(H.mul(H)); };
+    lim = q(3 * x0 * x0 + b);
+    extra = { simplifyH: true };
+    steps =
+      $M(`f(x + h) = (x + h)^3 ${b ? T.sgn(b).replace(/ (\d+)$/, " $1") + "(x + h)" : ""} = x^3 + 3x^2h + 3xh^2 + h^3 ${b ? `${b < 0 ? "-" : "+"} ${Math.abs(b)}x ${b < 0 ? "-" : "+"} ${Math.abs(b)}h` : ""}`) +
+      $M(`\\frac{f(x + h) - f(x)}{h} = \\frac{3x^2h + 3xh^2 + h^3 ${b ? `${b < 0 ? "-" : "+"} ${Math.abs(b)}h` : ""}}{h} = ${disp}`);
+  }
+  const table = hs.map((h) => [x0, h, at(h)]);
+  return {
+    prompt: para(`Let ${$m(`f(x) = ${ftex}`)}. Find and simplify the difference quotient ${$m("\\frac{f(x + h) - f(x)}{h}")}, then use it to fill in the table.`),
+    parts: [
+      P.expr(`Simplified difference quotient (in terms of ${$m("x")} and ${$m("h")})`, fn, disp, { vars: ["x", "h"], ...extra }),
+      ...table.map(([x, h, val]) => P.num(`${$m(`x = ${x},\\ h = ${fmtDec(h, 2)}`)}`, val)),
+      P.num(`As ${$m("h \\to 0")}, what value do these approach?`, lim),
+    ],
+    hint: "Expand f(x + h) carefully (every x becomes (x + h)), subtract f(x), then factor h out of the top and cancel.",
+    solution: steps + para(`Now substitute:`) + table.map(([x, h, val]) => $M(`x = ${x},\\ h = ${fmtDec(h, 2)}: \\quad ${val.tex()}${val.isInt() ? "" : ` = ${fmtDec(val.val(), 4)}`}`)).join("") +
+      para(`Letting ${$m("h \\to 0")} leaves ${$m(lim.tex())}: the instantaneous rate of change (slope of the tangent line) at ${$m(`x = ${x0}`)}. That's exactly what section 1.4 formalizes.`),
+  };
+};
+
+;
+// ================= Section 1.4 — The limit definition of the derivative =================
+const LH = `\\lim_{h \\to 0}`;
+const noH = [{ v: "h", msg: "Your answer still contains h — take the limit as h → 0 (let h become 0 after cancelling)." }];
+
+function derivSteps(kind, d) {
+  if (kind === "quad") {
+    const { a, b, c } = d;
+    return $M(`f'(x) = ${LH} \\frac{f(x + h) - f(x)}{h} = ${LH} \\frac{\\left[${sumTex([[a, "(x + h)^2"], [b, "(x + h)"], [c, ""]])}\\right] - \\left(${T.poly([a, b, c])}\\right)}{h}`) +
+      $M(`= ${LH} \\frac{${sumTex([[a, "x^2"], [2 * a, "xh"], [a, "h^2"], [b, "x"], [b, "h"], [c, ""]])} ${sumTex([[-a, "x^2"], [-b, "x"], [-c, ""]]).replace(/^(?!-)/, "+ ").replace(/^-/, "- ")}}{h}`) +
+      $M(`= ${LH} \\frac{${sumTex([[2 * a, "xh"], [a, "h^2"], [b, "h"]])}}{h} = ${LH} \\frac{h\\left(${sumTex([[2 * a, "x"], [a, "h"], [b, ""]])}\\right)}{h}`) +
+      $M(`= ${LH} \\left(${sumTex([[2 * a, "x"], [a, "h"], [b, ""]])}\\right) = ${sumTex([[2 * a, "x"], [b, ""]])}`);
+  }
+  if (kind === "recip") {
+    const { k } = d;
+    return $M(`f'(x) = ${LH} \\frac{\\frac{${k}}{x + h} - \\frac{${k}}{x}}{h} = ${LH} \\frac{\\frac{${k}x - ${k}(x + h)}{x(x + h)}}{h}`) +
+      $M(`= ${LH} \\frac{${-k}h}{x(x + h)} \\cdot \\frac{1}{h} = ${LH} \\frac{${-k}}{x(x + h)} = \\frac{${-k}}{x^2}`);
+  }
+  if (kind === "sqrt") {
+    return $M(`f'(x) = ${LH} \\frac{\\sqrt{x + h} - \\sqrt{x}}{h} \\cdot \\frac{\\sqrt{x + h} + \\sqrt{x}}{\\sqrt{x + h} + \\sqrt{x}} = ${LH} \\frac{(x + h) - x}{h\\left(\\sqrt{x + h} + \\sqrt{x}\\right)}`) +
+      $M(`= ${LH} \\frac{1}{\\sqrt{x + h} + \\sqrt{x}} = \\frac{1}{2\\sqrt{x}}`);
+  }
+  const { b } = d;
+  const bx = b ? ` ${b < 0 ? "-" : "+"} ${Math.abs(b)}` : "";
+  return $M(`f'(x) = ${LH} \\frac{\\left[(x + h)^3${b ? `${bx}(x + h)` : ""}\\right] - \\left(${T.poly([1, 0, b, 0])}\\right)}{h}`) +
+    $M(`= ${LH} \\frac{3x^2h + 3xh^2 + h^3${b ? `${bx}h` : ""}}{h} = ${LH} \\left(3x^2 + 3xh + h^2${bx}\\right) = ${T.poly([3, 0, b])}`);
+}
+
+function randFn(kinds) {
+  const kind = R.pick(kinds);
+  if (kind === "quad") { const a = R.pick([1, -1, 2, -2, 3]), b = R.int(-6, 6), c = R.int(-6, 6); return { kind, d: { a, b, c }, tex: T.poly([a, b, c]), f: (x) => evalPoly([a, b, c], x), fp: (x) => q(2 * a).mul(x).add(b), fpFn: (e) => 2 * a * e.x + b, fpTex: T.poly([2 * a, b]), extra: {} }; }
+  if (kind === "recip") { const k = R.pick([1, 2, 3, 4, 6, -2, -4]); return { kind, d: { k }, tex: `\\frac{${k}}{x}`, f: (x) => q(k).div(x), fp: (x) => q(-k).div(Q.of(x).mul(x)), fpFn: (e) => -k / (e.x * e.x), fpTex: `\\frac{${-k}}{x^2}`, extra: { avoid: (e) => Math.abs(e.x) < 0.3 } }; }
+  if (kind === "sqrt") return { kind, d: {}, tex: `\\sqrt{x}`, f: null, fp: null, fpFn: (e) => 1 / (2 * Math.sqrt(e.x)), fpTex: `\\frac{1}{2\\sqrt{x}}`, extra: { positive: true } };
+  const b = R.int(-5, 5); return { kind: "cubic", d: { b }, tex: T.poly([1, 0, b, 0]), f: (x) => evalPoly([1, 0, b, 0], x), fp: (x) => q(3).mul(Q.of(x).mul(x)).add(b), fpFn: (e) => 3 * e.x * e.x + b, fpTex: T.poly([3, 0, b]), extra: {} };
+}
+
+GEN.deriv = () => {
+  const F = randFn(["quad", "quad", "quad", "recip", "sqrt", "cubic"]);
+  let p;
+  if (F.kind === "sqrt") p = R.pick([1, 4, 9, 16, 25]);
+  else if (F.kind === "recip") p = R.pick([1, 2, -2, 3]);
+  else do { p = R.nz(-3, 4); } while (F.f(p).eq(F.fp(p)));
+  const fpP = F.kind === "sqrt" ? q(1, 2 * Math.sqrt(p)) : F.fp(p);
+  const r = F.kind === "sqrt" ? R.pick([1, 4, 9, 16].filter((z) => z !== p)) : p === 2 ? -1 : 2;
+  const fpR = F.kind === "sqrt" ? q(1, 2 * Math.sqrt(r)) : F.fp(r);
+  const V = fpP.tex();
+  return {
+    prompt: para(`Let ${$m(`f(x) = ${F.tex}`)}. Use the <b>limit definition</b> ${$m(`f'(x) = ${LH} \\frac{f(x + h) - f(x)}{h}`)} to find ${$m("f'(x)")}.`),
+    parts: [
+      P.expr($m("f'(x) ="), F.fpFn, F.fpTex, { vars: ["x"], forbid: noH, ...F.extra }),
+      P.num($m(`f'(${p}) =`), fpP),
+      P.num(`Slope of the tangent line to ${$m("f")} at ${$m(`x = ${r}`)}`, fpR),
+      P.mc(`What does ${$m(`f'(${p}) = ${V}`)} mean?`, [
+        `The instantaneous rate of change of ${$m("f")} at ${$m(`x = ${p}`)} is ${$m(V)} — the slope of the tangent line there.`,
+        `The value of ${$m("f")} at ${$m(`x = ${p}`)} is ${$m(V)}.`,
+        `The average rate of change of ${$m("f")} from ${$m(`x = 0`)} to ${$m(`x = ${p}`)} is ${$m(V)}.`,
+        `The slope of the secant line from ${$m(`x = ${p}`)} to ${$m(`x = ${p} + 1`)} is ${$m(V)}.`,
+      ], 0),
+    ],
+    hint: "Write f(x + h) by replacing every x with (x + h). After subtracting f(x), every surviving term on top has an h — factor it out and cancel.",
+    solution: derivSteps(F.kind, F.d) +
+      para(`Then ${$m(`f'(${p}) = ${V}`)} and the slope of the tangent at ${$m(`x = ${r}`)} is ${$m(`f'(${r}) = ${fpR.tex()}`)}.`) +
+      para(`${$m(`f'(${p})`)} is the <i>instantaneous</i> rate of change at one input — the slope of the tangent line, not the height of the graph and not an average over an interval.`),
+  };
+};
+
+GEN.tangent = () => {
+  const v = R.pick(["P", "P", "X", "K", "S", "V", "I"]);
+  const lineSol = (m, x0, y0) => {
+    const b = Q.of(y0).sub(Q.of(m).mul(x0));
+    return $M(`${T.pointSlope(m, x0, y0)} \\;\\Rightarrow\\; ${T.line(Q.of(m), b)}`);
+  };
+  if (v === "P" || v === "X") {
+    const F = randFn(["quad", "quad", "cubic"]); const x0 = R.int(-3, 3), y0 = F.f(x0), m = F.fp(x0), b = y0.sub(m.mul(x0));
+    const given = v === "P" ? `at the point ${$m(`(${x0}, ${y0.tex()})`)}` : `at ${$m(`x = ${x0}`)}`;
+    const parts = v === "P"
+      ? [P.expr($m("f'(x) ="), F.fpFn, F.fpTex, { forbid: noH }), P.num(`Slope at ${$m(`x = ${x0}`)}`, m), P.line(`Tangent line`, m, b)]
+      : [P.num($m(`f(${x0})`), y0), P.num($m(`f'(${x0})`), m), P.line(`Tangent line`, m, b)];
+    return {
+      prompt: para(`Let ${$m(`f(x) = ${F.tex}`)}. Find the equation of the tangent line to the graph of ${$m("f")} ${given}.`),
+      parts,
+      hint: v === "P" ? "You have the point. The slope is f'(x₀). Then use y − y₀ = m(x − x₀)." : "You only have x. Get the y-coordinate from f(x₀) and the slope from f'(x₀).",
+      solution: derivSteps(F.kind, F.d) +
+        para(`${v === "X" ? `Point: ${$m(`f(${x0}) = ${y0.tex()}`)}, so the point is ${$m(`(${x0}, ${y0.tex()})`)}. ` : ""}Slope: ${$m(`m = f'(${x0}) = ${m.tex()}`)}.`) + lineSol(m, x0, y0) +
+        para(`Answers in point-slope form are accepted too.`),
+    };
+  }
+  if (v === "K") {
+    const k = R.pick([2, 4, 6, -4, -6, 8]); const divs = [1, 2, -1, -2].filter((z) => Math.abs(k) % Math.abs(z) === 0);
+    const x0 = R.pick(divs), y0 = q(k, x0), m = q(-k, x0 * x0), b = y0.sub(m.mul(x0));
+    return {
+      prompt: para(`Let ${$m(`f(x) = \\frac{${k}}{x}`)}. Find the equation of the tangent line at ${$m(`(${x0}, ${y0.tex()})`)}.`),
+      parts: [P.expr($m("f'(x) ="), (e) => -k / (e.x * e.x), `\\frac{${-k}}{x^2}`, { forbid: noH, avoid: (e) => Math.abs(e.x) < 0.3 }), P.num(`Slope`, m), P.line(`Tangent line`, m, b)],
+      hint: "Combine the two fractions in the numerator over the common denominator x(x + h).",
+      solution: derivSteps("recip", { k }) + para(`Slope: ${$m(`f'(${x0}) = \\frac{${-k}}{${T.par(x0)}^2} = ${m.tex()}`)}.`) + lineSol(m, x0, y0),
+    };
+  }
+  if (v === "S") {
+    const r = R.int(1, 5), x0 = r * r, m = q(1, 2 * r), b = q(r).sub(m.mul(x0));
+    return {
+      prompt: para(`Let ${$m("f(x) = \\sqrt{x}")}. Find the equation of the tangent line at ${$m(`(${x0}, ${r})`)}.`),
+      parts: [P.num(`Slope`, m), P.line(`Tangent line`, m, b)],
+      hint: "Multiply the difference quotient by the conjugate (√(x+h) + √x) over itself.",
+      solution: derivSteps("sqrt", {}) + para(`Slope: ${$m(`f'(${x0}) = \\frac{1}{2\\sqrt{${x0}}} = ${m.tex()}`)}.`) + lineSol(m, x0, r),
+    };
+  }
+  if (v === "V") {
+    const a = R.int(-3, 4), y0 = R.int(-6, 8), m = R.nz(-5, 5), c = R.int(-2, 3), m2 = R.nz(-4, 5), b2 = R.int(-6, 6);
+    return {
+      prompt: para(`<b>(a)</b> Suppose ${$m(`f(${a}) = ${y0}`)} and ${$m(`f'(${a}) = ${m}`)}. Write the equation of the tangent line to ${$m("f")} at ${$m(`x = ${a}`)}.`) +
+        para(`<b>(b)</b> The tangent line to the graph of ${$m("g")} at ${$m(`x = ${c}`)} is ${$m(T.line(q(m2), q(b2)))}. Find ${$m(`g(${c})`)} and ${$m(`g'(${c})`)}.`),
+      parts: [P.line(`(a) Tangent line`, m, q(y0 - m * a)), P.num(`(b) ${$m(`g(${c})`)}`, q(m2 * c + b2)), P.num(`(b) ${$m(`g'(${c})`)}`, q(m2))],
+      hint: "f(a) gives the point (a, f(a)); f'(a) gives the slope. A tangent line touches the curve, so it shares the point, and its slope IS the derivative.",
+      solution: para(`<b>(a)</b> Point ${$m(`(${a}, ${y0})`)}, slope ${m}:`) + lineSol(q(m), a, y0) +
+        para(`<b>(b)</b> The tangent line touches ${$m("g")} at ${$m(`x = ${c}`)}, so ${$m(`g(${c})`)} is the line's height there: ${$m(`${m2}${T.par(c)} ${b2 < 0 ? "-" : "+"} ${Math.abs(b2)} = ${m2 * c + b2}`)}. Its slope is the derivative: ${$m(`g'(${c}) = ${m2}`)}.`),
+    };
+  }
+  // I: where is the slope a given value?
+  const a = R.pick([1, -1, 2, -2]), b = R.int(-8, 8), c = R.int(-5, 5), s = R.nz(-6, 6);
+  const xh = q(-b, 2 * a), yh = evalPoly([a, b, c], xh), xs = q(s - b, 2 * a);
+  return {
+    prompt: para(`Let ${$m(`f(x) = ${T.poly([a, b, c])}`)}, so ${$m(`f'(x) = ${T.poly([2 * a, b])}`)}.`),
+    parts: [
+      P.num(`At what ${$m("x")} is the tangent line horizontal?`, xh),
+      P.num(`What is the ${$m("y")}-coordinate of that point?`, yh),
+      P.num(`At what ${$m("x")} does the tangent line have slope ${$m(s)}?`, xs),
+    ],
+    hint: "Horizontal tangent ⇔ slope 0 ⇔ f'(x) = 0. Set f'(x) equal to the slope you want and solve.",
+    solution: $M(`f'(x) = 0: \\quad ${T.poly([2 * a, b])} = 0 \\;\\Rightarrow\\; x = ${xh.tex()}`) + $M(`f\\left(${xh.tex()}\\right) = ${yh.tex()}`) +
+      $M(`f'(x) = ${s}: \\quad ${T.poly([2 * a, b])} = ${s} \\;\\Rightarrow\\; x = \\frac{${s - b}}{${2 * a}} = ${xs.tex()}`),
+  };
+};
+
+const INT_CTX = [
+  { f: "D", desc: "the distance, in miles, a car has traveled after t hours", what: "the distance traveled", unit: "miles per hour", outU: "miles", inU: "hours", gen: () => [R.int(1, 4), R.int(20, 50), 0], ps: [1, 2, 3] },
+  { f: "h", desc: "the height, in feet, of a rocket t seconds after launch", what: "the height of the rocket", unit: "feet per second", outU: "feet", inU: "seconds", gen: () => [-16, R.pick([96, 128, 160]), 0], ps: [1, 2, 4, 5] },
+  { f: "T", desc: "the temperature, in °F, of an oven t minutes after it is turned on", what: "the oven's temperature", unit: "degrees Fahrenheit per minute", outU: "degrees Fahrenheit", inU: "minutes", gen: () => [-1, R.pick([30, 36, 40]), 70], ps: [5, 10, 12] },
+  { f: "W", desc: "the number of gallons of water in a pool t hours after draining begins", what: "the amount of water", unit: "gallons per hour", outU: "gallons", inU: "hours", gen: () => [2, -R.pick([80, 100]), 1200], ps: [2, 5, 10] },
+];
+
+GEN.interp = () => {
+  if (R.chance(0.3)) {
+    const k = R.int(1, 6), p = R.nz(-3, 3), V = 2 * p;
+    return {
+      prompt: para(`Let ${$m(`f(x) = x^2 - ${k}`)}. Complete the limit definition, then interpret ${$m(`f'(${p})`)}.`) +
+        $M(`${LH} \\frac{f(x + h) - f(x)}{h} = ${LH} \\frac{\\left((x + h)^2 - ${k}\\right) - \\left(x^2 - ${k}\\right)}{h} = \\;?`),
+      parts: [
+        P.expr($m("f'(x) ="), (e) => 2 * e.x, "2x", { forbid: noH }),
+        P.num($m(`f'(${p})`), q(V)),
+        P.mc(`What does ${$m(`f'(${p}) = ${V}`)} tell you?`, [
+          `The slope of the tangent line to the graph of ${$m("f")} at ${$m(`x = ${p}`)} is ${V}.`,
+          `The slope of the secant line from ${$m("x = 0")} to ${$m(`x = ${p}`)} is ${V}.`,
+          `The point ${$m(`(${p}, ${V})`)} is on the graph of ${$m("f")}.`,
+          `The graph of ${$m("f")} crosses the ${$m("y")}-axis at ${V}.`,
+        ], 0),
+      ],
+      hint: "Expand (x + h)², distribute the minus sign, and watch the constants cancel.",
+      solution: $M(`${LH} \\frac{x^2 + 2xh + h^2 - ${k} - x^2 + ${k}}{h} = ${LH} \\frac{h(2x + h)}{h} = ${LH} (2x + h) = 2x`) +
+        para(`${$m(`f'(${p}) = 2${T.par(p)} = ${V}`)}. The graph of ${$m("f")} has an instantaneous rate of change of ${V} at ${$m(`x = ${p}`)}: the tangent line there has slope ${V}${V > 0 ? " (f is increasing)" : " (f is decreasing)"}.`),
+    };
+  }
+  let ctx, co, p, V;
+  do { ctx = R.pick(INT_CTX); co = ctx.gen(); p = R.pick(ctx.ps); V = 2 * co[0] * p + co[1]; } while (V === 0 || co[0] * p + co[1] === V);
+  const up = V > 0, A = Math.abs(V), fx = T.poly(co, "t");
+  return {
+    prompt: para(`Let ${$m(`${ctx.f}(t) = ${fx}`)} be ${ctx.desc}.`),
+    parts: [
+      P.expr($m(`${ctx.f}'(t) =`), (e) => 2 * co[0] * e.t + co[1], T.poly([2 * co[0], co[1]], "t"), { vars: ["t"], forbid: noH }),
+      P.num($m(`${ctx.f}'(${p})`), q(V)),
+      P.mc(`Interpret ${$m(`${ctx.f}'(${p}) = ${V}`)}.`, [
+        `At ${$m(`t = ${p}`)} ${ctx.inU}, ${ctx.what} is ${up ? "increasing" : "decreasing"} at a rate of ${A} ${ctx.unit}.`,
+        `At ${$m(`t = ${p}`)} ${ctx.inU}, ${ctx.what} is ${up ? "decreasing" : "increasing"} at a rate of ${A} ${ctx.unit}.`,
+        `At ${$m(`t = ${p}`)} ${ctx.inU}, ${ctx.what} is ${A} ${ctx.outU}.`,
+        `Over the first ${p} ${ctx.inU}, ${ctx.what} changed at an average rate of ${A} ${ctx.unit}.`,
+      ], 0),
+    ],
+    hint: "The derivative's units are (output units) per (input unit). Its sign says increasing (+) or decreasing (−).",
+    solution: derivSteps("quad", { a: co[0], b: co[1], c: co[2] }).replace(/f'\(x\)/g, `${ctx.f}'(t)`).replace(/x/g, "t") +
+      $M(`${ctx.f}'(${p}) = ${2 * co[0]}${T.par(p)} ${co[1] < 0 ? "-" : "+"} ${Math.abs(co[1])} = ${V}`) +
+      para(`Positive/negative tells the direction, and the units are ${ctx.outU} per ${ctx.inU.replace(/s$/, "")}: at that instant ${ctx.what} is ${up ? "increasing" : "decreasing"} at ${A} ${ctx.unit}. (The value ${$m(`${ctx.f}(${p}) = ${evalPoly(co, p).tex()}`)} is a different quantity.)`),
+  };
+};
+
+const DIFF_CHOICES = ["Continuous and differentiable", "Continuous but NOT differentiable", "Not continuous (so not differentiable)"];
+GEN.diffGraph = () => {
+  const G = Graph.randomPiecewise(R.pick([["corner", "jump", "cont", "hole"], ["corner", "asym", "cont", "hole"], ["corner", "jump", "hole", "cont"], ["corner", "corner", "jump", "cont"]]));
+  return {
+    prompt: para(`At each labeled ${$m("x")}-value, decide whether the graph of ${$m("f")} is continuous there and whether it is differentiable there.`),
+    figure: G.svg,
+    parts: G.inner.map((n) => P.mcFixed(`At ${$m(`x = ${n.x}`)}`, DIFF_CHOICES, n.differentiable ? 0 : n.continuous ? 1 : 2)),
+    hint: "A function is NOT differentiable at corners, at discontinuities (holes, jumps, asymptotes), and at vertical tangents. Differentiable ⇒ continuous.",
+    solution: G.inner.map((n) => para(`<b>${$m(`x = ${n.x}`)}:</b> ${
+      n.differentiable ? "Smooth and unbroken — a single tangent line fits → continuous and differentiable."
+        : n.corner ? "No break, but the curve comes to a sharp point (corner): the slopes from the left and right disagree → continuous, not differentiable."
+          : n.type === "infinite" ? "Vertical asymptote → not continuous, so not differentiable."
+            : n.type === "jump" ? "The graph jumps → not continuous, so not differentiable."
+              : "There's a hole (the dot isn't on the curve) → not continuous, so not differentiable."}`)).join(""),
+  };
+};
+
+GEN.rateGraph = () => {
+  if (R.chance(0.55)) {
+    const L = R.pick([200, 250, 300]), ti = R.int(4, 6), k = R.pick([0.7, 0.8, 0.9]), A = Math.exp(k * ti);
+    const h = (t) => L / (1 + A * Math.exp(-k * t)), hp = (t) => k * h(t) * (1 - h(t) / L);
+    const ymax = Math.ceil((L * 1.15) / 50) * 50;
+    const svg = Graph.fnPlot({ fn: h, xmin: 0, xmax: 13, ymin: 0, ymax, gy: 25, ly: 50, edgeLabels: true, xName: "t (weeks)", yName: "h (cm)" });
+    const clear = (u, w) => Math.max(u, w) / Math.max(1e-9, Math.min(u, w)) > 1.35;
+    const stm = [];
+    { const s = R.chance(0.5) ? ti : ti + R.pick([-3, 3]); stm.push({ t: `The slopes of the tangent lines get steeper up to ${$m(`t = ${s}`)}, and then the slopes start to flatten out.`, v: s === ti, why: `The graph is steepest at about ${$m(`t = ${ti}`)} (where it changes from bending up to bending down).` }); }
+    for (let i = 0; i < 20; i++) { const T2 = R.pick([10, 12]), t1 = R.int(ti - 1, ti + 1), arc = (h(T2) - h(0)) / T2, ins = hp(t1); if (clear(arc, ins)) { stm.push({ t: `The average rate of change over ${$m(`[0, ${T2}]`)} is greater than the instantaneous rate of change at ${$m(`t = ${t1}`)}.`, v: arc > ins, why: `ARC ${$m(`\\approx \\frac{${fmtDec(h(T2), 1)} - ${fmtDec(h(0), 1)}}{${T2}} \\approx ${fmtDec(arc, 1)}`)} cm/week; the tangent slope at ${$m(`t = ${t1}`)} is about ${fmtDec(ins, 1)} cm/week.` }); break; } }
+    for (let i = 0; i < 40; i++) { const t1 = R.int(1, 12), t2 = R.int(1, 12); if (t1 !== t2 && clear(hp(t1), hp(t2))) { stm.push({ t: `The seedling grows faster (instantaneous rate) at week ${t1} than at week ${t2}.`, v: hp(t1) > hp(t2), why: `Tangent slopes: about ${fmtDec(hp(t1), 1)} cm/week at ${$m(`t = ${t1}`)} vs. ${fmtDec(hp(t2), 1)} at ${$m(`t = ${t2}`)}.` }); break; } }
+    for (let i = 0; i < 40; i++) { const a = R.int(0, 10), b = R.int(0, 10), ra = (h(a + 2) - h(a)) / 2, rb = (h(b + 2) - h(b)) / 2; if (Math.abs(a - b) >= 3 && clear(ra, rb)) { stm.push({ t: `The average rate of change over ${$m(`[${a}, ${a + 2}]`)} is less than over ${$m(`[${b}, ${b + 2}]`)}.`, v: ra < rb, why: `${$m(`[${a},${a + 2}]`)}: ≈ ${fmtDec(ra, 1)} cm/week; ${$m(`[${b},${b + 2}]`)}: ≈ ${fmtDec(rb, 1)} cm/week.` }); break; } }
+    return {
+      prompt: para(`A sunflower seedling is planted and its height ${$m("h")} (in centimeters) after ${$m("t")} weeks is graphed below. Decide whether each statement is true or false.`),
+      figure: svg,
+      parts: stm.map((s) => P.tf(s.t, s.v)),
+      hint: "Average rate = slope of the secant line between two points. Instantaneous rate = slope of the tangent line at one point. Compare steepness.",
+      solution: stm.map((s, i) => para(`<b>${"abcd"[i]}. ${s.v ? "True" : "False"}.</b> ${s.why}`)).join(""),
+    };
+  }
+  const T0 = R.pick([180, 190, 200]), kk = R.pick([0.1, 0.12, 0.15]);
+  const Tf = (t) => 70 + (T0 - 70) * Math.exp(-kk * t), Tp = (t) => -kk * (T0 - 70) * Math.exp(-kk * t);
+  const svg = Graph.fnPlot({ fn: Tf, xmin: 0, xmax: 30, ymin: 60, ymax: 210, gx: 5, lx: 5, gy: 10, ly: 30, edgeLabels: true, xName: "t (min)", yName: "T (°F)" });
+  const t1 = R.int(1, 8), t2 = t1 + R.int(10, 18), arc = (Tf(10) - Tf(0)) / 10;
+  const stm = [
+    { t: `The coffee is cooling faster at ${$m(`t = ${t1}`)} minutes than at ${$m(`t = ${t2}`)} minutes.`, v: true, why: `The graph is steeper at ${$m(`t = ${t1}`)} (slope ≈ ${fmtDec(Tp(t1), 1)} °F/min) than at ${$m(`t = ${t2}`)} (≈ ${fmtDec(Tp(t2), 1)} °F/min).` },
+    { t: `The average rate of change over ${$m("[0, 10]")} is positive.`, v: false, why: `The temperature drops from ${fmtDec(Tf(0), 0)} to about ${fmtDec(Tf(10), 1)}, so the ARC ≈ ${fmtDec(arc, 1)} °F/min — negative.` },
+    { t: `The tangent lines get steeper as ${$m("t")} increases.`, v: false, why: `The curve levels off toward 70 °F, so the tangent lines flatten (slopes move toward 0).` },
+    { t: `The instantaneous rate of change at ${$m("t = 25")} is closer to 0 than the average rate of change over ${$m("[0, 10]")}.`, v: Math.abs(Tp(25)) < Math.abs(arc), why: `${$m("T'(25)")} ≈ ${fmtDec(Tp(25), 2)} °F/min vs. ARC ≈ ${fmtDec(arc, 1)} °F/min.` },
+  ];
+  const order = R.shuffle(stm);
+  return {
+    prompt: para(`A cup of coffee is left on a counter. Its temperature ${$m("T")} (in °F) after ${$m("t")} minutes is graphed below. Decide whether each statement is true or false.`),
+    figure: svg,
+    parts: order.map((s) => P.tf(s.t, s.v)),
+    hint: "A decreasing graph has negative rates. 'Cooling faster' means a steeper (more negative) slope.",
+    solution: order.map((s, i) => para(`<b>${"abcd"[i]}. ${s.v ? "True" : "False"}.</b> ${s.why}`)).join(""),
+  };
+};
+
+;
+// ================= Concept checks + formula sheet =================
+const CONCEPTS = {
+  "1.1": [
+    { q: tx`If ${$m(tx`\lim_{x\to a^-} f(x) = 5`)}, ${$m(tx`\lim_{x\to a^+} f(x) = 5`)}, and ${$m("f(a) = 2")}, then ${$m(tx`\lim_{x\to a} f(x)`)} is…`, c: ["5", "2", "DNE", "3.5"], why: "Both one-sided limits are 5. The limit describes where the outputs are heading, not the value at a." },
+    { q: tx`If ${$m(tx`\lim_{x\to 2^-} f(x) = 3`)} and ${$m(tx`\lim_{x\to 2^+} f(x) = -1`)}, then ${$m(tx`\lim_{x\to 2} f(x)`)} is…`, c: ["DNE", "3", "−1", "1"], why: "The left and right limits must match for the limit to exist." },
+    { q: tx`${$m(tx`\lim_{x\to\infty} \left(-2x^3 + x\right)`)} is…`, c: [$m("-\\infty"), $m("\\infty"), "0", "−2"], why: "Odd degree, negative leading coefficient: as x → ∞ the graph falls." },
+    { q: tx`${$m(tx`\lim_{x\to 0} \frac{1}{x^2}`)} is…`, c: [`${$m("\\infty")} (both sides go up)`, "0", `${$m("-\\infty")}`, "Left → −∞, right → +∞"], why: "x² is a small positive number on both sides of 0, so 1/x² → +∞ from both sides." },
+    { q: tx`${$m(tx`\lim_{x\to 0^-} \frac{1}{x}`)} is…`, c: [$m("-\\infty"), $m("\\infty"), "0", "1"], why: "Just left of 0, x is a small negative number, so 1/x is a huge negative number." },
+    { q: tx`${$m(tx`\lim_{x\to -\infty} e^{x}`)} is…`, c: ["0", $m("\\infty"), "1", $m("-\\infty")], why: "e^x shrinks toward its horizontal asymptote y = 0 as x → −∞." },
+    { q: tx`A rational function has ${$m(tx`\lim_{x\to\infty} f(x) = 3/2`)}. On the graph this is…`, c: [`A horizontal asymptote ${$m("y = 3/2")}`, `A vertical asymptote ${$m("x = 3/2")}`, `A hole at ${$m("x = 3/2")}`, `The ${$m("y")}-intercept`], why: "Limits at ±∞ describe end behavior — horizontal asymptotes." },
+    { q: "A function is a rule that assigns…", c: ["exactly one output to each input", "exactly one input to each output", "at least one output to each input", "a limit to each input"], why: "That's the definition — and it's why the circle x² + y² = 16 is not a function." },
+  ],
+  "1.2": [
+    { q: "f is continuous at x = a when…", c: ["f(a) is defined, the limit as x → a exists, and the limit equals f(a)", "f(a) is defined and the left-hand limit exists", "the limit as x → a exists", "f'(a) exists and f(a) ≠ 0"], why: "All three conditions are required." },
+    { q: tx`Direct substitution into ${$m(tx`\lim_{x\to 3} \frac{x^2 - 9}{x - 3}`)} gives ${$m("\\frac{0}{0}")}. This means…`, c: ["Nothing yet — simplify (factor and cancel), then substitute again", "The limit is 0", "The limit does not exist", "The limit is 1"], why: "0/0 is an indeterminate form. Here (x−3)(x+3)/(x−3) = x + 3 → 6." },
+    { q: tx`To compute ${$m(tx`\lim_{x\to\infty}`)} of a rational function algebraically, divide every term by…`, c: ["the highest power of x in the denominator", "x", "the leading coefficient of the numerator", "the highest power of x in the numerator"], why: "Then every term of the form c/xᵖ goes to 0." },
+    { q: "A graph has an open circle on the curve at x = 2 and a filled dot at (2, 5) above it. At x = 2 there is a…", c: ["removable discontinuity", "jump discontinuity", "infinite discontinuity", "corner, but it is continuous"], why: "The limit exists (the curve closes up to one height) but doesn't equal f(2)." },
+    { q: tx`If ${$m(tx`\lim_{x\to1} f(x) = 4`)} and ${$m(tx`\lim_{x\to1} g(x) = -2`)}, then ${$m(tx`\lim_{x\to1} \frac{f(x)}{g(x)}`)} is…`, c: ["−2", "2", "−8", "DNE"], why: "Quotient property: 4 / (−2) = −2 (allowed since the bottom limit isn't 0)." },
+    { q: tx`${$m(tx`f(x) = \frac{x + 1}{x - 4}`)} has what kind of discontinuity at ${$m("x = 4")}?`, c: ["Infinite", "Removable", "Jump", "None — it's continuous"], why: "The bottom is 0 but the top is 5, nothing cancels → vertical asymptote." },
+  ],
+  "1.3": [
+    { q: "The average rate of change of f on [a, b] is the slope of…", c: ["the secant line through (a, f(a)) and (b, f(b))", "the tangent line at x = a", "the tangent line at x = b", "the line through the origin and (b, f(b))"], why: "Rise over run between two points on the graph." },
+    { q: "If P(t) is profit in dollars after t months, the average rate of change of P has units…", c: ["dollars per month", "months per dollar", "dollars", "dollars · months"], why: "Output units per input unit." },
+    { q: tx`The difference quotient ${$m(tx`\frac{f(x+h) - f(x)}{h}`)} represents…`, c: ["the average rate of change of f from x to x + h", "the instantaneous rate of change at x", "the value of f at x + h", "the change in f from x to x + h"], why: "It's (change in output)/(change in input) over an interval of width h." },
+    { q: "Unemployment was 5.4% in 2004 and 9.9% in 2009. The average rate of change is…", c: ["0.9 percentage points per year", "4.5 percentage points per year", "1.11 years per percentage point", "0.9%"], why: "(9.9 − 5.4)/(2009 − 2004) = 4.5/5 = 0.9." },
+    { q: tx`For ${$m(tx`f(x) = \frac{2}{x}`)}, the average rate of change on ${$m("[1, 4]")} is…`, c: ["−1/2", "1/2", "−3/2", "−2"], why: "(f(4) − f(1))/(4 − 1) = (0.5 − 2)/3 = −0.5." },
+  ],
+  "1.4": [
+    { q: "The derivative of f is defined as f′(x) = …", c: [$m(tx`\lim_{h\to0} \frac{f(x+h) - f(x)}{h}`), $m(tx`\frac{f(b) - f(a)}{b - a}`), $m(tx`\lim_{h\to0} \frac{f(x+h) + f(x)}{h}`), $m(tx`\lim_{x\to0} \frac{f(x+h) - f(x)}{h}`)], why: "The limit of the difference quotient as h → 0." },
+    { q: "Which is NOT a place where f can fail to be differentiable?", c: ["A point with a horizontal tangent line", "A corner (sharp point)", "A discontinuity (hole, jump, asymptote)", "A vertical tangent line"], why: "A horizontal tangent just means f′ = 0 — the derivative exists." },
+    { q: "If f is differentiable at x = a, then…", c: ["f is continuous at a", "f has a corner at a", "f′(a) = 0", "f may have a jump at a"], why: "Differentiable ⇒ continuous. (The reverse is false: |x| is continuous at 0 but has a corner.)" },
+    { q: "True or false: if f is continuous at a, then f is differentiable at a.", c: ["False", "True"], why: "Counterexample: f(x) = |x| at x = 0 has a corner." },
+    { q: "Which is NOT notation for the derivative of y = f(x)?", c: [$m(tx`\frac{\Delta y}{\Delta x}`), $m("f'(x)"), $m(tx`\frac{dy}{dx}`), $m("y'")], why: "Δy/Δx is an average rate of change over an interval." },
+    { q: "The tangent line to f at x = 2 when f(2) = 7 and f′(2) = −3 is…", c: [$m("y = -3x + 13"), $m("y = -3x + 7"), $m("y = 7x - 3"), $m("y = -3x - 1")], why: "y − 7 = −3(x − 2) → y = −3x + 6 + 7 = −3x + 13." },
+    { q: "If h(t) is a plant's height in cm after t weeks, then h′(4) = 30 means…", c: ["at week 4 the plant is growing at 30 cm per week", "the plant is 30 cm tall at week 4", "over the first 4 weeks it grew 30 cm per week on average", "the plant grows 30 cm between week 4 and week 5"], why: "An instantaneous rate at one moment, in output units per input unit." },
+    { q: "As h → 0, the secant lines through (a, f(a)) and (a + h, f(a + h)) approach…", c: ["the tangent line at x = a", "the x-axis", "a vertical line", "the average rate of change on [0, a]"], why: "That's the geometric picture behind the limit definition." },
+  ],
+};
+
+function conceptGen(sec) {
+  return () => {
+    const items = R.sample(CONCEPTS[sec], 4);
+    return {
+      prompt: para(`Quick concept check for section ${sec}. No calculation traps — just make sure the ideas are solid.`),
+      parts: items.map((it) => P.mc(it.q, it.c, 0)),
+      hint: "Think about what each idea means, not just how to compute it.",
+      solution: items.map((it, i) => para(`<b>${"abcd"[i]}.</b> ${it.c[0]} — ${it.why}`)).join(""),
+    };
+  };
+}
+GEN.concepts11 = conceptGen("1.1");
+GEN.concepts12 = conceptGen("1.2");
+GEN.concepts13 = conceptGen("1.3");
+GEN.concepts14 = conceptGen("1.4");
+
+const FORMULA_SHEET = [
+  { sec: "1.1", title: "Limits: numerical & graphical", items: [
+    ["Limit", tx`${$m(tx`\lim_{x\to a} f(x) = L`)} means the outputs get as close to ${$m("L")} as we like when inputs are close to ${$m("a")} (from both sides). The value ${$m("f(a)")} itself doesn't matter.`],
+    ["Existence", tx`${$m(tx`\lim_{x\to a} f(x)`)} exists only if ${$m(tx`\lim_{x\to a^-} f(x) = \lim_{x\to a^+} f(x)`)}. Otherwise it DNE.`],
+    ["Infinite limits", tx`${$m(tx`\lim_{x\to0^-} \frac1x = -\infty`)}, ${$m(tx`\lim_{x\to0^+} \frac1x = \infty`)}, so ${$m(tx`\lim_{x\to0} \frac1x`)} DNE. ${$m(tx`\lim_{x\to0} \frac1{x^2} = \infty`)}.`],
+    ["End behavior", tx`Even degree: both ends match the leading-coefficient sign. Odd degree, positive: ${$m(tx`x\to\infty \Rightarrow \infty`)}, ${$m(tx`x\to-\infty \Rightarrow -\infty`)} (negative flips both).`],
+    ["Reciprocals & exponentials", tx`${$m(tx`\frac{1}{x^p} \to 0`)} as ${$m(tx`x\to\pm\infty`)} (${$m("p>0")}). ${$m(tx`e^x \to \infty`)} as ${$m(tx`x\to\infty`)}, ${$m(tx`e^x\to 0`)} as ${$m(tx`x\to-\infty`)}. ${$m(tx`e^{-x}`)} is the mirror image.`],
+  ] },
+  { sec: "1.2", title: "Limits: algebraic & continuity", items: [
+    ["Properties", tx`Limits pass through sums, differences, constant multiples, products, quotients (bottom ≠ 0), powers, and roots: e.g. ${$m(tx`\lim [f\,g] = LM`)}, ${$m(tx`\lim \frac{f}{g} = \frac{L}{M}`)}, ${$m(tx`\lim [f]^n = L^n`)}.`],
+    ["Direct substitution", tx`If ${$m("a")} is in the domain (polynomials, rational functions with nonzero bottom, roots of nonnegatives), ${$m(tx`\lim_{x\to a} f(x) = f(a)`)}.`],
+    ["0/0", "Factor & cancel, expand & simplify, or use the conjugate (√x − r)(√x + r) = x − r². Keep writing “lim” until you substitute."],
+    ["Limits at ±∞", "Divide every term by the highest power of x in the denominator. Equal degrees → ratio of leading coefficients; bigger bottom → 0; bigger top → ±∞."],
+    ["Continuity at x = a", tx`(1) ${$m("f(a)")} defined, (2) ${$m(tx`\lim_{x\to a} f(x)`)} exists, (3) they're equal.`],
+    ["Discontinuities", "Removable: hole (limit exists ≠ f(a) or f(a) undefined). Jump: one-sided limits differ. Infinite: vertical asymptote."],
+  ] },
+  { sec: "1.3", title: "Average rate of change", items: [
+    ["Average rate of change", tx`${$m(tx`\frac{f(b) - f(a)}{b - a}`)} = slope of the secant line. Units: output units <b>per</b> input unit.`],
+    ["Difference quotient", tx`${$m(tx`\frac{f(x+h) - f(x)}{h}`)} = average rate of change from ${$m("x")} to ${$m("x+h")}. Simplify until ${$m("h")} cancels from the bottom.`],
+    ["Example", tx`${$m("f(x) = ax^2 + bx + c")} gives ${$m(tx`\frac{f(x+h)-f(x)}{h} = 2ax + ah + b`)}. ${$m(tx`f(x) = \frac{k}{x}`)} gives ${$m(tx`\frac{-k}{x(x+h)}`)}.`],
+  ] },
+  { sec: "1.4", title: "The derivative", items: [
+    ["Definition", $m(tx`f'(x) = \lim_{h\to 0} \frac{f(x+h) - f(x)}{h}`)],
+    ["Notation", tx`${$m("f'(x)")}, ${$m("y'")}, ${$m(tx`\frac{dy}{dx}`)}, ${$m(tx`\frac{d}{dx}f(x)`)}. ${$m("f'(a)")} is a number.`],
+    ["Meaning", tx`${$m("f'(a)")} = instantaneous rate of change at ${$m("x = a")} = slope of the tangent line there. Units: output per input.`],
+    ["Tangent line", tx`Point ${$m("(a, f(a))")}, slope ${$m("m = f'(a)")}: ${$m("y - f(a) = f'(a)(x - a)")}.`],
+    ["Not differentiable", "Corners/cusps, discontinuities (holes, jumps, asymptotes), vertical tangent lines."],
+    ["Key fact", "Differentiable ⇒ continuous. Continuous does NOT imply differentiable (|x| at 0)."],
+    ["Results to know", tx`${$m("(ax^2+bx+c)' = 2ax + b")}, ${$m(tx`\left(\frac{k}{x}\right)' = -\frac{k}{x^2}`)}, ${$m(tx`\left(\sqrt{x}\right)' = \frac{1}{2\sqrt{x}}`)}, ${$m("(x^3)' = 3x^2")}.`],
+  ] },
+];
+
+;
+// ================= mock midterms: fixed seeds, point values, printable papers, answer keys =================
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function withSeed(seed, fn) {
+  const orig = Math.random; Math.random = mulberry32(seed);
+  try { return fn(); } finally { Math.random = orig; }
+}
+
+const MOCK_BLUEPRINT = [
+  ["graphRead"], ["numTable", "inverse"], ["properties", "directSub"], ["factor"], ["infRational"], ["bigPiecewise", "endBehavior"],
+  ["pwLimit"], ["continuity"], ["discType"], ["arcFunc"], ["arcData", "arcShrink"], ["dq"], ["deriv"], ["tangent"], ["interp"], ["diffGraph", "rateGraph"],
+];
+const MOCKS = [
+  { key: "A", seed: 213001, variant: 0, name: "Mock Midterm A" },
+  { key: "B", seed: 213002, variant: 1, name: "Mock Midterm B" },
+  { key: "C", seed: 213003, variant: 2, name: "Mock Midterm C" },
+  { key: "D", seed: 213004, variant: 3, name: "Mock Midterm D" },
+];
+const WORK = { factor: "tall", dq: "tall", deriv: "tall", tangent: "tall", continuity: "tall", pwLimit: "mid", infRational: "tall", properties: "mid", directSub: "mid", arcFunc: "mid", arcShrink: "mid", interp: "mid", bigPiecewise: "mid", numTable: "short", inverse: "mid", endBehavior: "mid", arcData: "mid" };
+
+function partPoints(parts, part) {
+  if (part.type === "expr" || part.type === "line") return 3;
+  if (part.type === "mc") return 1;
+  return parts.filter((p) => p.type === "num").length >= 4 ? 1 : 2;
+}
+function buildMock(mock) {
+  return withSeed(mock.seed, () => MOCK_BLUEPRINT.map((opts, i) => {
+    const id = opts[((mock.variant >> (i % 2)) & 1) % opts.length];
+    const pr = makeProblem(id);
+    const pts = pr.parts.map((part) => partPoints(pr.parts, part));
+    return { id, pr, pts, total: pts.reduce((a, b) => a + b, 0) };
+  }));
+}
+const btn = (label, cls, onClick) => el("button", { class: `btn ${cls}`, type: "button", onclick: onClick }, label);
+const minutesSelect = (id) => `<label for="${id}">Time limit <select id="${id}"><option value="50">50 min</option><option value="75" selected>75 min</option><option value="90">90 min</option><option value="0">No limit</option></select></label>`;
+
+function renderMocks() {
+  clearInterval(examTimer);
+  const main = document.getElementById("main"); main.innerHTML = "";
+  const intro = el("section", { class: "sheet" });
+  intro.innerHTML = `<div class="sheet-head"><h3>Mock midterms</h3><span class="tag">§1.1 – §1.4 · ${MOCK_BLUEPRINT.length} problems each</span></div>
+    <div class="prompt"><p>Four full-length practice midterms built like the real one: every section, point values, and show-your-work problems. Each exam stays the same every time you open it, so you can print it, work it on paper, grade it with the answer key, and retake it later.</p>
+    <p><b>Plan before Wednesday:</b> take A under the timer tonight, review the misses, and drill those topics. Take B on Monday and C on Tuesday. Save D for a final warm-up.</p></div>
+    <div class="setup">${minutesSelect("mock-min")}</div>`;
+  main.append(intro);
+  const mins = () => +document.getElementById("mock-min").value;
+  const grid = el("div", { class: "mock-grid" });
+  MOCKS.forEach((m) => {
+    const probs = buildMock(m), pts = probs.reduce((n, p) => n + p.total, 0), best = state.mockScores[m.key];
+    const card = el("section", { class: "sheet mock-card" });
+    card.innerHTML = `<div class="mock-letter" aria-hidden="true">${m.key}</div><div><h3>${m.name}</h3><p class="mock-meta">${probs.length} problems · ${pts} points</p><p class="mock-best">${best != null ? `Best score <b>${best}%</b>` : "Not taken yet"}</p></div>`;
+    const acts = el("div", { class: "actions" });
+    acts.append(btn("Take it", "primary", () => runMock(m, mins())), btn("Printable exam", "", () => renderPaper(m, false)), btn("Answer key", "ghost", () => renderPaper(m, true)));
+    card.append(acts); grid.append(card);
+  });
+  const rnd = el("section", { class: "sheet mock-card" });
+  rnd.innerHTML = `<div class="mock-letter" aria-hidden="true">?</div><div><h3>Random mock</h3><p class="mock-meta">A brand-new exam every time</p><p class="mock-best">Same layout and point values as A–D</p></div>`;
+  const newRandom = () => { const seed = 1000 + Math.floor(Math.random() * 900000); return { key: null, seed, variant: seed % 4, name: `Random Mock #${seed}` }; };
+  const racts = el("div", { class: "actions" });
+  racts.append(btn("Take one", "primary", () => runMock(newRandom(), mins())), btn("Print one", "", () => renderPaper(newRandom(), false)));
+  rnd.append(racts); grid.append(rnd);
+  main.append(grid);
+}
+
+function runMock(mock, minutes) {
+  clearInterval(examTimer);
+  const main = document.getElementById("main"); main.innerHTML = "";
+  const problems = buildMock(mock), totalPts = problems.reduce((n, p) => n + p.total, 0);
+  const bar = el("div", { class: "exam-bar" });
+  bar.innerHTML = `<span class="clock" id="clock">${minutes ? `${minutes}:00` : "∞"}</span><span class="meta">${mock.name} · ${problems.length} problems · ${totalPts} points<br>${minutes ? "time remaining · no feedback until you submit" : "untimed · no feedback until you submit"}</span>`;
+  const submit = btn("Submit exam", "", () => grade(false));
+  bar.append(submit); main.append(bar);
+  const views = problems.map((p, i) => {
+    const t = TOPIC_BY_ID[p.id];
+    const v = problemCard(p.pr, { title: t.name, tag: `§${t.sec} · ${p.total} pts`, num: i + 1 });
+    main.append(v.card);
+    return { ...p, ...v };
+  });
+  typeset(main);
+  window.scrollTo({ top: 0 });
+  const end = Date.now() + minutes * 60000;
+  if (minutes) {
+    examTimer = setInterval(() => {
+      const left = Math.max(0, end - Date.now()), m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
+      const clock = document.getElementById("clock"); if (clock) clock.textContent = `${m}:${String(s).padStart(2, "0")}`;
+      if (left <= 0) grade(true);
+    }, 1000);
+  }
+  let done = false;
+  function grade(timeUp) {
+    if (done) return; done = true; clearInterval(examTimer);
+    const bySec = {}; let earned = 0;
+    views.forEach((v) => {
+      const sec = TOPIC_BY_ID[v.id].sec; bySec[sec] = bySec[sec] || [0, 0];
+      v.ctrls.forEach((c, j) => { const r = c.grade(); applyResult(c, r, true); c.lock(); if (r.ok) { earned += v.pts[j]; bySec[sec][0] += v.pts[j]; } bySec[sec][1] += v.pts[j]; });
+      v.card.append(el("details", { class: "solution" }, `<summary class="sol-lbl" style="cursor:pointer">Worked solution</summary>${v.pr.solution}`));
+    });
+    const pct = Math.round((100 * earned) / totalPts);
+    if (mock.key) { state.mockScores[mock.key] = Math.max(state.mockScores[mock.key] ?? 0, pct); persist(); }
+    const weakest = Object.entries(bySec).sort((a, b) => a[1][0] / a[1][1] - b[1][0] / b[1][1])[0];
+    const res = el("section", { class: "sheet" });
+    res.innerHTML = `<div class="sheet-head"><h3>${timeUp ? "Time's up — " : ""}${mock.name} results</h3><span class="tag">graded</span></div>
+      <div class="result"><span class="big">${pct}%</span><span>${earned} of ${totalPts} points</span>
+      <table>${Object.entries(bySec).map(([s, [a, b]]) => `<tr><td>§${s}</td><td>${a}/${b} pts</td><td>${Math.round((100 * a) / b)}%</td></tr>`).join("")}</table></div>
+      <p class="prompt" style="margin-top:10px">Your weakest section was <b>§${weakest[0]}</b>. Missed answers below show the correct value, and every problem has a worked solution. Drill §${weakest[0]} from the topic list, then retake this exam or move to the next one.</p>`;
+    const acts = el("div", { class: "actions" });
+    acts.append(btn("Back to mock exams", "primary", renderMocks));
+    if (mock.key) acts.append(btn("Printable answer key", "", () => renderPaper(mock, true)));
+    res.append(acts);
+    bar.remove(); main.prepend(res); typeset(main);
+    window.scrollTo({ top: 0, behavior: smooth() });
+  }
+}
+
+const paperText = (html) => html.replace(/<code>-inf<\/code>/g, "−∞").replace(/<code>inf<\/code>/g, "∞").replace(/ Use ∞ \/ −∞ for \\\(\\pm\\infty\\\)\./g, "");
+function renderPaper(mock, withKey, bare = false) {
+  clearInterval(examTimer);
+  const main = document.getElementById("main"); main.innerHTML = "";
+  const problems = buildMock(mock), totalPts = problems.reduce((n, p) => n + p.total, 0);
+  if (!bare) {
+    const tools = el("div", { class: "paper-tools" });
+    tools.append(btn("← Mock exams", "ghost", renderMocks), btn(withKey ? "Show the exam" : "Show the answer key", "", () => renderPaper(mock, !withKey)), btn("Print / save as PDF", "primary", () => window.print()));
+    tools.append(el("span", { class: "score-line" }, `Printing blocked here? PDFs of A–D are in <b>mat 2026 › 03 Exam Prep › Mock Exams</b>.`));
+    main.append(tools);
+  }
+  const L = "ABCD";
+  let html = `<header class="paper-top"><div><div>MAT 213 Brief Calculus</div><div class="paper-title">${mock.name}${withKey ? " — Answer Key" : ""}</div><div>Practice midterm (AI-Free) · Sections 1.1–1.4</div></div>` +
+    (withKey ? `<div class="paper-total">Total: ${totalPts} points</div>` : `<div class="paper-name"><div>Name: <span class="line"></span></div><div>Date: <span class="line"></span></div><div>Score: <span class="line short"></span> / ${totalPts}</div></div>`) + `</header>`;
+  if (!withKey) html += `<p class="paper-dir"><b>Directions:</b> Answer each question below. Be sure to show work to receive full credit. Work this exam on your own, without notes or AI, the way you will on the proctored midterm. Be sure the notation in your solutions matches the notation from the lesson videos. Write <b>DNE</b> if a value or limit does not exist. Suggested time: 75 minutes.</p>`;
+  problems.forEach((p, i) => {
+    html += `<section class="paper-q"><div class="pq-head"><span class="pq-num">${i + 1}.</span><div class="pq-body">${paperText(p.pr.prompt)}${p.pr.figure ? `<div class="figure">${p.pr.figure}</div>` : ""}<ol class="pq-parts">`;
+    p.pr.parts.forEach((part, j) => {
+      const letter = p.pr.parts.length > 1 ? `${String.fromCharCode(97 + j)}.)` : "";
+      const tf = part.type === "mc" && part.choices.length === 2 && part.choices[0] === "True";
+      let inner;
+      if (withKey) {
+        const ans = part.type === "mc" ? (tf ? part.choices[part.ans] : `(${L[part.ans]}) ${part.choices[part.ans]}`) : $m(part.type === "num" ? T.ans(part.ans) : part.display);
+        inner = `<span class="pl">${part.label}</span><div class="key-ans">${ans}</div>`;
+      } else if (tf) inner = `<span class="tf">T&nbsp;&nbsp;&nbsp;F</span><span class="pl">${part.label}</span>`;
+      else if (part.type === "mc") inner = `<span class="pl">${part.label}</span><div class="pq-choices">${part.choices.map((c, k) => `<div>(${L[k]}) ${c}</div>`).join("")}</div>`;
+      else inner = `<span class="pl">${part.label}</span><span class="blank"></span>`;
+      html += `<li><span class="pq-letter">${letter}</span><div>${inner}</div><span class="pq-pts">(${p.pts[j]})</span></li>`;
+    });
+    html += `</ol></div><span class="pq-total">${p.total} pts</span></div>`;
+    html += withKey ? `<div class="solution"><div class="sol-lbl">Worked solution</div>${p.pr.solution}</div>` : `<div class="work ${WORK[p.id] || "short"}" aria-hidden="true"></div>`;
+    html += `</section>`;
+  });
+  main.append(el("article", { class: `paper${withKey ? " key" : ""}` }, html));
+  typeset(main).then(() => document.documentElement.setAttribute("data-typeset", "done"));
+  if (!bare) window.scrollTo({ top: 0 });
+}
+
+function bootFromURL() {
+  const qs = new URLSearchParams(location.search), k = (qs.get("paper") || "").toUpperCase();
+  const mock = MOCKS.find((m) => m.key === k);
+  if (!mock) return false;
+  document.body.classList.add("bare");
+  renderPaper(mock, qs.get("key") === "1", true);
+  return true;
+}
+
+;
+// ================= app: navigation, practice, mixed review, exam simulation, formula sheet =================
+const TOPICS = [
+  { sec: "1.1", name: "Limits: numerical & graphical", items: [["graphRead", "Limits from a graph"], ["numTable", "Estimating from a table"], ["inverse", "Infinite limits"], ["endBehavior", "End behavior at ±∞"], ["bigPiecewise", "Piecewise: the big example"], ["concepts11", "Concept check"]] },
+  { sec: "1.2", name: "Algebraic limits & continuity", items: [["properties", "Properties of limits"], ["directSub", "Direct substitution"], ["factor", "0/0 — factor, cancel, conjugate"], ["infRational", "Rational limits at ±∞"], ["pwLimit", "Piecewise limits"], ["continuity", "Continuity at a point"], ["discType", "Types of discontinuity"], ["concepts12", "Concept check"]] },
+  { sec: "1.3", name: "Average rate of change", items: [["arcFunc", "Average rate, with units"], ["arcData", "Rates from tables & graphs"], ["arcShrink", "Shrinking intervals"], ["dq", "Difference quotient"], ["concepts13", "Concept check"]] },
+  { sec: "1.4", name: "The derivative", items: [["deriv", "f′(x) by the limit definition"], ["tangent", "Tangent lines"], ["interp", "Interpreting f′(a)"], ["diffGraph", "Continuous vs. differentiable"], ["rateGraph", "Rates from a graph (T/F)"], ["concepts14", "Concept check"]] },
+];
+const TOPIC_BY_ID = {};
+TOPICS.forEach((s) => s.items.forEach(([id, name]) => { TOPIC_BY_ID[id] = { id, name, sec: s.sec }; }));
+const EXAM_DATE = new Date(2026, 8, 16);
+const KEY = "mat213-midterm-lab-v1";
+const smooth = () => (matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth");
+
+const store = {
+  load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } },
+  save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } },
+};
+const state = Object.assign({ mode: "practice", topic: "graphRead", progress: {}, mockScores: {} }, store.load());
+if (!GEN[state.topic]) state.topic = "graphRead";
+const persist = () => store.save({ mode: state.mode, topic: state.topic, progress: state.progress, mockScores: state.mockScores });
+let examTimer = null, uidCounter = 0;
+
+function el(tag, attrs = {}, html) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v);
+  }
+  if (html != null) e.innerHTML = html;
+  return e;
+}
+function typeset(node) {
+  const MJ = window.MathJax;
+  if (MJ && MJ.typesetPromise) { if (MJ.typesetClear) MJ.typesetClear([node]); return MJ.typesetPromise([node]).catch(() => {}); }
+  return Promise.resolve();
+}
+function makeProblem(id) {
+  for (let i = 0; i < 6; i++) { try { return GEN[id](); } catch (e) { console.warn(id, e); } }
+  throw new Error("Could not generate " + id);
+}
+function insertAt(input, text) {
+  const s = input.selectionStart ?? input.value.length, e = input.selectionEnd ?? input.value.length;
+  input.value = input.value.slice(0, s) + text + input.value.slice(e);
+  const pos = s + text.length; input.setSelectionRange(pos, pos);
+}
+
+// ---------- countdown & rail ----------
+function renderCountdown() {
+  const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((EXAM_DATE - today) / 86400000);
+  const [num, lbl] = days > 1 ? [days, "days to go"] : days === 1 ? [1, "day — it's tomorrow"] : days === 0 ? ["0", "exam day — you've got this"] : ["✓", "exam finished"];
+  document.getElementById("countdown").innerHTML = `<span class="num">${num}</span><span class="lbl"><b>Midterm · Wed, Sep 16</b>${lbl}</span>`;
+}
+function renderRail() {
+  const rail = document.getElementById("rail"); rail.innerHTML = "";
+  TOPICS.forEach((s) => {
+    rail.append(el("h2", {}, `<span>§${s.sec}</span><span>${s.name}</span>`));
+    const ul = el("ul");
+    s.items.forEach(([id, name]) => {
+      const solved = state.progress[id]?.solved || 0;
+      const pips = [0, 1, 2].map((i) => `<i class="${i < solved ? "on" : ""}"></i>`).join("");
+      const b = el("button", {
+        type: "button", "aria-current": state.mode === "practice" && state.topic === id ? "true" : "false",
+        onclick: () => { state.mode = "practice"; state.topic = id; persist(); render(); window.scrollTo({ top: 0, behavior: smooth() }); },
+      }, `<span>${name}</span><span class="pips" aria-label="${solved} solved">${pips}</span>`);
+      const li = el("li"); li.append(b); ul.append(li);
+    });
+    rail.append(ul);
+  });
+  rail.append(el("p", { class: "legend" }, "A dot fills each time you solve a problem fully without opening the solution."));
+}
+
+// ---------- problem card ----------
+function partView(part, i, n) {
+  const id = "p" + ++uidCounter;
+  const li = el("li", { class: "part" });
+  li.append(el("div", { class: "letter" }, n > 1 ? String.fromCharCode(97 + i) + "." : ""));
+  const body = el("div", { class: "body" }); li.append(body);
+  body.append(el("div", { class: "label", id: id + "-l" }, part.label));
+  const feedback = el("div", { class: "feedback", "aria-live": "polite" });
+  let api;
+  if (part.type === "mc") {
+    const tf = part.choices.length === 2 && part.choices[0] === "True";
+    const wrap = el("div", { class: tf ? "choice-row" : "choices", role: "radiogroup", "aria-labelledby": id + "-l" });
+    const inputs = part.choices.map((c, j) => {
+      const lab = el("label", { class: "choice" });
+      const inp = el("input", { type: "radio", name: id, id: `${id}-${j}`, value: String(j) });
+      inp.addEventListener("change", () => { li.classList.remove("ok", "bad"); inputs.forEach((o) => o.lab.classList.remove("wrong")); });
+      lab.append(inp, el("span", {}, c)); wrap.append(lab);
+      return { inp, lab };
+    });
+    body.append(wrap, feedback);
+    api = {
+      value: () => inputs.findIndex((o) => o.inp.checked),
+      grade() { const k = this.value(); return k < 0 ? { empty: true } : { ok: k === part.ans }; },
+      mark(res, reveal) { const k = this.value(); inputs.forEach((o, j) => { o.lab.classList.toggle("right", !!reveal && j === part.ans); o.lab.classList.toggle("wrong", !!res && res.ok === false && j === k); }); },
+      lock() { inputs.forEach((o) => { o.inp.disabled = true; }); },
+      answerText: () => part.choices[part.ans],
+    };
+  } else {
+    const row = el("div", { class: "answer-row" });
+    const input = el("input", {
+      type: "text", id, autocomplete: "off", autocapitalize: "off", spellcheck: "false", inputmode: "text", "aria-labelledby": id + "-l",
+      placeholder: part.type === "line" ? "y = …" : part.type === "expr" ? `in terms of ${(part.vars || ["x"]).join(" and ")}` : "number, inf, -inf, or DNE",
+    });
+    const mark = el("span", { class: "mark", hidden: "" });
+    row.append(input, mark);
+    const keys = el("div", { class: "keys", "aria-label": "insert symbols" });
+    const keyset = part.type === "num" ? ["DNE", "inf", "-inf", "/", "sqrt(", "^"]
+      : part.type === "expr" ? ["^", "/", "(", ")", "sqrt(", ...(part.vars || ["x"])]
+        : ["y = ", "x", "^", "/", "(", ")"];
+    keyset.forEach((k) => keys.append(el("button", { type: "button", tabindex: "-1", onclick: () => { insertAt(input, k); input.dispatchEvent(new Event("input")); input.focus(); } },
+      k === "inf" ? "∞" : k === "-inf" ? "−∞" : k === "sqrt(" ? "√(" : k.trim())));
+    const preview = el("div", { class: "preview" });
+    body.append(row, keys, preview, feedback);
+    let timer;
+    input.addEventListener("input", () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => updatePreview(input.value, part.type, preview), 220);
+      li.classList.remove("ok", "bad"); mark.hidden = true; feedback.innerHTML = "";
+    });
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); input.closest(".sheet")?.querySelector("[data-check]")?.click(); } });
+    api = {
+      value: () => input.value,
+      grade: () => Check[part.type](input.value, part),
+      mark(res) {
+        if (!res || res.empty || !("ok" in res)) { mark.hidden = true; return; }
+        mark.hidden = false; mark.className = "mark " + (res.ok ? "ok" : "bad"); mark.textContent = res.ok ? "✓ correct" : "✗ not yet";
+      },
+      lock() { input.disabled = true; keys.remove(); },
+      answerText: () => $m(part.type === "num" ? T.ans(part.ans) : part.display),
+    };
+  }
+  Object.assign(api, { li, feedback, part });
+  return { li, api };
+}
+function updatePreview(raw, type, box) {
+  if (!raw.trim()) { box.innerHTML = ""; return; }
+  const tex = Check.preview(raw, type);
+  box.innerHTML = tex == null ? `<span class="pv-lbl">reads as</span>…keep typing` : `<span class="pv-lbl">reads as</span>\\(${tex}\\)`;
+  if (tex != null) typeset(box);
+}
+function applyResult(api, res, reveal) {
+  api.li.classList.remove("ok", "bad");
+  let fb = "";
+  if (res.empty) fb = reveal ? "" : `<span class="reveal">No answer yet.</span>`;
+  else if (res.err && !("ok" in res)) fb = `<span class="preview err">${res.err}</span>`;
+  else {
+    api.li.classList.add(res.ok ? "ok" : "bad");
+    if (res.err) fb += `<span class="preview err">${res.err}</span>`;
+    if (res.note) fb += `<div>${res.note}</div>`;
+  }
+  if (reveal && !res.ok) fb += `<div class="reveal">Answer: ${api.answerText()}</div>`;
+  api.feedback.innerHTML = fb;
+  api.mark(res, reveal);
+}
+function problemCard(pr, { title, tag, num }) {
+  const card = el("article", { class: "sheet" });
+  card.append(el("div", { class: "sheet-head" }, `<h3>${num ? `<span class="qnum">${num}.</span>` : ""}${title}</h3><span class="tag">${tag}</span>`));
+  card.append(el("div", { class: "prompt" }, pr.prompt));
+  if (pr.figure) card.append(el("div", { class: "figure" }, pr.figure));
+  const list = el("ol", { class: "parts" });
+  const ctrls = pr.parts.map((part, i) => { const { li, api } = partView(part, i, pr.parts.length); list.append(li); return api; });
+  card.append(list);
+  return { card, ctrls };
+}
+
+// ---------- practice & mixed ----------
+function tipsCard() {
+  const d = el("details", { class: "sheet" });
+  if (!Object.keys(state.progress).length) d.setAttribute("open", "");
+  d.innerHTML = `<summary class="sheet-head" style="cursor:pointer;margin-bottom:0;border:0;padding:0"><h3>How to type answers</h3><span class="tag">open / close</span></summary>
+    <div class="intro" style="margin-top:14px">
+      <div class="cell"><h4>Numbers & limits</h4><p><code>1/3</code> or <code>0.33</code> · <code>inf</code>, <code>-inf</code> · <code>DNE</code> (or “undefined”)</p></div>
+      <div class="cell"><h4>Expressions</h4><p><code>2x + h - 3</code> · <code>-4/x^2</code> · <code>1/(2sqrt(x))</code> — the preview shows how it was read.</p></div>
+      <div class="cell"><h4>Tangent lines</h4><p><code>y = -8x - 9</code> or point-slope <code>y - 15 = -8(x + 3)</code>. Both count.</p></div>
+    </div>
+    <p class="warn"><b>From your HW 2, #3:</b> ${$m("6 - x - x^2")} at ${$m("x = 1")} is ${$m("6 - 1 - 1 = 4")}, not ${$m("-4")}. The sign got lost when the expression was rewritten as ${$m("x^2 + x - 6")}. Substitute into the original piece, term by term. The continuity drills use negative leading terms on purpose.</p>`;
+  return d;
+}
+function renderPractice(mixed) {
+  const main = document.getElementById("main"); main.innerHTML = "";
+  if (!mixed) main.append(tipsCard());
+  const id = mixed ? R.pick(Object.keys(TOPIC_BY_ID)) : state.topic;
+  const t = TOPIC_BY_ID[id], pr = makeProblem(id);
+  const { card, ctrls } = problemCard(pr, { title: t.name, tag: `§${t.sec}${mixed ? " · mixed review" : ""}` });
+  const btnCheck = el("button", { class: "btn primary", type: "button", "data-check": "" }, "Check answers");
+  const btnHint = el("button", { class: "btn ghost", type: "button" }, "Hint");
+  const btnSol = el("button", { class: "btn", type: "button" }, "Show solution");
+  const btnNext = el("button", { class: "btn", type: "button" }, mixed ? "Next random problem →" : "New problem →");
+  const score = el("span", { class: "score-line", "aria-live": "polite" });
+  const actions = el("div", { class: "actions" }); actions.append(btnCheck, btnHint, btnSol, btnNext, score);
+  const hintBox = el("div", { class: "hint", hidden: "" }, `<b>Hint</b>${pr.hint}`);
+  const solBox = el("div", { class: "solution", hidden: "" }, `<div class="sol-lbl">Worked solution</div>${pr.solution}`);
+  card.append(actions, hintBox, solBox);
+  let tried = false, counted = false;
+  btnCheck.onclick = () => {
+    const results = ctrls.map((c) => { const r = c.grade(); applyResult(c, r, !solBox.hidden); return r; });
+    const right = results.filter((r) => r.ok).length, total = results.length;
+    const p = state.progress[id] || (state.progress[id] = { tries: 0, solved: 0 });
+    if (!tried) { p.tries++; tried = true; }
+    if (right === total && !counted && solBox.hidden) { p.solved++; counted = true; }
+    score.textContent = right === total ? `All ${total} correct${solBox.hidden ? "" : " (solution was open)"}` : `${right} of ${total} correct`;
+    persist(); renderRail(); typeset(card);
+  };
+  btnHint.onclick = () => { hintBox.hidden = !hintBox.hidden; };
+  btnSol.onclick = () => { solBox.hidden = false; ctrls.forEach((c) => applyResult(c, c.grade(), true)); typeset(card); solBox.scrollIntoView({ behavior: smooth(), block: "start" }); };
+  btnNext.onclick = () => { renderPractice(mixed); window.scrollTo({ top: 0, behavior: smooth() }); };
+  main.append(card);
+  typeset(main);
+}
+
+// ---------- formula sheet ----------
+function renderFormulas() {
+  const main = document.getElementById("main"); main.innerHTML = "";
+  const c = el("section", { class: "sheet formula" });
+  c.innerHTML = `<div class="sheet-head"><h3>Formula & fact sheet</h3><span class="tag">the blanks from your notes, filled in</span></div>` +
+    FORMULA_SHEET.map((s) => `<section><h3><span class="tag">§${s.sec}</span>${s.title}</h3><dl>${s.items.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></section>`).join("");
+  main.append(c);
+  typeset(main);
+}
+
+function render() {
+  clearInterval(examTimer);
+  document.querySelectorAll(".modes button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.mode === state.mode ? "true" : "false"));
+  renderRail();
+  if (state.mode === "practice") renderPractice(false);
+  else if (state.mode === "mixed") renderPractice(true);
+  else if (state.mode === "exam") renderMocks();
+  else renderFormulas();
+}
+document.querySelectorAll(".modes button").forEach((b) => { b.onclick = () => { state.mode = b.dataset.mode; persist(); render(); }; });
+renderCountdown();
+if (!bootFromURL()) render();
+</script>
+
+</body>
+</html>
