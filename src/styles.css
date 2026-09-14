@@ -351,3 +351,7 @@ table.vt td.qmark { color: var(--curve); font-weight: 700; }
 .plan-day { display: inline-block; min-width: 52px; font: 600 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--curve); }
 .plan-auto { font: 500 10px var(--f-mono); color: var(--faint); border: 1px solid var(--grid-strong); border-radius: 3px; padding: 0 5px; margin-left: 6px; white-space: nowrap; text-decoration: none; display: inline-block; }
 .setup .note { font: 400 12px/1.4 var(--f-mono); color: var(--graphite); }
+
+/* ---------- save status ---------- */
+.savebar { max-width: 1240px; margin: -8px auto 14px; font: 500 12px/1.45 var(--f-mono); color: var(--graphite); }
+.savebar.warn { color: var(--bad); font-weight: 600; }

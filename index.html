@@ -361,6 +361,10 @@ table.vt td.qmark { color: var(--curve); font-weight: 700; }
 .plan-day { display: inline-block; min-width: 52px; font: 600 11px var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--curve); }
 .plan-auto { font: 500 10px var(--f-mono); color: var(--faint); border: 1px solid var(--grid-strong); border-radius: 3px; padding: 0 5px; margin-left: 6px; white-space: nowrap; text-decoration: none; display: inline-block; }
 .setup .note { font: 400 12px/1.4 var(--f-mono); color: var(--graphite); }
+
+/* ---------- save status ---------- */
+.savebar { max-width: 1240px; margin: -8px auto 14px; font: 500 12px/1.45 var(--f-mono); color: var(--graphite); }
+.savebar.warn { color: var(--bad); font-weight: 600; }
 </style>
 <script>
 window.MathJax = {
@@ -393,6 +397,7 @@ window.MathJax = {
   <button type="button" data-mode="exam" aria-pressed="false">Paper mock exams</button>
   <button type="button" data-mode="formulas" aria-pressed="false">Formula sheet</button>
 </nav>
+<p class="savebar" id="savebar" aria-live="polite"></p>
 <div class="shell">
   <aside class="rail" id="rail" aria-label="Topics"></aside>
   <main class="main" id="main"></main>
@@ -3066,16 +3071,59 @@ function buildReport(S) {
   return L.join("\n");
 }
 
+// ---------- merging (cloud sync and backup codes never delete, they only add) ----------
+function mergeProgressMaps(into, from) {
+  Object.entries(from || {}).forEach(([id, p]) => {
+    if (!p) return;
+    const cur = into[id], incoming = { ...p, streak: p.streak ?? Math.min(p.solved || 0, 3) };
+    if (!cur || (incoming.tries || 0) > (cur.tries || 0)) into[id] = incoming;
+  });
+}
+function mergeState(data) {
+  let added = 0;
+  const ids = new Set(state.log.map((e) => e.id));
+  (data.log || []).forEach((e) => { if (e && e.id && !ids.has(e.id)) { state.log.push(e); ids.add(e.id); added++; } });
+  state.log.sort((a, b) => a.t - b.t);
+  const tids = new Set(state.tests.map((t) => t.id));
+  (data.tests || []).forEach((t) => { if (t && t.id && !tids.has(t.id)) { state.tests.push(t); tids.add(t.id); added++; } });
+  state.tests.sort((a, b) => a.t - b.t);
+  mergeProgressMaps(state.progress, data.progress);
+  mergeProgressMaps(state.pprogress, data.pprogress);
+  Object.entries(data.mockScores || {}).forEach(([k, v]) => { state.mockScores[k] = Math.max(state.mockScores[k] ?? 0, v); });
+  Object.entries(data.plan || {}).forEach(([k, v]) => { if (v) state.plan[k] = true; });
+  return added;
+}
+
+const STORAGE_OK = (() => {
+  try { const k = "mat213-storage-test"; localStorage.setItem(k, "1"); const ok = localStorage.getItem(k) === "1"; localStorage.removeItem(k); return ok; } catch (e) { return false; }
+})();
+function renderSaveBar() {
+  const bar = document.getElementById("savebar");
+  if (!bar) return;
+  const host = location.protocol === "file:" ? "file" : /github\.io$/.test(location.hostname) ? "pages" : "claude";
+  const st = Sync.status();
+  let warn = false, msg;
+  if (st === "synced") msg = "✓ Progress is saved to this page's cloud storage. Open this same link on any device to pick it up.";
+  else if (!STORAGE_OK) { warn = true; msg = "⚠ This browser isn't saving your progress (private window or blocked site data). Before closing this tab, copy a backup code in My gaps."; }
+  else if (st === "pending") msg = "Progress saves in this browser. Connecting cloud sync…";
+  else if (host === "pages") msg = "Progress saves in this browser only. To move it, use a backup code in My gaps, or practice on the claude.ai link, which syncs.";
+  else if (host === "file") msg = "Desktop copy: progress saves in this browser only. The claude.ai link syncs across devices.";
+  else if (st === "error" || st === "full") { warn = true; msg = "⚠ Cloud sync hit a problem. Progress is still saved in this browser."; }
+  else msg = "Progress saves in this browser only (cloud sync isn't available in this view).";
+  bar.className = `savebar${warn ? " warn" : ""}`;
+  bar.textContent = msg;
+}
+
 // ---------- cloud sync (only inside the published page; the local copy keeps data in the browser) ----------
 const Sync = (() => {
-  let db = null, ready = false, timer = null, status = "local";
+  let db = null, ready = false, timer = null, status = window.claude && typeof window.claude.use === "function" ? "pending" : "local";
   const CHUNK = 100;
   const listeners = new Set();
   const setStatus = (s) => { status = s; listeners.forEach((fn) => fn(s)); };
   async function init() {
     if (!window.claude || typeof window.claude.use !== "function") return;
     try { db = await window.claude.use("db"); } catch (e) { db = null; }
-    if (!db) return;
+    if (!db) { setStatus("local"); return; }
     try {
       const snap = await db.collection("attempts").get();
       const ids = new Set(state.log.map((e) => e.id));
@@ -3085,12 +3133,11 @@ const Sync = (() => {
       const t = await db.doc("analytics/tests").get();
       if (t.exists) { const tids = new Set(state.tests.map((x) => x.id)); (t.data().tests || []).forEach((x) => { if (x && x.id && !tids.has(x.id)) { state.tests.push(x); added++; } }); state.tests.sort((a, b) => a.t - b.t); }
       const pg = await db.doc("analytics/progress").get();
-      if (pg.exists && !Object.keys(state.progress).length && !Object.keys(state.pprogress).length) {
-        const body = pg.data(); state.progress = { ...(body.progress || {}) }; state.pprogress = { ...(body.pprogress || {}) }; state.mockScores = { ...(body.mockScores || {}), ...state.mockScores };
-      }
+      if (pg.exists) { const body = pg.data(); mergeState({ progress: body.progress, pprogress: body.pprogress, mockScores: body.mockScores, plan: body.plan }); }
       ready = true; setStatus("synced");
       persist();
-      if (added && (state.mode === "stats" || state.mode === "pearson" || state.mode === "practice")) render();
+      renderRail();
+      if (state.mode === "stats") render();
       touch();
     } catch (e) { console.warn("sync init failed", e); db = null; setStatus("local"); }
   }
@@ -3100,7 +3147,7 @@ const Sync = (() => {
       const log = state.log;
       for (let c = 0; c * CHUNK < log.length; c++) await db.doc(`attempts/chunk-${String(c).padStart(4, "0")}`).set({ entries: JSON.parse(JSON.stringify(log.slice(c * CHUNK, (c + 1) * CHUNK))), updated: Date.now() });
       await db.doc("analytics/tests").set({ tests: JSON.parse(JSON.stringify(state.tests.slice(-200))) });
-      await db.doc("analytics/progress").set({ progress: JSON.parse(JSON.stringify(state.progress)), pprogress: JSON.parse(JSON.stringify(state.pprogress)), mockScores: { ...state.mockScores }, updated: Date.now() });
+      await db.doc("analytics/progress").set({ progress: JSON.parse(JSON.stringify(state.progress)), pprogress: JSON.parse(JSON.stringify(state.pprogress)), mockScores: { ...state.mockScores }, plan: { ...state.plan }, updated: Date.now() });
       const S = computeStats();
       await db.doc("analytics/summary").set({ updated: Date.now(), total: S.total, firstRate: S.firstRate, report: buildReport(S) });
       setStatus("synced");
@@ -3121,6 +3168,8 @@ const Sync = (() => {
   return { init, touch, reset, status: () => status, onStatus: (fn) => { listeners.add(fn); return () => listeners.delete(fn); } };
 })();
 setTimeout(() => Sync.init(), 0);
+Sync.onStatus(() => renderSaveBar());
+let restoreNote = "";
 
 // ---------- dashboard ----------
 function practiceSkill(skill) {
@@ -3133,6 +3182,7 @@ const syncText = (s) => ({
   error: "Couldn't reach the page's storage just now. Results are saved in this browser and will sync on the next answer.",
   full: "The page's storage is full. Results are still saved in this browser.",
   local: "Saved in this browser only. Use “Copy report” to share results with Claude.",
+  pending: "Connecting to the page's storage…",
 })[s];
 
 function planCard(S) {
@@ -3263,7 +3313,31 @@ function renderStats() {
   const acts2 = el("div", { class: "actions" });
   acts2.append(resetBtn, confirmReset);
   rep.append(ta, acts, acts2);
-  main.append(rep);
+  const backup = el("section", { class: "sheet" });
+  backup.innerHTML = `<div class="sheet-head"><h3>Back up or move your progress</h3><span class="tag">phone ↔ computer</span></div>
+    <div class="prompt"><p>Each link keeps its own progress: the claude.ai link syncs, while the phone link and the Desktop file save only in that browser. To move progress, copy a backup code on one and restore it on the other. Restoring only adds records; it never deletes any.</p></div>`;
+  const code = el("textarea", { class: "report-box", id: "backup-box", "aria-label": "backup code", placeholder: "Paste a backup code here, then choose Restore" });
+  code.style.minHeight = "90px";
+  const bmsg = el("span", { class: "score-line", "aria-live": "polite" }, restoreNote);
+  restoreNote = "";
+  const makeCode = () => btoa(unescape(encodeURIComponent(JSON.stringify({ v: 1, log: state.log, tests: state.tests, progress: state.progress, pprogress: state.pprogress, mockScores: state.mockScores, plan: state.plan }))));
+  const bcopy = btn("Copy backup code", "primary", async () => {
+    code.value = makeCode();
+    try { await navigator.clipboard.writeText(code.value); bmsg.textContent = "Backup code copied."; }
+    catch (e) { code.focus(); code.select(); try { document.execCommand("copy"); bmsg.textContent = "Backup code copied."; } catch (e2) { bmsg.textContent = "Selected. Press Ctrl+C to copy it."; } }
+  });
+  const brestore = btn("Restore from code", "", () => {
+    let data;
+    try { data = JSON.parse(decodeURIComponent(escape(atob(code.value.trim())))); } catch (e) { bmsg.textContent = "That code couldn't be read. Copy the whole code and try again."; return; }
+    const added = mergeState(data);
+    persist(); Sync.touch();
+    restoreNote = `Restored: ${added} new answers and tests merged in, and your dots are updated.`;
+    renderRail(); render();
+  });
+  const bacts = el("div", { class: "actions" });
+  bacts.append(bcopy, brestore, bmsg);
+  backup.append(code, bacts);
+  main.append(rep, backup);
 }
 
 ;
@@ -3485,6 +3559,8 @@ const store = {
 };
 const state = Object.assign({ mode: "pearson", topic: "graphRead", progress: {}, mockScores: {}, ptopic: "limGraph", pprogress: {}, log: [], tests: [], guides: true, seenPearson: false, pearsonIntroSeen: false, plan: {}, examCfg: { minutes: 75, n: 20, calc: true } }, store.load());
 if (!state.seenPearson) { state.mode = "pearson"; state.seenPearson = true; }
+// progress saved by the older version has solve counts but no streak field
+[state.progress, state.pprogress].forEach((m) => Object.values(m).forEach((p) => { if (p.streak == null) p.streak = Math.min(p.solved || 0, 3); }));
 if (!GEN[state.topic]) state.topic = "graphRead";
 const persist = () => store.save({ mode: state.mode, topic: state.topic, progress: state.progress, mockScores: state.mockScores, ptopic: state.ptopic, pprogress: state.pprogress, log: state.log.slice(-2500), tests: state.tests.slice(-200), guides: state.guides, seenPearson: state.seenPearson, pearsonIntroSeen: state.pearsonIntroSeen, plan: state.plan, examCfg: state.examCfg });
 let examTimer = null, uidCounter = 0;
@@ -3708,6 +3784,7 @@ function render() {
 }
 document.querySelectorAll(".modes button").forEach((b) => { b.onclick = () => { state.mode = b.dataset.mode; persist(); render(); }; });
 renderCountdown();
+renderSaveBar();
 if (!bootFromURL()) render();
 </script>
 

@@ -17,6 +17,8 @@ const store = {
 };
 const state = Object.assign({ mode: "pearson", topic: "graphRead", progress: {}, mockScores: {}, ptopic: "limGraph", pprogress: {}, log: [], tests: [], guides: true, seenPearson: false, pearsonIntroSeen: false, plan: {}, examCfg: { minutes: 75, n: 20, calc: true } }, store.load());
 if (!state.seenPearson) { state.mode = "pearson"; state.seenPearson = true; }
+// progress saved by the older version has solve counts but no streak field
+[state.progress, state.pprogress].forEach((m) => Object.values(m).forEach((p) => { if (p.streak == null) p.streak = Math.min(p.solved || 0, 3); }));
 if (!GEN[state.topic]) state.topic = "graphRead";
 const persist = () => store.save({ mode: state.mode, topic: state.topic, progress: state.progress, mockScores: state.mockScores, ptopic: state.ptopic, pprogress: state.pprogress, log: state.log.slice(-2500), tests: state.tests.slice(-200), guides: state.guides, seenPearson: state.seenPearson, pearsonIntroSeen: state.pearsonIntroSeen, plan: state.plan, examCfg: state.examCfg });
 let examTimer = null, uidCounter = 0;
@@ -240,4 +242,5 @@ function render() {
 }
 document.querySelectorAll(".modes button").forEach((b) => { b.onclick = () => { state.mode = b.dataset.mode; persist(); render(); }; });
 renderCountdown();
+renderSaveBar();
 if (!bootFromURL()) render();
