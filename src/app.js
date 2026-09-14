@@ -242,5 +242,18 @@ function render() {
 }
 document.querySelectorAll(".modes button").forEach((b) => { b.onclick = () => { state.mode = b.dataset.mode; persist(); render(); }; });
 renderCountdown();
+// A restore link (?restore=<backup code>) merges progress in one click, then cleans up the address bar
+(() => {
+  const qs = new URLSearchParams(location.search), code = qs.get("restore");
+  if (!code) return;
+  try {
+    mergeState(JSON.parse(decodeURIComponent(escape(atob(code.replace(/ /g, "+"))))));
+    state.mode = "practice";
+    persist();
+    restoreNote = "Your progress from the restore link was added.";
+  } catch (e) { console.warn("restore link could not be read", e); }
+  qs.delete("restore");
+  history.replaceState(null, "", location.pathname + (qs.toString() ? `?${qs}` : "") + location.hash);
+})();
 renderSaveBar();
 if (!bootFromURL()) render();

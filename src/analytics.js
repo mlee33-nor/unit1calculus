@@ -218,7 +218,7 @@ const STORAGE_OK = (() => {
 function renderSaveBar() {
   const bar = document.getElementById("savebar");
   if (!bar) return;
-  const host = location.protocol === "file:" ? "file" : /github\.io$/.test(location.hostname) ? "pages" : "claude";
+  const host = location.protocol === "file:" ? "file" : window.claude && typeof window.claude.use === "function" ? "claude" : "pages";
   const st = Sync.status();
   let warn = false, msg;
   if (st === "synced") msg = "✓ Progress is saved to this page's cloud storage. Open this same link on any device to pick it up.";
