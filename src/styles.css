@@ -355,3 +355,17 @@ table.vt td.qmark { color: var(--curve); font-weight: 700; }
 /* ---------- save status ---------- */
 .savebar { max-width: 1240px; margin: -8px auto 14px; font: 500 12px/1.45 var(--f-mono); color: var(--graphite); }
 .savebar.warn { color: var(--bad); font-weight: 600; }
+
+/* ---------- sidebar rows with editable dots ---------- */
+.rail li.rail-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px; border-radius: 7px; padding-right: 8px; }
+.rail li.rail-item > button { grid-template-columns: minmax(0, 1fr); }
+.rail li.rail-item.current { background: var(--ink); color: var(--sheet); }
+.rail li.rail-item.current .pips i, .rail li.rail-item.current .pips .pip { border-color: var(--sheet); }
+.rail li.rail-item.current .pips i.on, .rail li.rail-item.current .pips .pip.on { background: var(--sheet); }
+.rail .pips.editing { gap: 6px; }
+.rail .pips .pip { width: 16px; min-width: 0; height: 16px; padding: 0; margin: 0; display: block; border-radius: 50%; border: 1.5px solid var(--grid-strong); background: transparent; cursor: pointer; white-space: normal; }
+.rail .pips .pip.on, .rail .pips .pip.on:hover { background: var(--ok); border-color: var(--ok); }
+.rail .pips .pip:hover { background: transparent; border-color: var(--ink); transform: scale(1.15); }
+.rail .legend { display: grid; gap: 6px; justify-items: start; }
+.rail .legend .dots-edit { width: auto; margin-top: 2px; }
+@media (prefers-reduced-motion: reduce) { .rail .pips .pip:hover { transform: none; } }

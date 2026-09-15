@@ -5,6 +5,38 @@ function makePProblem(id) {
 }
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
+// Sidebar dots: display-only by default; "Edit dots" makes them clickable
+let editingDots = false;
+function dotsControl(catalog, id, name) {
+  const map = catalog === "pgen" ? state.pprogress : state.progress;
+  const n = Math.min(3, map[id]?.streak || 0);
+  const wrap = el("span", { class: `pips${editingDots ? " editing" : ""}`, role: editingDots ? "group" : "img", "aria-label": `${name}: ${n} of 3 dots` });
+  [1, 2, 3].forEach((k) => {
+    if (!editingDots) { wrap.append(el("i", { class: k <= n ? "on" : "" })); return; }
+    const next = n === k ? k - 1 : k;
+    const pip = el("button", { type: "button", class: `pip${k <= n ? " on" : ""}`, "data-dot": `${catalog}-${id}-${k}`, "aria-label": `Set ${name} to ${next} dot${next === 1 ? "" : "s"}`, title: `Set to ${next}` });
+    pip.onclick = (e) => {
+      e.stopPropagation();
+      const p = map[id] || (map[id] = { tries: 0, solved: 0, streak: 0 });
+      p.streak = next; p.solved = Math.max(p.solved || 0, next); p.manual = Date.now();
+      persist(); Sync.touch();
+      renderRail();
+      if (state.mode === "stats") render();
+      document.querySelector(`[data-dot="${catalog}-${id}-${k}"]`)?.focus();
+    };
+    wrap.append(pip);
+  });
+  return wrap;
+}
+function dotsLegend(text) {
+  const box = el("div", { class: "legend" });
+  box.append(el("span", {}, editingDots ? "Click a dot to fill up to it. Click the last filled dot again to remove it." : text));
+  const t = el("button", { type: "button", class: "btn ghost small dots-edit", "aria-pressed": editingDots ? "true" : "false" }, editingDots ? "Done editing dots" : "Edit dots");
+  t.onclick = () => { editingDots = !editingDots; renderRail(); document.querySelector(".dots-edit")?.focus(); };
+  box.append(t);
+  return box;
+}
+
 function guideToggle() {
   const label = () => (state.guides === false ? "Show reading guides" : "Hide reading guides");
   const b = el("button", { type: "button", class: "btn ghost small guide-toggle" }, label());
@@ -198,13 +230,12 @@ function renderPearsonRail() {
     rail.append(el("h2", {}, `<span>${/^\d/.test(s.sec) ? "§" + s.sec : s.sec}</span><span>${s.name}</span>`));
     const ul = el("ul");
     s.items.forEach(([id, name]) => {
-      const solved = Math.min(3, state.pprogress[id]?.streak || 0);
-      const pips = [0, 1, 2].map((i) => `<i class="${i < solved ? "on" : ""}"></i>`).join("");
+      const current = state.mode === "pearson" && state.ptopic === id;
       const b = el("button", {
-        type: "button", "aria-current": state.mode === "pearson" && state.ptopic === id ? "true" : "false",
+        type: "button", "aria-current": current ? "true" : "false",
         onclick: () => { state.mode = "pearson"; state.ptopic = id; persist(); render(); window.scrollTo({ top: 0, behavior: smooth() }); },
-      }, `<span>${name}</span><span class="pips" aria-label="${solved} in a row">${pips}</span>`);
-      const li = el("li"); li.append(b); ul.append(li);
+      }, `<span>${name}</span>`);
+      const li = el("li", { class: `rail-item${current ? " current" : ""}` }); li.append(b, dotsControl("pgen", id, name)); ul.append(li);
     });
     rail.append(ul);
   });
@@ -217,7 +248,7 @@ function renderPearsonRail() {
     const li = el("li"); li.append(b); ul.append(li);
   });
   rail.append(ul);
-  rail.append(el("p", { class: "legend" }, "Dots = right in a row on the first try, without help. 3 = mastered. One miss resets to zero."));
+  rail.append(dotsLegend("Dots = right in a row on the first try, without help. 3 = mastered. One miss resets to zero."));
 }
 
 // ---------- practice tests ----------

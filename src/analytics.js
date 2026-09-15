@@ -142,6 +142,7 @@ function computeStats() {
     b.last5 = b.recent.slice(-5);
     b.recentAcc = b.last5.length ? b.last5.reduce((a, c) => a + c, 0) / b.last5.length : null;
     b.streak = Math.max(0, ...b.skill.topics.map((t) => Math.max(state.progress[t]?.streak || 0, state.pprogress[t]?.streak || 0)));
+    b.manual = b.skill.topics.some((t) => state.progress[t]?.manual || state.pprogress[t]?.manual);
     b.status = b.n === 0 ? "untested" : b.streak >= 3 ? "mastered" : b.n >= 2 && b.recentAcc < 0.5 ? "gap" : b.acc < 0.75 || b.recentAcc < 0.75 ? "shaky" : "good";
     b.topMistake = mlist.find((m) => m.skills[b.skill.id]);
   });
@@ -168,7 +169,7 @@ function buildReport(S) {
   ["alg", "1.1", "1.2", "1.3", "1.4"].forEach((s) => { const v = S.bySec[s]; L.push(`- ${s === "alg" ? "Algebra warm-up" : "§" + s}: ${v ? `${pct(v.first / v.n)} first-try over ${v.n} questions` : "not practiced"}`); });
   L.push("", "## Skills (weakest first)", "| Skill | § | Status | First-try | Last 5 | Streak | Attempts | Most common mistake |", "|---|---|---|---|---|---|---|---|");
   Object.values(S.bySkill).sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]).forEach((b) => {
-    L.push(`| ${b.skill.name} | ${b.skill.sec} | ${STATUS_LABEL[b.status]} | ${pct(b.acc)} | ${b.last5.map((x) => (x === 1 ? "✓" : x > 0 ? "½" : "✗")).join("") || "—"} | ${b.streak} | ${b.n} | ${b.topMistake ? b.topMistake.kind : "—"} |`);
+    L.push(`| ${b.skill.name} | ${b.skill.sec} | ${STATUS_LABEL[b.status]} | ${pct(b.acc)} | ${b.last5.map((x) => (x === 1 ? "✓" : x > 0 ? "½" : "✗")).join("") || "—"} | ${b.streak}${b.manual ? " (set by hand)" : ""} | ${b.n} | ${b.topMistake ? b.topMistake.kind : "—"} |`);
   });
   L.push("", "## Mistake patterns");
   if (!S.mistakes.length) L.push("- none recorded yet");

@@ -62,17 +62,16 @@ function renderRail() {
     rail.append(el("h2", {}, `<span>§${s.sec}</span><span>${s.name}</span>`));
     const ul = el("ul");
     s.items.forEach(([id, name]) => {
-      const solved = Math.min(3, state.progress[id]?.streak || 0);
-      const pips = [0, 1, 2].map((i) => `<i class="${i < solved ? "on" : ""}"></i>`).join("");
+      const current = state.mode === "practice" && state.topic === id;
       const b = el("button", {
-        type: "button", "aria-current": state.mode === "practice" && state.topic === id ? "true" : "false",
+        type: "button", "aria-current": current ? "true" : "false",
         onclick: () => { state.mode = "practice"; state.topic = id; persist(); render(); window.scrollTo({ top: 0, behavior: smooth() }); },
-      }, `<span>${name}</span><span class="pips" aria-label="${solved} in a row">${pips}</span>`);
-      const li = el("li"); li.append(b); ul.append(li);
+      }, `<span>${name}</span>`);
+      const li = el("li", { class: `rail-item${current ? " current" : ""}` }); li.append(b, dotsControl("gen", id, name)); ul.append(li);
     });
     rail.append(ul);
   });
-  rail.append(el("p", { class: "legend" }, "Dots = right in a row on the first try, without the solution. 3 = mastered. One miss resets to zero."));
+  rail.append(dotsLegend("Dots = right in a row on the first try, without the solution. 3 = mastered. One miss resets to zero."));
 }
 
 // ---------- problem card ----------
