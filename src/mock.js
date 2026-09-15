@@ -32,7 +32,7 @@ function partPoints(parts, part) {
 function buildMock(mock) {
   return withSeed(mock.seed, () => MOCK_BLUEPRINT.map((opts, i) => {
     const id = opts[((mock.variant >> (i % 2)) & 1) % opts.length];
-    const pr = makeProblem(id);
+    const pr = shortenProblem(makeProblem(id), id);
     const pts = pr.parts.map((part) => partPoints(pr.parts, part));
     return { id, pr, pts, total: pts.reduce((a, b) => a + b, 0) };
   }));
@@ -45,7 +45,7 @@ function renderMocks() {
   const main = document.getElementById("main"); main.innerHTML = "";
   const intro = el("section", { class: "sheet" });
   intro.innerHTML = `<div class="sheet-head"><h3>Mock midterms</h3><span class="tag">§1.1 – §1.4 · ${MOCK_BLUEPRINT.length} problems each</span></div>
-    <div class="prompt"><p>Four full-length practice midterms built like the real one: every section, point values, and show-your-work problems. Each exam stays the same every time you open it, so you can print it, work it on paper, grade it with the answer key, and retake it later.</p>
+    <div class="prompt"><p>Four practice midterms built like the real one: every section, point values, and short show-your-work problems with one or two answers each. Each exam stays the same every time you open it, so you can print it, work it on paper, grade it with the answer key, and retake it later.</p>
     <p><b>Plan before Wednesday:</b> take A under the timer tonight, review the misses, and drill those topics. Take B on Monday and C on Tuesday. Save D for a final warm-up.</p></div>
     <div class="setup">${minutesSelect("mock-min")}</div>`;
   main.append(intro);

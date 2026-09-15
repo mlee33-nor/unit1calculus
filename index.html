@@ -1833,7 +1833,7 @@ function partPoints(parts, part) {
 function buildMock(mock) {
   return withSeed(mock.seed, () => MOCK_BLUEPRINT.map((opts, i) => {
     const id = opts[((mock.variant >> (i % 2)) & 1) % opts.length];
-    const pr = makeProblem(id);
+    const pr = shortenProblem(makeProblem(id), id);
     const pts = pr.parts.map((part) => partPoints(pr.parts, part));
     return { id, pr, pts, total: pts.reduce((a, b) => a + b, 0) };
   }));
@@ -1846,7 +1846,7 @@ function renderMocks() {
   const main = document.getElementById("main"); main.innerHTML = "";
   const intro = el("section", { class: "sheet" });
   intro.innerHTML = `<div class="sheet-head"><h3>Mock midterms</h3><span class="tag">§1.1 – §1.4 · ${MOCK_BLUEPRINT.length} problems each</span></div>
-    <div class="prompt"><p>Four full-length practice midterms built like the real one: every section, point values, and show-your-work problems. Each exam stays the same every time you open it, so you can print it, work it on paper, grade it with the answer key, and retake it later.</p>
+    <div class="prompt"><p>Four practice midterms built like the real one: every section, point values, and short show-your-work problems with one or two answers each. Each exam stays the same every time you open it, so you can print it, work it on paper, grade it with the answer key, and retake it later.</p>
     <p><b>Plan before Wednesday:</b> take A under the timer tonight, review the misses, and drill those topics. Take B on Monday and C on Tuesday. Save D for a final warm-up.</p></div>
     <div class="setup">${minutesSelect("mock-min")}</div>`;
   main.append(intro);
@@ -2796,6 +2796,24 @@ function renderPearsonRail() {
 }
 
 // ---------- practice tests ----------
+// Tests keep each question short: at most two answer boxes (the key ones)
+const KEEP_PARTS = {
+  limGraph: () => [2, R.pick([0, 1, 3])],
+  limInfinite: () => [2, R.pick([0, 1])],
+  graphRead: (n) => (n >= 8 ? [R.int(0, 3), R.int(4, 7)] : [0, n - 1]),
+};
+function shortenProblem(pr, id, max = 2) {
+  const n = pr.parts.length;
+  if (n <= max) return pr;
+  const keep = [...new Set((KEEP_PARTS[id] ? KEEP_PARTS[id](n) : [0, n - 1]).filter((i) => i >= 0 && i < n))].sort((a, b) => a - b);
+  return { ...pr, parts: keep.map((i) => pr.parts[i]) };
+}
+function buildPTestProblems(test) {
+  const full = !!(state.examCfg && state.examCfg.full);
+  return withSeed(test.seed, () => (test.blueprint || PTEST_BLUEPRINT).map((id) => { const pr = makePProblem(id); return { id, pr: full ? pr : shortenProblem(pr, id) }; }));
+}
+const answerCount = (problems) => problems.reduce((a, p) => a + p.pr.parts.length, 0);
+
 function testBlueprint() {
   const cfg = state.examCfg || { n: 20, calc: true };
   let base = PTEST_BLUEPRINT.map((id) => (!cfg.calc && id === "limTable" ? "limAlg" : id));
@@ -2812,22 +2830,25 @@ function renderPTestHome() {
   intro.innerHTML = `<div class="sheet-head"><h3>Pearson-style practice tests</h3><span class="tag">§1.1 – §1.4 · ${PTEST_BLUEPRINT.length} questions</span></div>
     <div class="prompt"><p>Every answer format from the homework: A/B limit choices, Yes/No, select all that apply, <b>y =</b> boxes, and separate unit boxes. Questions appear one at a time, you can jump between them, and nothing is graded until you submit.</p>
     <p>Scoring matches the homework: each question is worth 1 point, split across its parts, with the same strict rules — exact simplified fractions and correct units.</p></div>
-    <div class="setup">${minutesSelect("pt-min")}<label for="pt-n">Questions <select id="pt-n"><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option></select></label><label for="pt-calc">Calculator <select id="pt-calc"><option value="yes">Allowed</option><option value="no">Not allowed</option></select></label><span class="note">Set these to match your real exam once you know the details.</span></div>`;
+    <div class="setup">${minutesSelect("pt-min")}<label for="pt-n">Questions <select id="pt-n"><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option></select></label><label for="pt-calc">Calculator <select id="pt-calc"><option value="yes">Allowed</option><option value="no">Not allowed</option></select></label><label for="pt-len">Length <select id="pt-len"><option value="quick">Quick (1–2 answers per question)</option><option value="full">Full (every part)</option></select></label><span class="note">Match these to your real exam once you know the details.</span></div>`;
   main.append(intro);
   const cfg = state.examCfg || { minutes: 75, n: 20, calc: true };
   document.getElementById("pt-min").value = String(cfg.minutes);
   document.getElementById("pt-n").value = String(cfg.n);
   document.getElementById("pt-calc").value = cfg.calc ? "yes" : "no";
-  ["pt-min", "pt-n", "pt-calc"].forEach((id) => document.getElementById(id).addEventListener("change", () => {
-    state.examCfg = { minutes: +document.getElementById("pt-min").value, n: +document.getElementById("pt-n").value, calc: document.getElementById("pt-calc").value === "yes" };
+  document.getElementById("pt-len").value = cfg.full ? "full" : "quick";
+  ["pt-min", "pt-n", "pt-calc", "pt-len"].forEach((id) => document.getElementById(id).addEventListener("change", () => {
+    state.examCfg = { minutes: +document.getElementById("pt-min").value, n: +document.getElementById("pt-n").value, calc: document.getElementById("pt-calc").value === "yes", full: document.getElementById("pt-len").value === "full" };
     persist();
+    renderPTestHome();
+    document.getElementById(id)?.focus();
   }));
   const mins = () => +document.getElementById("pt-min").value;
   const grid = el("div", { class: "mock-grid" });
   PTESTS.forEach((t, i) => {
-    const best = state.mockScores[t.key];
+    const best = state.mockScores[t.key], probs = buildPTestProblems({ ...t, blueprint: testBlueprint() });
     const card = el("section", { class: "sheet mock-card" });
-    card.innerHTML = `<div class="mock-letter" aria-hidden="true">${i + 1}</div><div><h3>${t.name}</h3><p class="mock-meta">${PTEST_BLUEPRINT.length} questions · same questions every time</p><p class="mock-best">${best != null ? `Best score <b>${best}%</b>` : "Not taken yet"}</p></div>`;
+    card.innerHTML = `<div class="mock-letter" aria-hidden="true">${i + 1}</div><div><h3>${t.name}</h3><p class="mock-meta">${probs.length} questions · ${answerCount(probs)} answers · same every time</p><p class="mock-best">${best != null ? `Best score <b>${best}%</b>` : "Not taken yet"}</p></div>`;
     const acts = el("div", { class: "actions" }); acts.append(btn("Start test", "primary", () => runPTest({ ...t, blueprint: testBlueprint() }, mins())));
     card.append(acts); grid.append(card);
   });
@@ -2842,9 +2863,9 @@ function renderPTestHome() {
 function runPTest(test, minutes) {
   clearInterval(examTimer);
   const main = document.getElementById("main"); main.innerHTML = "";
-  const problems = withSeed(test.seed, () => (test.blueprint || PTEST_BLUEPRINT).map((id) => ({ id, pr: makePProblem(id) })));
+  const problems = buildPTestProblems(test);
   const bar = el("div", { class: "exam-bar" });
-  bar.innerHTML = `<span class="clock" id="clock">${minutes ? `${minutes}:00` : "∞"}</span><span class="meta">${test.name}<br><span class="pt-pos">Question 1 of ${problems.length}</span></span>`;
+  bar.innerHTML = `<span class="clock" id="clock">${minutes ? `${minutes}:00` : "∞"}</span><span class="meta">${test.name} · ${answerCount(problems)} answers<br><span class="pt-pos">Question 1 of ${problems.length}</span></span>`;
   bar.append(btn("Submit test", "", () => trySubmit()));
   const confirmRow = el("div", { class: "pt-confirm sheet", hidden: "" });
   const nav = el("nav", { class: "pt-nav", "aria-label": "Questions" });
